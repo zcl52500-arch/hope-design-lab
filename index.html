@@ -1,156 +1,140 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-<meta charset="UTF-8">
-<title>HOPE Design Lab · 滚动同步增强版</title>
-<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
-<style>
-body {
-    background:#F0F2F5;
-    font-family:'Inter',sans-serif;
-    color:#1e293b;
-    padding:20px;
-    margin:0;
-}
-h1 span { font-size:12px; background:#76B92E; color:#fff; padding:2px 8px; border-radius:10px; }
-.container { display:flex; gap:20px; max-width:1400px; margin:0 auto; flex-wrap:wrap; }
-textarea { width:45%; min-width:300px; min-height:850px; padding:20px; border-radius:12px; border:1px solid #cbd5e1; font-size:15px; line-height:1.7; resize:none; overflow-y:scroll; }
-.preview { width:55%; min-width:300px; background:white; padding:30px; border-radius:12px; overflow:auto; min-height:850px; position:relative; }
-button { background:#2E84C5; color:#fff; padding:10px 25px; border-radius:20px; border:none; cursor:pointer; font-weight:bold; margin-left:5px; }
-.capsule { display:inline-block; background:#2E84C5; color:#fff; padding:6px 20px; border-radius:50px; font-size:14px; font-weight:bold; margin:6px 0; }
-.highlight { background-color: rgba(255, 235, 59, 0.2); border-radius:4px; transition: background 0.3s; }
-@media(max-width:1000px){ .container{flex-direction:column;} textarea,.preview{width:100%;} }
-</style>
+    <meta charset="UTF-8">
+    <title>HOPE Design Lab · 最终稳定版</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <style>
+        body { background:#F0F2F5; font-family:'Inter',sans-serif; color:#1e293b; padding:20px; margin:0; }
+        .container { display:flex; gap:20px; max-width:1400px; margin:0 auto; flex-wrap:wrap; }
+        textarea { width:45%; min-width:300px; min-height:850px; padding:20px; border-radius:12px; border:1px solid #cbd5e1; font-size:15px; line-height:1.7; resize:none; outline:none; background:#fafafa; }
+        .preview { width:50%; min-width:300px; background:white; padding:40px; border-radius:12px; overflow:auto; min-height:850px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        button { background:#2E84C5; color:#fff; padding:10px 25px; border-radius:20px; border:none; cursor:pointer; font-weight:bold; transition:all 0.3s; }
+        button:hover { background:#1a6da1; transform:translateY(-2px); }
+        .highlight { background-color: rgba(255, 235, 59, 0.3); border-radius:4px; }
+        @media(max-width:1000px){ .container{flex-direction:column;} textarea,.preview{width:100%;} }
+    </style>
 </head>
 <body>
 
 <div style="max-width:1400px; margin:0 auto 20px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h1>🍓 HOPE Design Lab <span>v10.0 滚动同步增强版</span></h1>
+        <h1 style="font-size:24px; font-weight:bold;">🍓 HOPE Design Lab <span style="font-size:12px; background:#76B92E; color:#fff; padding:2px 10px; border-radius:10px; margin-left:10px;">v11.0 最终稳定版</span></h1>
         <div>
-            <button id="btnGenerate">生成排版</button>
-            <button id="btnCopy">一键复制</button>
+            <button onclick="generate()">生成排版</button>
+            <button onclick="copyHTML()" style="background:#2E84C5; margin-left:10px;">一键复制</button>
         </div>
     </div>
-    <div style="margin-bottom:10px; color:#555;">提示：# 一级标题（悬浮数字） | ## 二级标题（居中） | > 引用 | --- 分割线 | 【标签】</div>
 </div>
 
 <div class="container">
-    <textarea id="input" placeholder="在此粘贴文案..."></textarea>
+    <textarea id="input" oninput="generate()" placeholder="提示：
+# 01 激活一级标题
+## 二级居中标题
+> 编者按
+--- 三色圆点分割线
+【胶囊标签】"></textarea>
     <div id="output" class="preview"></div>
 </div>
 
 <script>
 const inputEl = document.getElementById("input");
 const outputEl = document.getElementById("output");
-let paragraphNodes = [];
 
-// 将数字转英文 PART 名称
 function numToEng(n){
     const words = ["ZERO","ONE","TWO","THREE","FOUR","FIVE","SIX","SEVEN","EIGHT","NINE","TEN"];
     return words[parseInt(n)] || "SECTION";
 }
 
-// 生成排版
 function generate(){
     const text = inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
     const lines = text.split("\n");
     let html = "";
-    paragraphNodes = [];
 
-    lines.forEach((line,index)=>{
+    lines.forEach((line)=>{
         line=line.trim();
         if(line==="") return;
 
-        let nodeHTML = "";
-        // 一级标题
+        // 1. 一级标题：采用 Table 布局替代 Flex，防止微信清洗
         if(line.startsWith("# ")){
             let content=line.replace("# ","");
             let numMatch=content.match(/\d+/);
             let num=numMatch?numMatch[0]:"01";
             let cleanTitle=content.replace(num,"").trim();
-            nodeHTML = `
-            <div style="display:flex; align-items:center; margin:50px 0 25px;" class="para">
-                <div style="flex-shrink:0; font-size:80px; font-weight:900; color:#EBF4E2; line-height:0.8; width:90px; text-align:right;">${num.padStart(2,'0')}</div>
-                <div style="margin-left:20px;">
-                    <div style="display:flex; align-items:center; margin-bottom:5px;">
-                        <div style="width:12px; height:12px; background:#FFD100; border-radius:50%; margin-right:8px;"></div>
-                        <div style="font-size:14px; font-weight:bold; color:#FFD100; letter-spacing:2px;">PART ${numToEng(num)}</div>
-                    </div>
-                    <div style="font-size:28px; font-weight:bold; color:#2E84C5; line-height:1.3;">${cleanTitle}</div>
-                </div>
-            </div>`;
+            html += `
+            <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:50px 0 30px; border-collapse:collapse;">
+                <tr>
+                    <td width="90" valign="bottom" align="right">
+                        <div style="font-size:75px; font-weight:900; color:#EBF4E2; line-height:0.8; font-family:Arial, sans-serif;">${num.padStart(2,'0')}</div>
+                    </td>
+                    <td valign="bottom" style="padding-left:20px;">
+                        <div style="margin-bottom:10px;">
+                            <span style="display:inline-block; width:12px; height:12px; background:#FFD100; border-radius:50%;"></span>
+                            <span style="font-size:14px; font-weight:bold; color:#FFD100; margin-left:8px; letter-spacing:2px; font-family:Arial;">PART ${numToEng(num)}</span>
+                        </div>
+                        <div style="font-size:26px; font-weight:bold; color:#2E84C5; line-height:1.3;">${cleanTitle}</div>
+                    </td>
+                </tr>
+            </table>
+            <div style="color:#76B92E; font-size:35px; font-weight:900; margin-bottom:35px; margin-left:10px;">↘</div>`;
         }
-        // 二级标题
+        // 2. 二级标题：居中版
         else if(line.startsWith("## ")){
-            nodeHTML = `<p style="text-align:center; font-size:26px; font-weight:bold; color:#2E84C5; margin:35px 0 20px; font-family:'ZCOOL KuaiLe', cursive;" class="para">${line.replace("## ","")}</p>`;
+            html += `<p style="text-align:center; font-size:24px; font-weight:bold; color:#2E84C5; margin:40px 0 25px; font-family:'ZCOOL KuaiLe', cursive;">${line.replace("## ","")}</p>`;
         }
-        // 蓝色胶囊
+        // 3. 胶囊标签
         else if(line.startsWith("【") && line.endsWith("】")){
-            nodeHTML = `<span class="capsule para">${line.replace(/[【】]/g,'')}</span>`;
+            html += `<div style="text-align:center; margin:15px 0;"><span style="display:inline-block; background:#2E84C5; color:#ffffff; padding:6px 22px; border-radius:50px; font-size:14px; font-weight:bold;">${line.replace(/[【】]/g,'')}</span></div>`;
         }
-        // 引用
+        // 4. 引用块
         else if(line.startsWith("> ")){
             let content=line.replace("> ","");
             let isNote=content.includes("编者按");
+            let theme=isNote?"#2E84C5":"#FFD100";
             let bg=isNote?"#F2F7FB":"#FCFAF2";
-            let color=isNote?"#2E84C5":"#FFD100";
-            nodeHTML = `<p style="background:${bg}; border-left:4px solid ${color}; padding:15px; line-height:1.9; color:#444; font-size:16px; text-align:justify; border-radius:0 4px 4px 0; margin:25px 0;" class="para">${content}</p>`;
+            html += `
+            <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:30px 0; border-collapse:collapse;">
+                <tr>
+                    <td width="5" style="background-color:${theme}; border-radius:2px;"></td>
+                    <td style="background-color:${bg}; padding:25px 30px; border-radius:0 8px 8px 0;">
+                        <div style="line-height:2.1; color:#444; font-size:16.5px; text-align:justify;">${content}</div>
+                    </td>
+                </tr>
+            </table>`;
         }
-        // 分割线
+        // 5. 三色点分割线：注入实体符号防止被删
         else if(line==="---"){
-            nodeHTML = `<p style="text-align:center; margin:30px 0;" class="para">
-                <span style="display:inline-block; width:12px; height:12px; background:#2E84C5; border-radius:50%; margin:0 4px;"></span>
-                <span style="display:inline-block; width:12px; height:12px; background:#FFD100; border-radius:50%; margin:0 4px;"></span>
-                <span style="display:inline-block; width:12px; height:12px; background:#76B92E; border-radius:50%; margin:0 4px;"></span>
-            </p>`;
+            html += `
+            <table align="center" cellspacing="0" cellpadding="0" border="0" style="margin:55px auto; border-collapse:collapse;">
+                <tr>
+                    <td style="padding:0 6px;"><div style="width:10px; height:10px; background:#2E84C5; border-radius:50%; color:#2E84C5; font-size:1px; line-height:10px;">&bull;</div></td>
+                    <td style="padding:0 6px;"><div style="width:12px; height:12px; background:#FFD100; border-radius:50%; color:#FFD100; font-size:1px; line-height:12px;">&bull;</div></td>
+                    <td style="padding:0 6px;"><div style="width:10px; height:10px; background:#76B92E; border-radius:50%; color:#76B92E; font-size:1px; line-height:10px;">&bull;</div></td>
+                </tr>
+            </table>`;
         }
-        // 图片
+        // 6. 图片
         else if(line.startsWith("![") && line.includes("](")){
             let match=line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
-            if(match){ nodeHTML = `<p style="text-align:center; margin:25px 0;" class="para"><img src="${match[2]}" style="max-width:100%; border-radius:8px;"></p>`; }
+            if(match){ html += `<div style="text-align:center; margin:30px 0;"><img src="${match[2]}" style="max-width:100%; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>`; }
         }
-        // 正文
+        // 7. 正文
         else{
-            nodeHTML = `<p style="text-indent:2em; line-height:1.8; font-size:16px; color:#333; text-align:justify; margin-bottom:20px;" class="para">${line}</p>`;
+            html += `<div style="text-indent:2.1em; line-height:2.2; font-size:16.5px; color:#333; text-align:justify; margin-bottom:25px; letter-spacing:0.5px;">${line}</div>`;
         }
-        html += nodeHTML;
     });
-
     outputEl.innerHTML = html;
-    paragraphNodes = Array.from(outputEl.getElementsByClassName("para"));
 }
 
-// 一键复制
 function copyHTML(){
     const range=document.createRange();
     range.selectNode(outputEl);
     window.getSelection().removeAllRanges();
     window.getSelection().addRange(range);
-    try{
-        document.execCommand('copy');
-        alert("🍓 HOPE 专属格式已打包！直接去公众号后台粘贴即可。");
-    }catch(e){
-        alert("复制失败，请手动选择预览区内容复制");
-    }
+    document.execCommand('copy');
+    alert("🍓 HOPE 最终稳定版格式已打包！直接去公众号后台粘贴保存即可。");
 }
 
-// 滚动同步高亮
-inputEl.addEventListener("scroll", ()=>{
-    const scrollTop = inputEl.scrollTop;
-    const lineHeight = parseInt(window.getComputedStyle(inputEl).lineHeight);
-    const firstVisibleLine = Math.floor(scrollTop/lineHeight);
-    paragraphNodes.forEach((p,i)=>{
-        p.classList.remove("highlight");
-        if(i===firstVisibleLine){ p.classList.add("highlight"); }
-    });
-});
-
-// 绑定按钮
-document.getElementById("btnGenerate").addEventListener("click", generate);
-document.getElementById("btnCopy").addEventListener("click", copyHTML);
-
-// 页面加载时生成一次
 window.onload = generate;
 </script>
 </body>
