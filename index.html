@@ -2,126 +2,117 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 像素级排版实验室 v15.0</title>
+    <title>HOPE 像素级排版实验室 v16.0</title>
     <style>
-        :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; --hope-gray-bg: #F8F9FA; }
-        body { margin: 0; display: flex; height: 100vh; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #eef1f5; }
+        :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; --hope-bg: #FFFFFF; }
+        body { margin: 0; display: flex; height: 100vh; font-family: "PingFang SC", "STHeiti", sans-serif; background: #eef2f6; }
         
-        /* 布局控制 */
-        #editor-side { width: 30%; background: white; border-right: 1px solid #d1d9e0; padding: 20px; display: flex; flex-direction: column; }
-        textarea { flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 18px; font-size: 14px; line-height: 1.6; outline: none; background: #fafbfc; }
+        #editor-side { width: 32%; background: #fff; border-right: 1px solid #d1d9e0; padding: 25px; display: flex; flex-direction: column; }
+        textarea { flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 18px; font-size: 14px; line-height: 1.6; outline: none; background: #fcfdfe; }
         
         #preview-side { flex: 1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
-        .canvas { width: 100%; max-width: 640px; background: white; padding: 70px 55px; box-shadow: 0 20px 50px rgba(0,0,0,0.08); min-height: 100%; box-sizing: border-box; }
+        .canvas { width: 100%; max-width: 640px; background: white; padding: 70px 50px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); min-height: 100%; box-sizing: border-box; }
 
-        /* --- 1. 一级标题复合体（PART + 标题 + 水印数字） --- */
-        .h1-composite { position: relative; margin: 55px 0 40px; border-bottom: 4px solid var(--hope-blue); padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .h1-info { z-index: 2; position: relative; }
-        .h1-part { color: #BBB; font-size: 13px; font-weight: 900; letter-spacing: 3px; margin-bottom: 6px; font-family: 'Arial Black'; }
-        .h1-main { color: var(--hope-blue); font-size: 24px; font-weight: bold; line-height: 1.4; }
-        .h1-main::after { content: " ↘"; color: var(--hope-yellow); font-size: 26px; }
-        .h1-watermark { position: absolute; right: -5px; bottom: 8px; font-size: 95px; color: #F8F8F8; font-weight: 900; font-family: Arial; line-height: 0.7; z-index: 1; pointer-events: none; }
+        /* --- H1 实践地图风格：力量感构图 --- */
+        .h1-hero { position: relative; margin: 60px 0 45px; border-bottom: 5px solid var(--hope-blue); padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .h1-label-group { z-index: 2; position: relative; }
+        .h1-part-tag { color: #BBB; font-size: 13px; font-weight: 900; letter-spacing: 2px; margin-bottom: 8px; font-family: 'Arial Black'; }
+        .h1-title-main { color: var(--hope-blue); font-size: 25px; font-weight: bold; line-height: 1.3; }
+        /* 图三保留的精髓：黄色小箭头 */
+        .h1-title-main::after { content: " ↘"; color: var(--hope-yellow); font-size: 28px; font-weight: 900; }
+        .h1-bg-num { position: absolute; right: -5px; bottom: 5px; font-size: 100px; color: #F7F7F7; font-weight: 900; font-family: Arial; line-height: 0.7; z-index: 1; }
 
-        /* --- 2. 二级与三级逻辑标题 --- */
-        /* 二级：绿色竖线标题（如：五、更深层的需求） */
-        .h2-green-line { border-left: 6px solid var(--hope-green); padding-left: 18px; font-size: 20px; font-weight: bold; color: #333; margin: 45px 0 20px; letter-spacing: 0.5px; }
-        /* 三级：蓝色胶囊（用于 12. 岗位无法满足... 或特定议题） */
-        .h3-capsule { background: var(--hope-blue); color: white; display: inline-block; padding: 5px 24px; border-radius: 50px; font-weight: bold; font-size: 15.5px; margin: 25px 0 15px; }
+        /* 二级标题：绿色立柱 */
+        .h2-pillar { border-left: 7px solid var(--hope-green); padding-left: 18px; font-size: 20px; font-weight: bold; color: #222; margin: 45px 0 25px; letter-spacing: 0.5px; }
 
-        /* --- 3. 高亮块：图三式“呼吸”风格 --- */
-        .highlight-notice { background: rgba(255, 209, 0, 0.14); border-left: 5px solid var(--hope-yellow); padding: 25px 30px; margin: 35px 0; border-radius: 0 6px 6px 0; font-size: 16.5px; line-height: 1.8; color: #222; font-weight: 500; text-align: justify; }
+        /* 蓝色胶囊：实色稳重款 */
+        .hope-capsule { background: var(--hope-blue); color: white; display: inline-block; padding: 5px 26px; border-radius: 50px; font-weight: bold; font-size: 15.5px; margin: 25px 0 15px; box-shadow: 0 3px 10px rgba(46, 132, 197, 0.2); }
 
-        /* --- 4. 列表系统：复刻 PDF 中的层级感 --- */
-        /* ● 列表 */
-        .list-dot { padding-left: 1.8em; position: relative; margin-bottom: 12px; color: #444; line-height: 1.75; font-size: 15.5px; }
-        .list-dot::before { content: "●"; color: var(--hope-green); position: absolute; left: 0; font-size: 14px; top: 1px; }
-        /* ◆ 列表（通常作为子项或行动建议） */
-        .list-diamond { padding-left: 1.8em; position: relative; margin-bottom: 12px; color: #444; line-height: 1.75; font-size: 15.5px; }
-        .list-diamond::before { content: "◆"; color: var(--hope-yellow); position: absolute; left: 0; font-size: 14px; top: 1px; }
+        /* 黄色高亮：全宽实色块 (倾向 A 风格) */
+        .action-box { background: var(--hope-yellow); color: #222; padding: 28px 35px; margin: 40px 0; border-radius: 4px; font-weight: bold; font-size: 17px; line-height: 1.8; text-align: justify; box-shadow: 0 4px 15px rgba(255, 209, 0, 0.15); }
 
-        /* --- 5. 正文与编者按 --- */
-        .editor-note { background: #F8F9FB; border: 1px solid #E6E9ED; padding: 22px; font-size: 14.5px; color: #666; margin-bottom: 35px; border-radius: 4px; line-height: 1.7; text-align: justify; }
-        p { text-indent: 2em; line-height: 1.95; text-align: justify; margin-bottom: 25px; color: #3F3F3F; font-size: 16px; letter-spacing: 0.3px; }
+        /* 双色列表体系 */
+        .li-dot { padding-left: 1.8em; position: relative; margin-bottom: 15px; color: #333; line-height: 1.8; font-size: 16px; }
+        .li-dot::before { content: "●"; color: var(--hope-green); position: absolute; left: 0; font-size: 15px; top: 0; }
+        
+        .li-dia { padding-left: 1.8em; position: relative; margin-bottom: 15px; color: #333; line-height: 1.8; font-size: 16px; font-weight: 500; }
+        .li-dia::before { content: "◆"; color: var(--hope-blue); position: absolute; left: 0; font-size: 15px; top: 0; }
+
+        /* 正文与编者按 */
+        .preface { background: #F4F7F9; border: 1px solid #E1E6EB; padding: 25px; font-size: 15px; color: #555; margin-bottom: 40px; border-radius: 6px; border-top: 4px solid var(--hope-blue); }
+        p { text-indent: 2em; line-height: 2.0; text-align: justify; margin-bottom: 25px; color: #333; font-size: 16px; }
     </style>
 </head>
 <body>
 
 <div id="editor-side">
-    <h3 style="color:var(--hope-blue); margin-bottom:12px;">🍓 HOPE 终极适配实验室 v15.0</h3>
-    <textarea id="editor" placeholder="在这里粘贴《空间》文案...
+    <h3 style="color:var(--hope-blue); margin-top:0;">🍓 HOPE 实践地图引擎 v16.0</h3>
+    <textarea id="input" placeholder="请粘贴文案...
     
-识别规则：
-1. 01 [回车] 标题 -> H1 复合块
-2. 编者按: -> 灰色引用框
-3. 五、或 12. -> 绿色竖线标题
-4. 【】 -> 蓝色胶囊
-5. （） -> 呼吸感黄色块
-6. ● / ◆ -> 不同颜色的点状列表"></textarea>
+💡 快速指南：
+1. 01 [换行] 标题 -> 生成 H1 英雄块
+2. 编者按: -> 顶部蓝带框
+3. 五、或 12. -> 绿色立柱标题
+4. 【】 -> 实色蓝胶囊
+5. （） -> 实色黄动作块
+6. ● / ◆ -> 绿点/蓝方块列表"></textarea>
 </div>
 
 <div id="preview-side">
-    <div class="canvas" id="viewer"></div>
+    <div class="canvas" id="render"></div>
 </div>
 
 <script>
-    const editor = document.getElementById('editor');
-    const viewer = document.getElementById('viewer');
+    const input = document.getElementById('input');
+    const render = document.getElementById('render');
 
-    editor.addEventListener('input', () => {
-        const lines = editor.value.split('\n').map(l => l.trim()).filter(l => l !== '');
+    input.addEventListener('input', () => {
+        const lines = input.value.split('\n').map(l => l.trim()).filter(l => l !== '');
         let html = '';
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
 
-            // 1. 编者按
             if (line.startsWith('编者按')) {
-                html += `<div class="editor-note">${line}</div>`;
+                html += `<div class="preface">${line}</div>`;
             }
-            // 2. H1 复合结构 (数字 + 下一行标题)
             else if (/^\d{1,2}$/.test(line) && i + 1 < lines.length) {
                 const title = lines[i+1];
                 html += `
-                <div class="h1-composite">
-                    <div class="h1-info">
-                        <div class="h1-part">PART ${numToEng(line)}</div>
-                        <div class="h1-main">${title}</div>
+                <div class="h1-hero">
+                    <div class="h1-label-group">
+                        <div class="h1-part-tag">PART ${numToEng(line)}</div>
+                        <div class="h1-title-main">${title}</div>
                     </div>
-                    <div class="h1-watermark">${line.padStart(2, '0')}</div>
+                    <div class="h1-bg-num">${line.padStart(2, '0')}</div>
                 </div>`;
                 i++;
             }
-            // 3. 胶囊识别
             else if (line.startsWith('【') && line.endsWith('】')) {
-                html += `<div class="h3-capsule">${line.replace(/[【】]/g, '')}</div>`;
+                html += `<div class="hope-capsule">${line.replace(/[【】]/g, '')}</div>`;
             }
-            // 4. 高亮块识别（图三风格）
             else if (line.startsWith('（') && line.endsWith('）')) {
-                html += `<div class="highlight-notice">${line.replace(/[（）]/g, '')}</div>`;
+                html += `<div class="action-box">${line.replace(/[（）]/g, '')}</div>`;
             }
-            // 5. 二级标题（绿色竖线，匹配汉字序号或数字点号）
             else if (/^[一二三四五六七八九十]、/.test(line) || /^\d{1,2}\.\s/.test(line)) {
-                html += `<div class="h2-green-line">${line}</div>`;
+                html += `<div class="h2-pillar">${line}</div>`;
             }
-            // 6. 列表识别 (●)
             else if (line.startsWith('●')) {
-                html += `<div class="list-dot">${line.slice(1).trim()}</div>`;
+                html += `<div class="li-dot">${line.slice(1).trim()}</div>`;
             }
-            // 7. 列表识别 (◆)
             else if (line.startsWith('◆')) {
-                html += `<div class="list-diamond">${line.slice(1).trim()}</div>`;
+                html += `<div class="li-dia">${line.slice(1).trim()}</div>`;
             }
-            // 8. 默认正文
             else {
                 html += `<p>${line}</p>`;
             }
         }
-        viewer.innerHTML = html || '<p style="color:#ccc; text-align:center; margin-top:150px;">等待文案...</p>';
+        render.innerHTML = html || '<p style="color:#ccc; text-align:center; margin-top:150px;">正在加载实践地图...</p>';
     });
 
     function numToEng(n) {
         const words = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN"];
-        return words[parseInt(n)] || "CHAPTER";
+        return words[parseInt(n)] || "SECTION";
     }
 </script>
 </body>
