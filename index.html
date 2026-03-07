@@ -2,100 +2,118 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · v23.0 物理复刻版</title>
+<title>HOPE Design Lab · 微信稳定版</title>
 <style>
-/* 编辑器界面 UI - 仅供网页显示 */
-* { box-sizing: border-box; }
-body { margin:0; font-family: sans-serif; background:#F4F6F9; display:flex; flex-direction:column; height:100vh; }
-header { background:white; padding:15px 30px; border-bottom:1px solid #e1e4e8; display:flex; justify-content:space-between; align-items:center; }
-.main-workspace { display:grid; grid-template-columns: 1fr 1fr; flex-grow:1; overflow:hidden; }
-.editor-zone { border-right:1px solid #e1e4e8; background:#fafafa; }
-textarea { width:100%; height:100%; padding:30px; border:none; outline:none; font-size:15px; line-height:1.8; resize:none; }
-.preview-zone { background:white; overflow-y:auto; padding:40px; }
-button { background:#2E84C5; color:#fff; padding:10px 25px; border-radius:20px; border:none; cursor:pointer; font-weight:bold; }
+body { margin:0; font-family:'Arial','Inter',sans-serif; background:#F4F6F9; }
+textarea { width:100%; height:100%; padding:20px; font-size:15px; line-height:1.8; }
+button { background:#2E84C5;color:#fff;padding:8px 20px;border-radius:20px;border:none;cursor:pointer;font-weight:bold; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1 style="margin:0; font-size:20px;">🍓 HOPE Design Lab <span style="font-size:12px; color:#76B92E;">v23.0 (无边框物理锁定版)</span></h1>
-  <button onclick="copyHTML()">一键复制 HTML 全文</button>
-</header>
-
-<div class="main-workspace">
-  <div class="editor-zone">
-    <textarea id="input" oninput="generate()" placeholder="输入 # 01 标题内容..."></textarea>
+<div style="padding:20px; max-width:1200px; margin:0 auto;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+    <h1 style="font-size:20px; margin:0;">🍓 HOPE Design Lab <span style="background:#76B92E;color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;">v20.0 微信稳定版</span></h1>
+    <button onclick="copyHTML()">一键复制 HTML</button>
   </div>
-  <div id="output" class="preview-zone"></div>
+  <div style="display:flex; gap:20px; height:800px;">
+    <textarea id="input" oninput="generate()" placeholder="在此输入文案..."></textarea>
+    <div id="output" style="background:#fff; padding:30px; overflow:auto; width:50%;"></div>
+  </div>
 </div>
 
 <script>
-const inputEl = document.getElementById("input");
-const outputEl = document.getElementById("output");
+const inputEl = document.getElementById('input');
+const outputEl = document.getElementById('output');
 
-const engMap = {"01":"ONE","02":"TWO","03":"THREE","04":"FOUR","05":"FIVE","06":"SIX","07":"SEVEN","08":"EIGHT","09":"NINE","10":"TEN"};
+function numToEng(n){
+  const words=["ZERO","ONE","TWO","THREE","FOUR","FIVE","SIX","SEVEN","EIGHT","NINE","TEN"];
+  return words[parseInt(n)]||"SECTION";
+}
 
 function generate(){
-  const text = inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
+  const text = inputEl.value.replace(/\r/g,'').replace(/\n{3,}/g,"\n\n");
   const lines = text.split("\n");
   let html = "";
 
-  lines.forEach(line => {
-    line = line.trim();
+  lines.forEach(line=>{
+    line=line.trim();
     if(!line) return;
 
-    // --- 一级标题 (彻底物理隔离边框，完全不使用 Table) ---
+    // 一级标题
     if(line.startsWith("# ")){
-      let raw = line.replace("# ","");
-      let numStr = (raw.match(/^\d+/) || ["01"])[0];
-      let titleStr = raw.replace(/^\d+/, "").trim();
-      let engStr = engMap[numStr] || "SECTION";
-      
-      html += `
-      <section style="margin: 60px 0 40px; clear: both; background: transparent; padding: 0;">
-        <section style="display: block; min-height: 80px;">
-          <section style="float: left; width: 95px; font-size: 85px; font-weight: 900; color: #EBF4E2; font-family: Arial; line-height: 0.8; text-align: right;">${numStr}</section>
-          <section style="margin-left: 110px; padding-top: 10px;">
-            <section style="margin-bottom: 8px; line-height: 1;">
-              <span style="display: inline-block; width: 10px; height: 10px; background: #FFD100; border-radius: 50%;"></span>
-              <span style="font-size: 13px; font-weight: bold; color: #FFD100; letter-spacing: 2px; margin-left: 6px; font-family: Arial;">PART ${engStr}</span>
-            </section>
-            <section style="font-size: 26px; font-weight: bold; color: #2E84C5; line-height: 1.3;">${titleStr}</section>
-          </section>
-          <section style="clear: both;"></section>
-        </section>
-        <section style="color: #76B92E; font-size: 38px; font-weight: 900; margin: 15px 0 0 15px; line-height: 1;">↘</section>
-      </section>`;
+      let content=line.replace("# ","");
+      let numMatch=content.match(/\d+/);
+      let num=numMatch?numMatch[0]:"01";
+      let cleanTitle=content.replace(num,"").trim();
+      html+=`<table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:40px 0;">
+<tr>
+<td width="90" style="font-size:70px;font-weight:900;color:#EBF4E2;line-height:1;font-family:Arial;" valign="bottom">${num.padStart(2,'0')}</td>
+<td style="padding-left:15px; vertical-align:bottom;">
+<div style="font-size:13px;font-weight:bold;color:#FFD100;margin-bottom:5px;">PART ${numToEng(num)}</div>
+<div style="font-size:26px;font-weight:bold;color:#2E84C5;line-height:1.3;">${cleanTitle}</div>
+</td>
+</tr>
+</table>
+<div style="color:#76B92E;font-size:35px;font-weight:900;margin-top:10px;margin-left:5px;">↘</div>`;
     }
 
-    // --- 二级标题 (v19.0 稳定结构) ---
+    // 二级标题
     else if(line.startsWith("## ")){
-      html += `
-      <section style="margin: 40px 0 20px; border-left: 4px solid #76B92E; padding-left: 14px; line-height: 1.4;">
-        <span style="font-size: 21px; font-weight: bold; color: #2E84C5;">${line.replace("## ","")}</span>
-      </section>`;
+      let content=line.replace("## ","");
+      html+=`<table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:30px 0;">
+<tr>
+<td width="4" style="background-color:#76B92E;">&nbsp;</td>
+<td style="padding-left:12px;">
+<div style="font-size:16.5px;line-height:2.1;font-weight:bold;color:#2E84C5;">${content}</div>
+</td>
+</tr>
+</table>`;
     }
 
-    // --- 引用 (编者按样式) ---
+    // 蓝色圆角胶囊
+    else if(line.startsWith("【") && line.endsWith("】")){
+      let content=line.replace(/[【】]/g,'');
+      html+=`<div style="text-align:center;margin:20px 0;">
+<span style="display:inline-block;background:#2E84C5;color:#fff;padding:5px 25px;border-radius:50px;font-size:14px;font-weight:bold;letter-spacing:1px;">${content}</span>
+</div>`;
+    }
+
+    // 引用
     else if(line.startsWith("> ")){
-      let content = line.replace("> ","");
-      let theme = content.includes("编者按") ? "#2E84C5" : "#FFD100";
-      let bg = content.includes("编者按") ? "#F2F7FB" : "#FCFAF2";
-      html += `<section style="margin: 35px 0; background: ${bg}; border-left: 5px solid ${theme}; padding: 25px 30px; line-height: 2.1; font-size: 16px; color: #444; text-align: justify;">${content}</section>`;
+      let content=line.replace("> ","");
+      let theme = content.includes("编者按")?"#2E84C5":"#FFD100";
+      let bg = content.includes("编者按")?"#F2F7FB":"#FCFAF2";
+      html+=`<table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:25px 0;">
+<tr>
+<td width="5" style="background-color:${theme};"></td>
+<td style="background-color:${bg};padding:20px;font-size:16.5px;line-height:2.1;color:#444;text-align:justify;">${content}</td>
+</tr>
+</table>`;
     }
 
-    // --- 分割线 ---
+    // 三色分割线
     else if(line==="---"){
-      html += `<section style="text-align: center; margin: 60px 0;"><span style="display: inline-block; width: 8px; height: 8px; background: #2E84C5; border-radius: 50%; margin: 0 6px;"></span><span style="display: inline-block; width: 10px; height: 10px; background: #FFD100; border-radius: 50%; margin: 0 6px;"></span><span style="display: inline-block; width: 8px; height: 8px; background: #76B92E; border-radius: 50%; margin: 0 6px;"></span></section>`;
+      html+=`<div style="text-align:center;margin:40px 0;">
+<span style="display:inline-block;width:8px;height:8px;background:#2E84C5;border-radius:50%;margin:0 5px;"></span>
+<span style="display:inline-block;width:10px;height:10px;background:#FFD100;border-radius:50%;margin:0 5px;"></span>
+<span style="display:inline-block;width:8px;height:8px;background:#76B92E;border-radius:50%;margin:0 5px;"></span>
+</div>`;
     }
 
-    // --- 正文 ---
-    else {
-      html += `<p style="text-indent: 2.1em; line-height: 2.2; font-size: 16px; color: #333; margin-bottom: 28px; text-align: justify; letter-spacing: 0.5px;">${line}</p>`;
+    // 图片
+    else if(line.startsWith("![") && line.includes("](")){
+      let match=line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
+      if(match) html+=`<div style="text-align:center;margin:25px 0;"><img src="${match[2]}" style="max-width:100%;border-radius:8px;"></div>`;
+    }
+
+    // 正文
+    else{
+      html+=`<p style="text-indent:2em;line-height:2.1;font-size:16.5px;color:#333;margin-bottom:25px;text-align:justify;">${line}</p>`;
     }
   });
 
-  outputEl.innerHTML = html;
+  outputEl.innerHTML=html;
 }
 
 function copyHTML(){
@@ -104,9 +122,11 @@ function copyHTML(){
   window.getSelection().removeAllRanges();
   window.getSelection().addRange(range);
   document.execCommand('copy');
-  alert("🍓 HOPE v23.0 已复制！\n1. 物理锁死大数字\n2. 彻底根除表格边框\n3. 全文自动识别排版");
+  alert("🍓 HOPE v20.0 HTML 已复制成功！");
 }
-window.onload = generate;
+
+window.onload=generate;
 </script>
+
 </body>
 </html>
