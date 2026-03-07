@@ -2,25 +2,25 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 终极适配 v23.0</title>
+    <title>HOPE 零边框适配版 v24.0</title>
     <style>
-        body { margin: 0; display: flex; height: 100vh; font-family: sans-serif; background: #f4f6f9; }
+        body { margin: 0; display: flex; height: 100vh; font-family: sans-serif; background: #eaeff2; }
         #editor-side { width: 30%; background: #fff; border-right: 1px solid #ddd; padding: 20px; display: flex; flex-direction: column; }
-        textarea { flex: 1; border: 1px solid #ccc; border-radius: 8px; padding: 15px; font-size: 14px; outline: none; }
+        textarea { flex: 1; border: 1px solid #ccc; border-radius: 8px; padding: 15px; font-size: 14px; outline: none; background: #fafafa; }
         #preview-side { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-        .canvas-container { width: 100%; max-width: 560px; background: white; padding: 40px; }
-        .copy-btn { margin-bottom: 20px; padding: 12px 30px; background: #2E84C5; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
+        .canvas-container { width: 100%; max-width: 580px; background: white; padding: 40px; }
+        .copy-btn { margin-bottom: 20px; padding: 12px 35px; background: #2E84C5; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 12px rgba(46,132,197,0.2); }
     </style>
 </head>
 <body>
 
 <div id="editor-side">
-    <h3 style="color:#2E84C5;">🍓 公众号无损搬运 v23.0</h3>
+    <h3 style="color:#2E84C5;">🍓 零边框直通车 v24.0</h3>
     <textarea id="input" placeholder="贴入文案..."></textarea>
 </div>
 
 <div id="preview-side">
-    <button class="copy-btn" onclick="copyToWechat()">✨ 点击复制（解决【年终总结】消失问题）</button>
+    <button class="copy-btn" onclick="copyToWechat()">✨ 点击复制（解决边框与胶囊消失问题）</button>
     <div class="canvas-container" id="render"></div>
 </div>
 
@@ -35,63 +35,39 @@
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
 
-            // 1. 修复：一级标题错位构图（使用 table 确保左右分布稳定）
+            // 1. 一级标题：纯 section 布局，利用 float 模拟右侧大数字
             if (/^\d{1,2}$/.test(line) && i + 1 < lines.length) {
                 const title = lines[i+1];
                 html += `
-                <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 40px 0;">
-                    <tr>
-                        <td valign="top">
-                            <section style="display: flex; align-items: center; margin-bottom: 12px;">
-                                <section style="width: 10px; height: 10px; background-color: #FFD100; border-radius: 50%; margin-right: 10px;"></section>
-                                <section style="color: #FFD100; font-size: 14px; font-weight: 800; letter-spacing: 3px; font-family: Arial;">PART ${numToEng(line)}</section>
-                            </section>
-                            <section style="color: #2E84C5; font-size: 24px; font-weight: bold; line-height: 1.4;">${title}</section>
-                            <section style="color: #FFD100; font-size: 30px; font-weight: 900; margin-top: 10px;">↘</section>
-                        </td>
-                        <td align="right" valign="top" style="width: 100px;">
-                            <section style="font-size: 85px; color: #F5F5F5; font-weight: 900; font-family: Arial; line-height: 0.8;">${line.padStart(2, '0')}</section>
-                        </td>
-                    </tr>
-                </table>`;
+                <section style="margin: 45px 0 50px; overflow: hidden;">
+                    <section style="float: right; font-size: 85px; color: #F5F5F5; font-weight: 900; font-family: Arial; line-height: 0.8; margin-top: -10px;">${line.padStart(2, '0')}</section>
+                    
+                    <section>
+                        <section style="display: flex; align-items: center; margin-bottom: 12px;">
+                            <section style="width: 10px; height: 10px; background-color: #FFD100; border-radius: 50%; margin-right: 10px; display: inline-block; vertical-align: middle;"></section>
+                            <section style="color: #FFD100; font-size: 14px; font-weight: bold; letter-spacing: 3px; display: inline-block; vertical-align: middle; font-family: Arial;">PART ${numToEng(line)}</section>
+                        </section>
+                        <section style="color: #2E84C5; font-size: 24px; font-weight: bold; line-height: 1.4; margin-right: 90px;">${title}</section>
+                        <section style="color: #FFD100; font-size: 32px; font-weight: 900; margin-top: 10px;">↘</section>
+                    </section>
+                </section>`;
                 i++;
             } 
-            // 2. 修复：【年终总结】蓝色胶囊格式（增加内联 padding 和 display 属性）
+            // 2. 蓝色胶囊：【年终总结】（强化 display 和 padding）
             else if (line.startsWith('【') && line.endsWith('】')) {
                 html += `
-                <section style="margin: 25px 0 15px; text-align: left;">
-                    <span style="background-color: #2E84C5; color: #ffffff; padding: 6px 22px; border-radius: 50px; font-size: 15px; font-weight: bold; display: inline-block; line-height: 1.2;">${line.replace(/[【】]/g, '')}</span>
+                <section style="margin: 30px 0 15px;">
+                    <section style="display: inline-block; background-color: #2E84C5; color: #ffffff; padding: 7px 22px; border-radius: 50px; font-size: 15px; font-weight: bold; line-height: 1;">
+                        ${line.replace(/[【】]/g, '')}
+                    </section>
                 </section>`;
             }
-            // 3. 修复：（春日）部分的高级感（针对长文本使用背景色+左边线的稳健方案）
+            // 3. 春日段落：（亲爱的伙伴）
             else if (line.startsWith('（') && line.endsWith('）')) {
                 const txt = line.replace(/[（）]/g, '');
                 html += `
-                <section style="margin: 30px 0; background-color: #fdfcf5; border-left: 5px solid #FFD100; padding: 25px; line-height: 1.8; color: #444; font-size: 16px;">
+                <section style="margin: 35px 0; background-color: #FDFCF5; border-left: 5px solid #FFD100; padding: 25px 30px; line-height: 1.9; color: #444; font-size: 16px; text-align: justify;">
                     ${txt}
                 </section>`;
             } 
-            else {
-                html += `<p style="text-indent: 2em; line-height: 2.0; margin-bottom: 22px; color: #333; font-size: 16px; text-align: justify;">${line}</p>`;
-            }
-        }
-        render.innerHTML = html;
-    });
-
-    function numToEng(n) {
-        const words = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN"];
-        return words[parseInt(n)] || "SECTION";
-    }
-
-    function copyToWechat() {
-        const layout = document.getElementById('render');
-        const range = document.createRange();
-        range.selectNode(layout);
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(range);
-        document.execCommand('copy');
-        alert('🍓 修复版已就绪！这次【年终总结】不会丢了。');
-    }
-</script>
-</body>
-</html>
+            else
