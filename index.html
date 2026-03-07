@@ -2,70 +2,58 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · 优化版</title>
+<title>HOPE Design Lab · 视觉焊死最终版</title>
 
-<!-- 字体 -->
 <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-
-<!-- Tailwind CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-body {background-color:#F0F2F5;color:#1e293b;margin:0;padding:20px;font-family:'Inter',sans-serif;}
-h1,h2,h3{margin:0;}
-.container{display:flex;flex-wrap:wrap;gap:25px;max-width:1400px;margin:0 auto;}
-textarea{width:45%;min-width:320px;min-height:600px;padding:20px;font-size:15px;line-height:1.7;border-radius:12px;border:1px solid #cbd5e1;outline:none;transition: all 0.3s;}
-textarea:focus{border-color:#2E84C5;box-shadow:0 0 0 3px rgba(46,132,197,0.1);}
-.preview{width:50%;min-width:320px;background:white;padding:40px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,0.05);overflow:auto;}
-.meta{color:#888;font-size:14px;margin-bottom:10px;}
-/* 动画 */
-@keyframes float {0%{transform:translateY(0px) rotate(-1deg);}50%{transform:translateY(-6px) rotate(0deg);}100%{transform:translateY(0px) rotate(-1deg);}}
-.animate-float{animation:float 4s ease-in-out infinite;}
-@media(max-width:1000px){.container{flex-direction:column;}.preview,textarea{width:100%;}}
-/* 排版样式 */
-.h1{font-size:28px;font-weight:700;margin:40px 0 30px;text-align:center;color:#2E84C5;font-family:'ZCOOL KuaiLe',cursive;}
-.h2-container{margin:60px 0 40px;position:relative;}
-.h2-num{font-size:90px;color:#F2F2F2;font-weight:900;position:absolute;top:-30px;left:0;opacity:0.2;font-family:Arial;}
-.h2-title{color:#2E84C5;font-size:26px;font-weight:bold;margin-left:10px;display:inline-block;}
-.h2-part{display:flex;align-items:center;margin-bottom:12px;}
-.h2-dot{width:10px;height:10px;background:#FFD100;border-radius:50%;margin-right:10px;}
-.h2-part-label{color:#FFD100;font-size:14px;font-weight:bold;letter-spacing:3px;font-family:Arial;}
-.h3{font-size:18px;font-weight:bold;color:#1e90ff;margin:20px 0 10px;}
-.p{font-size:16px;line-height:1.8;color:#333;margin:14px 0;text-indent:2em;text-align:justify;}
-.quote{background-color:#FCFAF2;border-left:4px solid #FFD100;padding:25px 30px;line-height:2;color:#444;font-size:16px;border-radius:0 4px 4px 0;margin:35px 0;font-family:'Ma Shan Zheng',cursive;text-align:justify;}
-.hr{border-top:2px dashed #FFD100;margin:40px auto;width:30%;}
-.qa-q{font-weight:bold;margin-top:18px;font-family:'ZCOOL KuaiLe',cursive;}
-.qa-a{margin:10px 0;}
-.card{background:#f0f9ff;padding:15px;border-radius:6px;margin:15px 0;box-shadow:0 2px 6px rgba(0,0,0,0.05);}
-figure{margin:15px 0;text-align:center;}
-figure img{max-width:100%;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.1);}
-figcaption{color:#666;font-size:14px;margin-top:6px;font-family:'Ma Shan Zheng',cursive;}
-.capsule{display:inline-block;background:#2E84C5;color:#fff;padding:6px 22px;border-radius:50px;font-size:15px;font-weight:bold;line-height:1.2;margin:15px 0;}
-
-/* 悬浮动画 */
-@keyframes fade-in{from{opacity:0;}to{opacity:1;}}
-.fade-in{animation:fade-in 0.5s both;}
+    body { background-color:#F0F2F5; color:#1e293b; margin:0; padding:20px; font-family:'Inter', sans-serif; }
+    .container { display:flex; gap:25px; flex-wrap:wrap; max-width: 1400px; margin: 0 auto; }
+    textarea { width:45%; min-width:320px; min-height:700px; padding:20px; font-size:15px; line-height:1.7; border-radius:12px; border:1px solid #cbd5e1; outline:none; transition: all 0.3s; background: #fafafa; }
+    textarea:focus { border-color: #2E84C5; background: #fff; box-shadow: 0 0 0 4px rgba(46,132,197,0.1); }
+    .preview { width:50%; min-width:320px; background:white; padding:45px; border-radius:12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow:auto; }
+    
+    /* 仅用于编辑器的动画，不影响复制结果 */
+    @keyframes float {0%{transform:translateY(0px) rotate(-1deg);}50%{transform:translateY(-6px) rotate(0.5deg);}100%{transform:translateY(0px) rotate(-1deg);}}
+    .animate-float{animation:float 4s ease-in-out infinite;}
+    @media(max-width:1000px){.container{flex-direction:column;}.preview,textarea{width:100%;}}
 </style>
 </head>
 
 <body>
-<div class="max-w-7xl mx-auto mb-6 flex justify-between items-center">
-<h1 class="text-2xl font-bold text-slate-800 animate-float flex items-center"><span class="text-blue-600 mr-2">🍓</span> HOPE Design Lab <span class="ml-2 px-2 py-1 bg-yellow-400 text-white text-xs rounded">优化版</span></h1>
-<div class="space-x-2">
-<button onclick="generate()" class="bg-slate-800 hover:bg-black text-white px-5 py-2 rounded-full text-sm font-medium transition shadow-lg">生成排版</button>
-<button onclick="copyHTML()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-medium transition shadow-lg">复制 HTML</button>
-<button onclick="uploadImage()" class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 px-5 py-2 rounded-full text-sm font-medium transition">上传图片</button>
-</div>
+<div class="max-w-7xl mx-auto mb-8 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-slate-800 animate-float flex items-center">
+        <span style="font-size:30px; margin-right:10px;">🍓</span> 
+        HOPE Design Lab 
+        <span class="ml-3 px-3 py-1 bg-yellow-400 text-white text-xs rounded-full shadow-sm">v7.2 物理焊死版</span>
+    </h1>
+    <div class="flex gap-3">
+        <button onclick="generate()" class="bg-slate-800 hover:bg-black text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg active:scale-95">生成预览</button>
+        <button onclick="copyHTML()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg active:scale-95">复制 HTML</button>
+        <button onclick="uploadImage()" class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-sm">上传图片</button>
+    </div>
 </div>
 
-<div class="max-w-7xl mx-auto mb-4 flex items-center justify-between text-slate-500 text-xs px-2">
-<div id="meta">字数 0 · 预计阅读 0 分钟</div>
-<div>提示：使用 # / ## / > 自动生成标题和引用</div>
+<div class="max-w-7xl mx-auto mb-4 flex items-center justify-between text-slate-400 text-xs px-2">
+    <div id="meta">字数 0 · 预计阅读 0 分钟</div>
+    <div class="flex gap-4">
+        <span>## 数字标题 触发悬浮</span>
+        <span>> 引用 触发感性块</span>
+        <span>【】触发胶囊</span>
+    </div>
 </div>
 
 <div class="container">
-<textarea id="input" placeholder="在此贴入文案...支持：# 一级标题 ## 二级标题 > 引用 【蓝色胶囊】 --- 分割线"></textarea>
-<div id="output" class="preview"></div>
+    <textarea id="input" oninput="generate()" placeholder="在此贴入文案...
+支持：
+# 一级标题
+## 01 分段切片
+> 引用或感性段落
+【蓝色胶囊标题】
+--- 分割线"></textarea>
+    
+    <div id="output" class="preview"></div>
 </div>
 
 <input type="file" id="fileInput" style="display:none" accept="image/*">
@@ -76,14 +64,18 @@ const outputEl=document.getElementById("output");
 const metaEl=document.getElementById("meta");
 const fileInput=document.getElementById("fileInput");
 
+function numToEng(n) {
+    const words = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN"];
+    return words[parseInt(n)] || "CHAPTER";
+}
+
 function uploadImage(){ fileInput.click(); }
 fileInput.addEventListener("change",(e)=>{
     const file=e.target.files[0];
     if(file){
         const reader=new FileReader();
         reader.onload=function(evt){
-            const markdown=`\n![${file.name}](${evt.target.result})\n`;
-            inputEl.value += markdown;
+            inputEl.value += `\n![${file.name}](${evt.target.result})\n`;
             generate();
         }
         reader.readAsDataURL(file);
@@ -94,45 +86,82 @@ function generate(){
     const text=inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
     const lines=text.split("\n");
     let html="", wordCount=0;
+
     lines.forEach(line=>{
         line=line.trim();
         if(line==="") return;
         wordCount+=line.length;
-        // 一级标题
-        if(line.startsWith("# ")){ html += `<h1 class="h1">${line.replace("# ","")}</h1>`;}
-        // 二级标题带数字装饰
-        else if(line.startsWith("## ")){
-            let content=line.replace("## ",""), numMatch=content.match(/\d+/), num=numMatch?numMatch[0]:"01";
-            let cleanTitle=content.replace(num,"").trim();
-            html += `<div class="h2-container">
-                        <div class="h2-num">${num.padStart(2,'0')}</div>
-                        <div class="h2-part"><div class="h2-dot"></div><div class="h2-part-label">PART ${num}</div></div>
-                        <div class="h2-title">${cleanTitle}</div>
-                    </div>`;
+
+        // 1. HOPE 一级标题 (居中/蓝色/快乐体)
+        if(line.startsWith("# ")){
+            html += `<section style="text-align:center; margin: 45px 0 35px;"><h1 style="font-size:28px; font-weight:bold; color:#2E84C5; line-height:1.4; font-family:'ZCOOL KuaiLe', cursive; border:none; margin:0;">${line.replace("# ","")}</h1></section>`;
         }
-        // 蓝色胶囊
-        else if(line.startsWith("【") && line.endsWith("】")){ html += `<div class="capsule">${line.replace(/[【】]/g,'')}</div>`;}
-        // 引用
-        else if(line.startsWith("> ")){ html += `<div class="quote">${line.replace("> ","")}</div>`;}
-        // 分割线
-        else if(line==="---"){ html += `<div class="hr"></div>`;}
-        // 图片
+        // 2. HOPE 二级标题 (右漂浮大数字 + 黄色圆点补丁)
+        else if(line.startsWith("## ")){
+            let content = line.replace("## ","");
+            let numMatch = content.match(/\d+/);
+            let num = numMatch ? numMatch[0] : "01";
+            let cleanTitle = content.replace(num, "").replace(/PART/i, "").trim();
+            
+            html += `
+            <section style="margin: 65px 0 50px; position: relative; overflow: visible;">
+                <section style="text-align: right; height: 0px; margin-bottom: -55px; pointer-events: none;">
+                    <span style="font-size: 110px; color: #F7F7F7; font-family: Arial, sans-serif; font-weight: 900; line-height: 1; display: inline-block;">${num.padStart(2, '0')}</span>
+                </section>
+                <section style="position: relative; z-index: 2;">
+                    <section style="margin-bottom: 15px; display: flex; align-items: center;">
+                        <section style="width: 12px; height: 12px; background-color: #FFD100; border-radius: 50%; margin-right: 12px; flex-shrink: 0;"></section>
+                        <section style="color: #FFD100; font-size: 15px; font-weight: bold; letter-spacing: 4px; font-family: Arial;">PART ${numToEng(num)}</section>
+                    </section>
+                    <section style="color: #2E84C5; font-size: 28px; font-weight: bold; line-height: 1.3; max-width: 85%;">${cleanTitle}</section>
+                    <section style="color: #FFD100; font-size: 40px; font-weight: 900; margin-top: 15px; line-height: 1;">↘</section>
+                </section>
+            </section>`;
+        }
+        // 3. 蓝色胶囊标题 (增加宽度感)
+        else if(line.startsWith("【") && line.endsWith("】")){
+            html += `<section style="margin: 35px 0 20px;"><span style="display: inline-block; background-color: #2E84C5; color: #ffffff; padding: 7px 28px; border-radius: 50px; font-size: 16px; font-weight: bold; line-height: 1.2; box-shadow: 0 2px 8px rgba(46,132,197,0.2);">${line.replace(/[【】]/g, '')}</span></section>`;
+        }
+        // 4. 感性引用段落 (淡暖米色 + 黄粗线)
+        else if(line.startsWith("> ")){
+            html += `<section style="margin: 40px 0; background-color: #FCFAF2; border-left: 6px solid #FFD100; padding: 30px 35px; line-height: 2.1; color: #444; font-size: 17px; border-radius: 0 8px 8px 0; text-align: justify; font-family: 'Ma Shan Zheng', cursive;">${line.replace("> ","")}</section>`;
+        }
+        // 5. 分割线 (HOPE 黄虚线)
+        else if(line==="---"){
+            html += `<section style="margin: 50px auto; width: 40%; border-top: 2px dashed #FFD100; opacity: 0.6;"></section>`;
+        }
+        // 6. 图片处理
         else if(line.startsWith("![") && line.includes("](")){
             let match=line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
-            if(match){ html += `<figure><img src="${match[2]}" alt="${match[1]}"><figcaption>${match[1]}</figcaption></figure>`;}
+            if(match){ 
+                html += `<section style="margin: 30px 0; text-align: center;"><img src="${match[2]}" style="max-width:100%; border-radius:12px; box-shadow: 0 6px 20px rgba(0,0,0,0.1); border: 1px solid #eee;"></section>`; 
+            }
         }
-        // 正文
-        else { html += `<p class="p">${line}</p>`;}
+        // 7. 正文段落 (空气感核心：2.2倍行距 + 两端对齐)
+        else {
+            html += `<p style="text-indent: 2.1em; line-height: 2.2; margin-bottom: 28px; color: #333; font-size: 16.5px; text-align: justify; letter-spacing: 0.6px;">${line}</p>`;
+        }
     });
-    outputEl.innerHTML=html;
-    metaEl.innerText=`字数 ${wordCount} · 预计阅读 ${Math.ceil(wordCount/400)} 分钟`;
+
+    outputEl.innerHTML = html || '<p style="color:#cbd5e1; text-align:center; margin-top:280px; font-size:14px;">🍓 贴入文案，即刻开启 HOPE 像素级排版...</p>';
+    metaEl.innerText = `字数 ${wordCount} · 预计阅读 ${Math.ceil(wordCount/400)} 分钟`;
 }
 
-// 一键复制
-function copyHTML(){ navigator.clipboard.writeText(outputEl.innerHTML); alert("已复制，可直接粘贴到公众号后台"); }
+function copyHTML(){
+    const range = document.createRange();
+    range.selectNode(outputEl);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    try {
+        document.execCommand('copy');
+        alert("🍓 HOPE 视觉元素已物理焊死！去公众号后台粘贴，保证不走样。");
+    } catch (err) {
+        alert("浏览器限制了自动复制，请手动全选预览区内容。");
+    }
+}
 
-// 自动生成
-window.onload=generate;
+// 页面加载自动运行一次
+window.onload = generate;
 </script>
 </body>
 </html>
