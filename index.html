@@ -2,25 +2,25 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 终极稳健版 v26.0</title>
+    <title>HOPE 像素回溯 v27.0</title>
     <style>
-        body { margin: 0; display: flex; height: 100vh; font-family: sans-serif; background: #f0f2f5; }
+        body { margin: 0; display: flex; height: 100vh; font-family: sans-serif; background: #eaeff2; }
         #editor-side { width: 32%; background: #fff; border-right: 1px solid #ddd; padding: 20px; display: flex; flex-direction: column; }
         textarea { flex: 1; border: 1px solid #ccc; border-radius: 8px; padding: 15px; font-size: 14px; outline: none; background: #fafafa; }
         #preview-side { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-        .canvas-container { width: 100%; max-width: 560px; background: white; padding: 40px; }
+        .canvas-container { width: 100%; max-width: 560px; background: white; padding: 50px 45px; }
         .copy-btn { margin-bottom: 20px; padding: 12px 35px; background: #2E84C5; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="editor-side">
-    <h3 style="color:#2E84C5;">🍓 终极稳健版 v26.0</h3>
+    <h3 style="color:#2E84C5;">🍓 像素回溯版 v27.0</h3>
     <textarea id="input" placeholder="输入 01 [回车] 标题"></textarea>
 </div>
 
 <div id="preview-side">
-    <button class="copy-btn" onclick="copyToWechat()">✨ 点击一键复制（保格式、去边框）</button>
+    <button class="copy-btn" onclick="copyToWechat()">✨ 点击一键复制（找回原版神韵）</button>
     <div class="canvas-container" id="render"></div>
 </div>
 
@@ -35,43 +35,46 @@
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i].trim();
 
-            // 1. 一级标题复刻：左标题右数字（不使用 Table，不使用 Flex）
+            // 1. 复刻原版：利用负边距实现“数字悬浮标题上方”
             if (/^\d{1,2}$/.test(line) && i + 1 < lines.length) {
                 let title = lines[i+1].trim();
                 html += `
-                <section style="margin: 40px 0; overflow: hidden; clear: both;">
-                    <section style="float: right; font-size: 80px; color: #f0f0f0; font-family: Arial; font-weight: 900; line-height: 1;">${line.padStart(2, '0')}</section>
-                    <section style="padding-top: 10px;">
-                        <section style="margin-bottom: 10px;">
-                            <span style="display: inline-block; width: 8px; height: 8px; background: #FFD100; border-radius: 50%; margin-right: 8px;"></span>
-                            <span style="color: #FFD100; font-size: 14px; font-weight: bold; letter-spacing: 2px;">PART ${numToEng(line)}</span>
-                        </section>
-                        <section style="color: #2E84C5; font-size: 24px; font-weight: bold; line-height: 1.4; margin-right: 90px;">${title}</section>
-                        <section style="color: #FFD100; font-size: 30px; font-weight: 900; margin-top: 5px;">↘</section>
+                <section style="margin: 50px 0 40px; position: relative;">
+                    <section style="float: right; margin-top: -30px; margin-right: -10px;">
+                        <span style="font-size: 95px; color: #F2F2F2; font-family: Arial; font-weight: 900; line-height: 1;">${line.padStart(2, '0')}</span>
                     </section>
+                    <section>
+                        <section style="margin-bottom: 12px;">
+                            <span style="display: inline-block; width: 9px; height: 9px; background: #FFD100; border-radius: 50%; margin-right: 8px; vertical-align: middle;"></span>
+                            <span style="color: #FFD100; font-size: 14px; font-weight: bold; letter-spacing: 3px; font-family: Arial; vertical-align: middle;">PART ${numToEng(line)}</span>
+                        </section>
+                        <section style="color: #2E84C5; font-size: 25px; font-weight: bold; line-height: 1.35; padding-right: 60px;">${title}</section>
+                        <section style="color: #FFD100; font-size: 34px; font-weight: 900; margin-top: 5px;">↘</section>
+                    </section>
+                    <section style="clear: both;"></section>
                 </section>`;
                 i++;
             }
-            // 2. 蓝色胶囊：【年终总结】（微信后台最稳方案）
+            // 2. 蓝色胶囊：瘦身处理，找回精致感
             else if (line.startsWith('【')) {
                 let content = line.replace(/[【】]/g, '');
                 html += `
                 <section style="margin: 25px 0 15px;">
-                    <section style="display: inline-block; background-color: #2E84C5; border-radius: 20px; padding: 5px 18px;">
-                        <span style="color: #ffffff; font-size: 14px; font-weight: bold; line-height: 1.5;">${content}</span>
+                    <section style="display: inline-block; background-color: #2E84C5; border-radius: 30px; padding: 4px 16px;">
+                        <span style="color: #ffffff; font-size: 14px; font-weight: bold; line-height: 1.4;">${content}</span>
                     </section>
                 </section>`;
             }
-            // 3. 春日感性段落：（春日已至...）
+            // 3. 春日段落：空气感还原
             else if (line.startsWith('（')) {
                 let content = line.replace(/[（）]/g, '');
                 html += `
-                <section style="margin: 30px 0; background-color: #fdfdf7; border-left: 4px solid #FFD100; padding: 20px 25px; line-height: 1.8; color: #444; font-size: 16px; text-align: justify;">
+                <section style="margin: 35px 0; background-color: #FCFBF7; border-left: 3px solid #FFD100; padding: 20px 25px; line-height: 2.0; color: #555; font-size: 16px; text-align: justify;">
                     ${content}
                 </section>`;
             }
             else {
-                html += `<p style="text-indent: 2em; line-height: 1.9; margin-bottom: 20px; color: #333; font-size: 16px;">${line}</p>`;
+                html += `<p style="text-indent: 2em; line-height: 2.1; margin-bottom: 25px; color: #333; font-size: 16px; text-align: justify;">${line}</p>`;
             }
         }
         render.innerHTML = html;
@@ -89,7 +92,7 @@
         window.getSelection().removeAllRanges();
         window.getSelection().addRange(range);
         document.execCommand('copy');
-        alert('🍓 v26.0 复制成功！请直接在公众号后台粘贴。');
+        alert('🍓 v27.0 像素修复版已就绪！这次神韵回来了。');
     }
 </script>
 </body>
