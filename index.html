@@ -1,122 +1,33 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOPE Design Lab - 安全版</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>HOPE 学堂无损排版工具</title>
     <style>
-        body { font-family: sans-serif; background-color: #F8FAFB; }
-        .markdown-body h1 { font-size: 1.5rem; font-weight: 900; color: #2589D0; margin-top: 2rem; margin-bottom: 1rem; }
-        .markdown-body p { margin-bottom: 1.2rem; line-height: 1.8; color: #334155; }
-        .markdown-body blockquote { border-left: 4px solid #2589D0; padding-left: 1rem; color: #64748b; font-style: italic; margin: 1.5rem 0; }
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; display: flex; gap: 20px; }
+        #input { width: 50%; height: 90vh; padding: 20px; border: 1px solid #ddd; }
+        #preview { width: 50%; height: 90vh; background: white; padding: 40px; overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        /* 下面是 HOPE 学堂的专属样式 */
+        .p-text { text-indent: 2em; line-height: 1.75; margin-bottom: 20px; text-align: justify; color: #3F3F3F; }
+        .hope-blue { color: #2E84C5; font-weight: bold; }
+        .part-num { font-size: 50px; color: #EAEAEA; font-family: Arial; }
     </style>
 </head>
 <body>
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-
-        function App() {
-            const [apiKey, setApiKey] = useState(localStorage.getItem('hope_gemini_key') || '');
-            const [showKeyInput, setShowKeyInput] = useState(!localStorage.getItem('hope_gemini_key'));
-            const [text, setText] = useState('');
-            const [loading, setLoading] = useState(false);
-            const [result, setResult] = useState('');
-
-            const saveKey = (key) => {
-                localStorage.setItem('hope_gemini_key', key);
-                setApiKey(key);
-                setShowKeyInput(false);
-            };
-
-            const handleRun = async () => {
-                if (!text) return alert("请输入内容");
-                if (!apiKey) return setShowKeyInput(true);
-                
-                setLoading(true);
-                try {
-                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: `你现在是 HOPE 学堂的排版专家。请将以下内容转换为符合 HOPE 学院风格的 HTML 排版（内联样式，保留所有文字）：\n\n${text}` }] }]
-                        })
-                    });
-
-                    const data = await response.json();
-                    if (data.error) throw new Error(data.error.message);
-                    setResult(data.candidates[0].content.parts[0].text);
-                } catch (error) {
-                    alert("出错啦：" + error.message);
-                    if (error.message.includes("API key")) setShowKeyInput(true);
-                } finally {
-                    setLoading(false);
-                }
-            };
-
-            return (
-                <div className="min-h-screen flex flex-col">
-                    {/* Key 输入弹窗 */}
-                    {showKeyInput && (
-                        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
-                            <div className="bg-white p-8 rounded-[2rem] max-w-md w-full shadow-2xl">
-                                <h3 className="text-xl font-black mb-4">配置 API Key</h3>
-                                <p className="text-slate-500 text-sm mb-6">为了安全，请在此输入您的 Gemini API Key。Key 将仅保存在您的浏览器本地。</p>
-                                <input 
-                                    type="password" 
-                                    placeholder="粘贴 AIza... 开头的 Key"
-                                    className="w-full p-4 bg-slate-50 rounded-xl mb-4 outline-none border-2 border-transparent focus:border-blue-500 transition-all"
-                                    onKeyDown={(e) => e.key === 'Enter' && saveKey(e.target.value)}
-                                    id="keyInput"
-                                />
-                                <button 
-                                    onClick={() => saveKey(document.getElementById('keyInput').value)}
-                                    className="w-full py-4 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-600 transition-all"
-                                >
-                                    保存并开始使用
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
-                    <nav className="bg-white border-b p-6 flex justify-between items-center shadow-sm">
-                        <h1 className="text-xl font-black">HOPE <span className="text-blue-500">Design Lab</span></h1>
-                        <button onClick={() => setShowKeyInput(true)} className="text-[10px] font-bold text-slate-400 hover:text-blue-500 uppercase tracking-widest">
-                            <i className="fas fa-key mr-1"></i> 修改 Key
-                        </button>
-                    </nav>
-
-                    <main className="flex-1 p-6 md:p-10 max-w-6xl mx-auto w-full">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                            <div className="bg-white rounded-[2.5rem] p-8 shadow-xl">
-                                <textarea 
-                                    className="w-full h-96 p-6 rounded-[1.5rem] bg-slate-50 outline-none text-base leading-relaxed mb-6"
-                                    placeholder="粘贴文章内容..."
-                                    value={text}
-                                    onChange={(e) => setText(e.target.value)}
-                                />
-                                <button onClick={handleRun} disabled={loading} className="w-full py-5 bg-slate-900 text-white rounded-[1.5rem] font-black tracking-widest hover:bg-blue-600 disabled:opacity-50">
-                                    {loading ? '排版中...' : '开始智能排版'}
-                                </button>
-                            </div>
-                            <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl min-h-[500px]">
-                                {result ? <div className="markdown-body" dangerouslySetInnerHTML={{ __html: result }} /> : <div className="h-full flex flex-col items-center justify-center text-slate-200 py-20"><i className="fas fa-wand-magic-sparkles text-6xl mb-4"></i><p className="font-bold tracking-widest">等待预览</p></div>}
-                            </div>
-                        </div>
-                    </main>
-                </div>
-            );
-        }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+    <textarea id="input" placeholder="请在这里粘贴智谱生成的带缩进的文字..."></textarea>
+    <div id="preview">
+        <div class="part-num">01</div>
+        <div class="hope-blue" style="font-size:20px; margin-bottom:30px;">PART ONE</div>
+        <div id="output">预览区（在这里复制到微信）</div>
+    </div>
+    <script>
+        const input = document.getElementById('input');
+        const output = document.getElementById('output');
+        input.addEventListener('input', (e) => {
+            // 将普通文字转化为带 HOPE 格式的 HTML
+            const lines = e.target.value.split('\n');
+            output.innerHTML = lines.map(line => `<p class="p-text">${line}</p>`).join('');
+        });
     </script>
 </body>
 </html>
