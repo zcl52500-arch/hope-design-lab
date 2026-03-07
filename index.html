@@ -2,10 +2,10 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 像素级排版实验室 v16.0</title>
+    <title>HOPE 逻辑增强引擎 v17.0</title>
     <style>
-        :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; --hope-bg: #FFFFFF; }
-        body { margin: 0; display: flex; height: 100vh; font-family: "PingFang SC", "STHeiti", sans-serif; background: #eef2f6; }
+        :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; }
+        body { margin: 0; display: flex; height: 100vh; font-family: "PingFang SC", sans-serif; background: #eaeff2; }
         
         #editor-side { width: 32%; background: #fff; border-right: 1px solid #d1d9e0; padding: 25px; display: flex; flex-direction: column; }
         textarea { flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 18px; font-size: 14px; line-height: 1.6; outline: none; background: #fcfdfe; }
@@ -13,49 +13,30 @@
         #preview-side { flex: 1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
         .canvas { width: 100%; max-width: 640px; background: white; padding: 70px 50px; box-shadow: 0 20px 60px rgba(0,0,0,0.1); min-height: 100%; box-sizing: border-box; }
 
-        /* --- H1 实践地图风格：力量感构图 --- */
-        .h1-hero { position: relative; margin: 60px 0 45px; border-bottom: 5px solid var(--hope-blue); padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .h1-label-group { z-index: 2; position: relative; }
-        .h1-part-tag { color: #BBB; font-size: 13px; font-weight: 900; letter-spacing: 2px; margin-bottom: 8px; font-family: 'Arial Black'; }
-        .h1-title-main { color: var(--hope-blue); font-size: 25px; font-weight: bold; line-height: 1.3; }
-        /* 图三保留的精髓：黄色小箭头 */
-        .h1-title-main::after { content: " ↘"; color: var(--hope-yellow); font-size: 28px; font-weight: 900; }
-        .h1-bg-num { position: absolute; right: -5px; bottom: 5px; font-size: 100px; color: #F7F7F7; font-weight: 900; font-family: Arial; line-height: 0.7; z-index: 1; }
+        /* --- 修正：04 与胶囊标题的紧凑关联 --- */
+        .chapter-header { position: relative; margin: 50px 0 30px; }
+        .num-watermark { font-size: 110px; color: #F7F7F7; font-weight: 900; font-family: Arial; line-height: 0.7; position: absolute; left: -10px; top: -20px; z-index: 1; }
+        .capsule-group { position: relative; z-index: 2; margin-top: 20px; }
+        .hope-pill { background: var(--hope-blue); color: white; display: inline-block; padding: 6px 28px; border-radius: 50px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 12px rgba(46, 132, 197, 0.25); }
 
-        /* 二级标题：绿色立柱 */
-        .h2-pillar { border-left: 7px solid var(--hope-green); padding-left: 18px; font-size: 20px; font-weight: bold; color: #222; margin: 45px 0 25px; letter-spacing: 0.5px; }
+        /* --- 修正：动态高亮块逻辑 --- */
+        /* 短句高亮：实色 A 风格（用于行动指南） */
+        .highlight-solid { background: var(--hope-yellow); color: #222; padding: 25px 35px; margin: 35px 0; border-radius: 4px; font-weight: bold; font-size: 17px; line-height: 1.8; text-align: justify; }
+        /* 长篇高亮：自动降级为图三风格（用于结尾或叙事） */
+        .highlight-airy { background: rgba(255, 209, 0, 0.1); border-left: 6px solid var(--hope-yellow); padding: 25px 30px; margin: 35px 0; border-radius: 0 6px 6px 0; font-size: 16px; line-height: 1.95; color: #444; }
 
-        /* 蓝色胶囊：实色稳重款 */
-        .hope-capsule { background: var(--hope-blue); color: white; display: inline-block; padding: 5px 26px; border-radius: 50px; font-weight: bold; font-size: 15.5px; margin: 25px 0 15px; box-shadow: 0 3px 10px rgba(46, 132, 197, 0.2); }
+        /* 列表逻辑 */
+        .li-dot { padding-left: 1.8em; position: relative; margin-bottom: 14px; color: #333; line-height: 1.8; font-size: 16px; }
+        .li-dot::before { content: "●"; color: var(--hope-green); position: absolute; left: 0; font-size: 15px; }
 
-        /* 黄色高亮：全宽实色块 (倾向 A 风格) */
-        .action-box { background: var(--hope-yellow); color: #222; padding: 28px 35px; margin: 40px 0; border-radius: 4px; font-weight: bold; font-size: 17px; line-height: 1.8; text-align: justify; box-shadow: 0 4px 15px rgba(255, 209, 0, 0.15); }
-
-        /* 双色列表体系 */
-        .li-dot { padding-left: 1.8em; position: relative; margin-bottom: 15px; color: #333; line-height: 1.8; font-size: 16px; }
-        .li-dot::before { content: "●"; color: var(--hope-green); position: absolute; left: 0; font-size: 15px; top: 0; }
-        
-        .li-dia { padding-left: 1.8em; position: relative; margin-bottom: 15px; color: #333; line-height: 1.8; font-size: 16px; font-weight: 500; }
-        .li-dia::before { content: "◆"; color: var(--hope-blue); position: absolute; left: 0; font-size: 15px; top: 0; }
-
-        /* 正文与编者按 */
-        .preface { background: #F4F7F9; border: 1px solid #E1E6EB; padding: 25px; font-size: 15px; color: #555; margin-bottom: 40px; border-radius: 6px; border-top: 4px solid var(--hope-blue); }
         p { text-indent: 2em; line-height: 2.0; text-align: justify; margin-bottom: 25px; color: #333; font-size: 16px; }
     </style>
 </head>
 <body>
 
 <div id="editor-side">
-    <h3 style="color:var(--hope-blue); margin-top:0;">🍓 HOPE 实践地图引擎 v16.0</h3>
-    <textarea id="input" placeholder="请粘贴文案...
-    
-💡 快速指南：
-1. 01 [换行] 标题 -> 生成 H1 英雄块
-2. 编者按: -> 顶部蓝带框
-3. 五、或 12. -> 绿色立柱标题
-4. 【】 -> 实色蓝胶囊
-5. （） -> 实色黄动作块
-6. ● / ◆ -> 绿点/蓝方块列表"></textarea>
+    <h3 style="color:var(--hope-blue);">🍓 HOPE 逻辑增强版 v17.0</h3>
+    <textarea id="input" placeholder="输入 04 回车再输入【标题】看联动逻辑..."></textarea>
 </div>
 
 <div id="preview-side">
@@ -73,47 +54,41 @@
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
 
-            if (line.startsWith('编者按')) {
-                html += `<div class="preface">${line}</div>`;
+            // 1. 联动逻辑：数字后面紧跟胶囊
+            if (/^\d{1,2}$/.test(line)) {
+                let nextLine = lines[i+1] || "";
+                if (nextLine.startsWith('【')) {
+                    html += `
+                    <div class="chapter-header">
+                        <div class="num-watermark">${line.padStart(2, '0')}</div>
+                        <div class="capsule-group">
+                            <div class="hope-pill">${nextLine.replace(/[【】]/g, '')}</div>
+                        </div>
+                    </div>`;
+                    i++; // 跳过下一行
+                } else {
+                    html += `<div class="num-watermark" style="position:static; margin:40px 0">${line.padStart(2, '0')}</div>`;
+                }
             }
-            else if (/^\d{1,2}$/.test(line) && i + 1 < lines.length) {
-                const title = lines[i+1];
-                html += `
-                <div class="h1-hero">
-                    <div class="h1-label-group">
-                        <div class="h1-part-tag">PART ${numToEng(line)}</div>
-                        <div class="h1-title-main">${title}</div>
-                    </div>
-                    <div class="h1-bg-num">${line.padStart(2, '0')}</div>
-                </div>`;
-                i++;
-            }
-            else if (line.startsWith('【') && line.endsWith('】')) {
-                html += `<div class="hope-capsule">${line.replace(/[【】]/g, '')}</div>`;
-            }
+            // 2. 高亮块动态识别：根据字数决定风格
             else if (line.startsWith('（') && line.endsWith('）')) {
-                html += `<div class="action-box">${line.replace(/[（）]/g, '')}</div>`;
-            }
-            else if (/^[一二三四五六七八九十]、/.test(line) || /^\d{1,2}\.\s/.test(line)) {
-                html += `<div class="h2-pillar">${line}</div>`;
+                const content = line.replace(/[（）]/g, '');
+                // 如果字数超过 60 字，自动切换到“呼吸感”模式
+                if (content.length > 60) {
+                    html += `<div class="highlight-airy">${content}</div>`;
+                } else {
+                    html += `<div class="highlight-solid">${content}</div>`;
+                }
             }
             else if (line.startsWith('●')) {
                 html += `<div class="li-dot">${line.slice(1).trim()}</div>`;
-            }
-            else if (line.startsWith('◆')) {
-                html += `<div class="li-dia">${line.slice(1).trim()}</div>`;
             }
             else {
                 html += `<p>${line}</p>`;
             }
         }
-        render.innerHTML = html || '<p style="color:#ccc; text-align:center; margin-top:150px;">正在加载实践地图...</p>';
+        render.innerHTML = html || '<p style="color:#ccc; text-align:center; margin-top:150px;">等待草莓输入...</p>';
     });
-
-    function numToEng(n) {
-        const words = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN"];
-        return words[parseInt(n)] || "SECTION";
-    }
 </script>
 </body>
 </html>
