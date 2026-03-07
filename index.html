@@ -2,71 +2,63 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 像素级排版实验室 v13.0</title>
+    <title>HOPE 像素级排版实验室 v14.0</title>
     <style>
-        :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; --hope-light-yellow: rgba(255, 209, 0, 0.15); }
-        body { margin: 0; display: flex; height: 100vh; font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f0f2f5; }
+        :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; --hope-bg: #FFFFFF; }
+        body { margin: 0; display: flex; height: 100vh; font-family: "PingFang SC", "STHeiti", sans-serif; background: #eaeff2; }
         
-        /* 界面布局 */
-        #editor-side { width: 30%; background: white; border-right: 1px solid #ddd; padding: 25px; display: flex; flex-direction: column; }
-        textarea { flex: 1; border: 1px solid #eee; border-radius: 12px; padding: 15px; font-size: 14px; line-height: 1.6; outline: none; background: #fafafa; }
+        #editor-side { width: 30%; background: #fff; border-right: 1px solid #c8ced3; padding: 25px; display: flex; flex-direction: column; }
+        textarea { flex: 1; border: 1px solid #dfe3e8; border-radius: 8px; padding: 20px; font-size: 14px; line-height: 1.6; outline: none; background: #f9fafb; transition: 0.2s; }
+        textarea:focus { border-color: var(--hope-blue); background: #fff; }
         
         #preview-side { flex: 1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
-        .canvas { width: 100%; max-width: 600px; background: white; padding: 60px 45px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); min-height: 100%; box-sizing: border-box; }
+        .canvas { width: 100%; max-width: 620px; background: white; padding: 70px 55px; box-shadow: 0 15px 45px rgba(0,0,0,0.1); min-height: 100%; box-sizing: border-box; }
 
-        /* --- 核心组件：根据图三美学重构 --- */
-        
-        /* H1 复合结构：左文字/右数字 */
-        .h1-block { display: flex; justify-content: space-between; align-items: flex-end; margin: 40px 0 30px; border-bottom: 3px solid var(--hope-blue); padding-bottom: 12px; }
-        .h1-content { flex: 1; }
-        .h1-part { color: #BBB; font-size: 13px; font-weight: 800; letter-spacing: 2px; margin-bottom: 4px; }
-        .h1-title { color: var(--hope-blue); font-size: 22px; font-weight: bold; line-height: 1.4; position: relative; }
-        /* 那个关键的黄色小箭头 */
-        .h1-title::after { content: " ↘"; color: var(--hope-yellow); font-size: 24px; font-weight: 900; }
-        .h1-number { font-size: 72px; color: #F5F5F5; font-weight: 900; font-family: Arial; line-height: 0.7; margin-left: 15px; }
+        /* --- 核心：H1 复合视觉重构 --- */
+        .h1-composite { position: relative; margin: 50px 0 45px; border-bottom: 4px solid var(--hope-blue); padding-bottom: 18px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .h1-info { z-index: 2; }
+        .h1-part { color: #BBB; font-size: 13px; font-weight: 900; letter-spacing: 2.5px; margin-bottom: 6px; font-family: 'Arial Black'; }
+        .h1-main { color: var(--hope-blue); font-size: 24px; font-weight: bold; line-height: 1.3; }
+        .h1-main::after { content: " ↘"; color: var(--hope-yellow); font-size: 26px; font-weight: 900; }
+        /* 数字作为水印背景 */
+        .h1-watermark { position: absolute; right: -10px; bottom: 5px; font-size: 90px; color: #F7F7F7; font-weight: 900; font-family: Arial; line-height: 0.7; z-index: 1; pointer-events: none; }
 
-        /* 蓝色胶囊：更精致的比例 */
-        .capsule { background: var(--hope-blue); color: white; display: inline-block; padding: 4px 22px; border-radius: 50px; font-weight: bold; font-size: 15px; margin: 25px 0 15px; letter-spacing: 0.5px; }
+        /* 蓝色胶囊：加厚感 */
+        .hope-pill { background: var(--hope-blue); color: white; display: inline-block; padding: 6px 26px; border-radius: 50px; font-weight: bold; font-size: 15.5px; margin: 30px 0 18px; box-shadow: 0 2px 8px rgba(46, 132, 197, 0.2); }
 
-        /* 黄色高亮块：图三风格（引用块质感） */
-        .highlight-box { background: var(--hope-light-yellow); border-left: 5px solid var(--hope-yellow); color: #333; padding: 20px 25px; margin: 30px 0; font-weight: 500; font-size: 16px; line-height: 1.8; text-align: justify; border-radius: 0 4px 4px 0; }
+        /* 黄色高亮块：大留白、自适应宽度 */
+        .hope-highlight-box { background: rgba(255, 209, 0, 0.18); border-left: 6px solid var(--hope-yellow); padding: 30px 35px; margin: 35px auto; width: 92%; box-sizing: border-box; font-weight: 600; font-size: 16.5px; line-height: 1.85; color: #222; border-radius: 0 6px 6px 0; }
 
-        /* 二级标题：绿色竖线 */
-        .h2-green { border-left: 5px solid var(--hope-green); padding-left: 15px; font-size: 18px; font-weight: bold; color: #333; margin: 40px 0 20px; }
+        /* 绿色二级标题 */
+        .h2-green { border-left: 6px solid var(--hope-green); padding-left: 18px; font-size: 19px; font-weight: bold; color: #333; margin: 45px 0 22px; }
 
-        /* 微信标准正文 */
-        p { text-indent: 2em; line-height: 1.9; text-align: justify; margin-bottom: 22px; color: #444; font-size: 16px; letter-spacing: 0.3px; }
+        /* 微信正文优化 */
+        p { text-indent: 2em; line-height: 2.0; text-align: justify; margin-bottom: 26px; color: #3F3F3F; font-size: 16px; letter-spacing: 0.2px; }
 
         /* 列表项 */
-        .dot-item { padding-left: 1.6em; position: relative; margin-bottom: 12px; color: #555; line-height: 1.7; }
-        .dot-item::before { content: "●"; color: var(--hope-green); position: absolute; left: 0; font-size: 13px; top: 1px; }
+        .list-li { padding-left: 1.8em; position: relative; margin-bottom: 14px; color: #444; line-height: 1.8; }
+        .list-li::before { content: "●"; color: var(--hope-green); position: absolute; left: 0; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div id="editor-side">
-    <h3 style="color:var(--hope-blue); margin-top:0;">🍓 HOPE 精致排版 v13.0</h3>
+    <h3 style="color:var(--hope-blue); margin-bottom:15px;">🍓 HOPE 终极排版系统 v14.0</h3>
     <textarea id="editor" placeholder="在此粘贴...
 示例：
 01
 被误解的“装”与数字世界的自我保护
 【飞盘小组】
-（这是一段带呼吸感的高亮文字）"></textarea>
-    <div style="margin-top:15px; font-size:12px; color:#999; line-height:1.6;">
-        🌟 <b>图三风格指南：</b><br>
-        1. <b>数字+标题：</b> 01 下一行紧跟标题即可。<br>
-        2. <b>高亮块：</b> 使用中文括号（）包裹长句子。<br>
-        3. <b>胶囊：</b> 使用【】包裹短标题。
-    </div>
+（这是一段带有深度呼吸感的高亮内容）"></textarea>
 </div>
 
 <div id="preview-side">
-    <div class="canvas" id="viewer"></div>
+    <div class="canvas" id="view"></div>
 </div>
 
 <script>
     const editor = document.getElementById('editor');
-    const viewer = document.getElementById('viewer');
+    const view = document.getElementById('view');
 
     editor.addEventListener('input', () => {
         const lines = editor.value.split('\n').map(l => l.trim()).filter(l => l !== '');
@@ -75,46 +67,46 @@
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
 
-            // 1. H1 复合块识别
+            // 1. H1 复合构图识别
             if (/^\d{1,2}$/.test(line) && i + 1 < lines.length) {
-                const titleText = lines[i+1];
+                const title = lines[i+1];
                 html += `
-                <div class="h1-block">
-                    <div class="h1-content">
-                        <div class="h1-part">PART ${numToEng(line)}</div>
-                        <div class="h1-title">${titleText}</div>
+                <div class="h1-composite">
+                    <div class="h1-info">
+                        <div class="h1-part">PART ${numberToEnglish(line)}</div>
+                        <div class="h1-main">${title}</div>
                     </div>
-                    <div class="h1-number">${line.padStart(2, '0')}</div>
+                    <div class="h1-watermark">${line.padStart(2, '0')}</div>
                 </div>`;
                 i++;
             }
             // 2. 胶囊识别
             else if (line.startsWith('【') && line.endsWith('】')) {
-                html += `<div class="capsule">${line.replace(/[【】]/g, '')}</div>`;
+                html += `<div class="hope-pill">${line.replace(/[【】]/g, '')}</div>`;
             }
-            // 3. 高亮块识别（图三风格）
+            // 3. 高亮块识别
             else if (line.startsWith('（') && line.endsWith('）')) {
-                html += `<div class="highlight-box">${line.replace(/[（）]/g, '')}</div>`;
+                html += `<div class="hope-highlight-box">${line.replace(/[（）]/g, '')}</div>`;
             }
-            // 4. 二级标题识别
+            // 4. 二级绿色标题
             else if (/^[一二三四五六七八九十]、/.test(line) || /^\d{1,2}\./.test(line)) {
                 html += `<div class="h2-green">${line}</div>`;
             }
             // 5. 列表识别
             else if (line.startsWith('●') || line.startsWith('◆')) {
-                html += `<div class="dot-item">${line.slice(1).trim()}</div>`;
+                html += `<div class="list-li">${line.slice(1).trim()}</div>`;
             }
             // 6. 默认正文
             else {
                 html += `<p>${line}</p>`;
             }
         }
-        viewer.innerHTML = html || '<p style="color:#ccc; text-align:center; margin-top:150px;">等候草莓投喂...</p>';
+        view.innerHTML = html || '<p style="color:#ccc; text-align:center; margin-top:150px;">等待文案...</p>';
     });
 
-    function numToEng(n) {
+    function numberToEnglish(n) {
         const words = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN"];
-        return words[parseInt(n)] || "SECTION";
+        return words[parseInt(n)] || "CHAPTER";
     }
 </script>
 </body>
