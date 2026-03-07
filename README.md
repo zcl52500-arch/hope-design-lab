@@ -1,2 +1,3 @@
 # hope-design-lab
-help design articles for HOPE academy
+HOPE Design Lab
+AI layout & poster toolkit for grassroots organizations.
