@@ -2,84 +2,86 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 学堂 | 智能排版实验室</title>
+    <title>HOPE 学堂 | 像素级排版实验室</title>
     <style>
-        :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; }
+        :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; --text-gray: #3F3F3F; }
         body { margin: 0; display: flex; height: 100vh; font-family: -apple-system, sans-serif; background: #f0f2f5; }
         
-        /* 输入区 */
-        #input-panel { width: 40%; background: white; border-right: 1px solid #ddd; padding: 20px; display: flex; flex-direction: column; }
-        textarea { flex: 1; border: 1px solid #eee; padding: 15px; font-size: 14px; line-height: 1.6; resize: none; outline: none; border-radius: 4px; }
-
-        /* 预览画布 */
+        /* 输入区：左侧 */
+        #input-panel { width: 40%; background: #fff; border-right: 1px solid #ddd; padding: 25px; display: flex; flex-direction: column; }
+        textarea { flex: 1; border: 1px solid #eee; padding: 15px; font-size: 14px; line-height: 1.6; resize: none; outline: none; border-radius: 4px; background: #fafafa; }
+        
+        /* 预览画布：右侧 */
         #preview-panel { flex: 1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
-        .canvas { width: 100%; max-width: 600px; background: white; padding: 60px 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 100%; }
+        .canvas { width: 100%; max-width: 620px; background: #fff; padding: 60px 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 100%; }
 
-        /* 动态样式库 */
+        /* --- HOPE 视觉组件 (100% 还原 PDF) --- */
         .p-num { font-size: 60px; color: #EFEFEF; font-weight: 800; font-family: Arial; margin-bottom: -15px; line-height: 1; }
-        .p-title { color: var(--hope-blue); font-size: 20px; font-weight: bold; border-bottom: 3px solid var(--hope-blue); display: inline-block; padding-bottom: 5px; margin-bottom: 40px; text-transform: uppercase; }
+        .p-title { color: var(--hope-blue); font-size: 20px; font-weight: bold; border-bottom: 3px solid var(--hope-blue); display: inline-block; padding-bottom: 5px; margin-bottom: 40px; }
         .slice-h { color: var(--hope-blue); font-size: 18px; font-weight: bold; margin-top: 35px; display: flex; align-items: center; }
-        .slice-h::before { content: "● 🧩"; color: var(--hope-green); margin-right: 10px; }
-        .v-line { border-left: 5px solid var(--hope-blue); padding-left: 15px; margin: 30px 0 15px; font-weight: bold; color: #333; font-size: 17px; }
-        .arrow { color: var(--hope-yellow); font-size: 32px; margin: 15px 0 20px 2em; }
-        p { text-indent: 2em; line-height: 1.8; text-align: justify; color: #3F3F3F; margin-bottom: 22px; font-size: 15px; }
+        .slice-h::before { content: "● 🧩"; color: var(--hope-green); margin-right: 10px; font-size: 20px; }
+        .v-line { border-left: 5px solid var(--hope-blue); padding-left: 15px; margin: 30px 0 15px; font-weight: bold; color: #333; }
+        .arrow { color: var(--hope-yellow); font-size: 32px; margin: 15px 0 20px 2em; line-height: 1; }
+        p { text-indent: 2em; line-height: 1.8; text-align: justify; color: var(--text-gray); margin-bottom: 22px; font-size: 15px; }
     </style>
 </head>
 <body>
 
 <div id="input-panel">
-    <h3 style="color:var(--hope-blue); margin-top:0;">草莓的排版实验室 v3.0</h3>
-    <textarea id="editor" placeholder="在此粘贴任意文字...
-规则提示：
-1. 纯数字行（如 02）会自动变大。
-2. 包含 'PART' 的行会变蓝色大标题。
-3. 包含 '切片' 或 '项目' 的行会变绿色图标标题。
-4. 包含 '关于' 或 '————' 的行会变蓝色竖线。"></textarea>
+    <h3 style="color:var(--hope-blue); margin-top:0;">HOPE 排版工具 v4.0</h3>
+    <textarea id="editor" placeholder="在这里粘贴你的新文案...
+    
+识别小技巧：
+- 输入 02 就会变大数字
+- 输入 PART TWO 就会变蓝标题
+- 输入 切片... 就会带绿色图标"></textarea>
+    <p style="font-size:12px; color:#999; margin-top:10px;">* 右侧渲染后，全选复制到微信后台</p>
 </div>
 
 <div id="preview-panel">
-    <div class="canvas" id="viewer"></div>
+    <div class="canvas" id="viewer">
+        <p style="color:#ccc; text-align:center; margin-top:100px;">等待内容输入...</p>
+    </div>
 </div>
 
 <script>
     const editor = document.getElementById('editor');
     const viewer = document.getElementById('viewer');
 
-    function updatePreview() {
+    editor.addEventListener('input', () => {
         const text = editor.value;
         const lines = text.split('\n').map(l => l.trim()).filter(l => l !== '');
         
         let html = '';
         lines.forEach(line => {
-            // 1. 智能数字识别：只要这一行只有数字（或0开头的数字），它就变大
-            if (/^\d+$/.test(line) || /^[0-9]{2}$/.test(line)) {
+            // 1. 动态数字识别：只要是纯数字（01, 02...），它就会实时变大
+            if (/^\d+$/.test(line)) {
                 html += `<div class="p-num">${line}</div>`;
             } 
             // 2. 识别 PART 标题
             else if (line.toUpperCase().includes('PART')) {
                 html += `<div class="p-title">${line}</div>`;
             }
-            // 3. 识别关键节点（切片/项目）
-            else if (line.includes('切片') || line.includes('项目')) {
-                html += `<div class="slice-h">${line}</div>`;
+            // 3. 识别切片（绿色图标）
+            else if (line.includes('切片') || line.includes('●')) {
+                html += `<div class="slice-h">${line.replace(/●|🧩/g, '').trim()}</div>`;
             }
-            // 4. 识别副标题（关于/分割线）
-            else if (line.includes('关于') || line.includes('——') || line.includes('————')) {
+            // 4. 识别副标题（蓝色竖线）
+            else if (line.includes('关于') || line.includes('————')) {
                 html += `<div class="v-line">${line.replace(/[—|]/g, '').trim()}</div>`;
             }
             // 5. 识别箭头
             else if (line.includes('↘')) {
                 html += `<div class="arrow">↘</div>`;
             }
-            // 6. 其余全归为正文
+            // 6. 普通正文 (锁定 2em 缩进)
             else {
                 html += `<p>${line}</p>`;
             }
         });
         viewer.innerHTML = html || '<p style="color:#ccc; text-align:center; margin-top:100px;">等待内容输入...</p>';
-    }
-
-    editor.addEventListener('input', updatePreview);
+    });
 </script>
+
 </body>
 </html>
