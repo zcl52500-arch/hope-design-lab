@@ -2,25 +2,25 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 零边框适配版 v24.0</title>
+    <title>HOPE 终极无损 v25.0</title>
     <style>
         body { margin: 0; display: flex; height: 100vh; font-family: sans-serif; background: #eaeff2; }
         #editor-side { width: 30%; background: #fff; border-right: 1px solid #ddd; padding: 20px; display: flex; flex-direction: column; }
         textarea { flex: 1; border: 1px solid #ccc; border-radius: 8px; padding: 15px; font-size: 14px; outline: none; background: #fafafa; }
         #preview-side { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
         .canvas-container { width: 100%; max-width: 580px; background: white; padding: 40px; }
-        .copy-btn { margin-bottom: 20px; padding: 12px 35px; background: #2E84C5; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 12px rgba(46,132,197,0.2); }
+        .copy-btn { margin-bottom: 20px; padding: 12px 35px; background: #2E84C5; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="editor-side">
-    <h3 style="color:#2E84C5;">🍓 零边框直通车 v24.0</h3>
-    <textarea id="input" placeholder="贴入文案..."></textarea>
+    <h3 style="color:#2E84C5;">🍓 终极无损版 v25.0</h3>
+    <textarea id="input" placeholder="输入 01 [回车] 标题内容"></textarea>
 </div>
 
 <div id="preview-side">
-    <button class="copy-btn" onclick="copyToWechat()">✨ 点击复制（解决边框与胶囊消失问题）</button>
+    <button class="copy-btn" onclick="copyToWechat()">✨ 点击复制（解决格式消失与边框问题）</button>
     <div class="canvas-container" id="render"></div>
 </div>
 
@@ -35,39 +35,16 @@
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
 
-            // 1. 一级标题：纯 section 布局，利用 float 模拟右侧大数字
+            // 1. 一级标题：使用绝对定位错位（微信后台对这种简单的 relative 嵌套兼容性最好）
             if (/^\d{1,2}$/.test(line) && i + 1 < lines.length) {
                 const title = lines[i+1];
                 html += `
-                <section style="margin: 45px 0 50px; overflow: hidden;">
-                    <section style="float: right; font-size: 85px; color: #F5F5F5; font-weight: 900; font-family: Arial; line-height: 0.8; margin-top: -10px;">${line.padStart(2, '0')}</section>
-                    
-                    <section>
-                        <section style="display: flex; align-items: center; margin-bottom: 12px;">
-                            <section style="width: 10px; height: 10px; background-color: #FFD100; border-radius: 50%; margin-right: 10px; display: inline-block; vertical-align: middle;"></section>
-                            <section style="color: #FFD100; font-size: 14px; font-weight: bold; letter-spacing: 3px; display: inline-block; vertical-align: middle; font-family: Arial;">PART ${numToEng(line)}</section>
-                        </section>
-                        <section style="color: #2E84C5; font-size: 24px; font-weight: bold; line-height: 1.4; margin-right: 90px;">${title}</section>
-                        <section style="color: #FFD100; font-size: 32px; font-weight: 900; margin-top: 10px;">↘</section>
-                    </section>
-                </section>`;
-                i++;
-            } 
-            // 2. 蓝色胶囊：【年终总结】（强化 display 和 padding）
-            else if (line.startsWith('【') && line.endsWith('】')) {
-                html += `
-                <section style="margin: 30px 0 15px;">
-                    <section style="display: inline-block; background-color: #2E84C5; color: #ffffff; padding: 7px 22px; border-radius: 50px; font-size: 15px; font-weight: bold; line-height: 1;">
-                        ${line.replace(/[【】]/g, '')}
-                    </section>
-                </section>`;
-            }
-            // 3. 春日段落：（亲爱的伙伴）
-            else if (line.startsWith('（') && line.endsWith('）')) {
-                const txt = line.replace(/[（）]/g, '');
-                html += `
-                <section style="margin: 35px 0; background-color: #FDFCF5; border-left: 5px solid #FFD100; padding: 25px 30px; line-height: 1.9; color: #444; font-size: 16px; text-align: justify;">
-                    ${txt}
-                </section>`;
-            } 
-            else
+                <section style="margin-top: 50px; margin-bottom: 50px; position: relative;">
+                    <section style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <section style="flex: 1; z-index: 2;">
+                            <section style="margin-bottom: 12px; display: flex; align-items: center;">
+                                <section style="width: 10px; height: 10px; background-color: #FFD100; border-radius: 50%; margin-right: 10px; display: inline-block;"></section>
+                                <section style="color: #FFD100; font-size: 15px; font-weight: bold; letter-spacing: 3px; font-family: Arial;">PART ${numToEng(line)}</section>
+                            </section>
+                            <section style="color: #2E84C5; font-size: 26px; font-weight: bold; line-height: 1.4; padding-right: 40px;">${title}</section>
+                            <section style="color: #FFD100; font
