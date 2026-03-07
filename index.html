@@ -2,45 +2,26 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · 微信稳定版</title>
+<title>HOPE Design Lab · 格式锁死版</title>
 <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-<style>
-    body { background-color:#F0F2F5; color:#1e293b; margin:0; padding:20px; font-family:'Inter', sans-serif; }
-    .container { display:flex; gap:25px; flex-wrap:wrap; max-width: 1400px; margin: 0 auto; }
-    textarea { width:45%; min-width:320px; min-height:800px; padding:25px; font-size:15px; line-height:1.7; border-radius:12px; border:1px solid #cbd5e1; outline:none; background: #fafafa; }
-    .preview { width:50%; min-width:320px; background:white; padding:45px; border-radius:12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow:auto; }
-    @keyframes float {0%{transform:translateY(0px) rotate(-1deg);}50%{transform:translateY(-6px) rotate(0.5deg);}100%{transform:translateY(0px) rotate(-1deg);}}
-    .animate-float{animation:float 4s ease-in-out infinite;}
-</style>
 </head>
+<body style="background-color:#F0F2F5; padding:20px;">
 
-<body>
-<div class="max-w-7xl mx-auto mb-8 flex justify-between items-center">
-    <h1 class="text-2xl font-bold text-slate-800 animate-float flex items-center">
-        <span style="font-size:30px; margin-right:10px;">🍓</span> 
-        HOPE Design Lab 
-        <span class="ml-3 px-3 py-1 bg-green-500 text-white text-xs rounded-full shadow-sm">v7.6 微信稳定版</span>
-    </h1>
-    <div class="flex gap-3">
-        <button onclick="generate()" class="bg-slate-800 hover:bg-black text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg">生成预览</button>
-        <button onclick="copyHTML()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg">复制 HTML</button>
+<div style="max-width:1200px; margin:0 auto;">
+    <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+        <h1 style="font-size:24px; font-weight:bold; color:#333;">🍓 HOPE Design Lab <span style="font-size:12px; background:#2E84C5; color:#fff; padding:2px 8px; border-radius:10px;">v7.8 格式锁死版</span></h1>
+        <button onclick="copyHTML()" style="background:#2E84C5; color:#fff; padding:10px 25px; border-radius:20px; border:none; cursor:pointer; font-weight:bold;">一键复制</button>
     </div>
-</div>
-
-<div class="container">
-    <textarea id="input" oninput="generate()" placeholder="贴入文案..."></textarea>
-    <div id="output" class="preview"></div>
+    <div style="display:flex; gap:20px;">
+        <textarea id="input" oninput="generate()" style="width:45%; height:800px; padding:20px; border-radius:12px; border:1px solid #cbd5e1;" placeholder="贴入文案..."></textarea>
+        <div id="output" style="width:55%; background:white; padding:40px; border-radius:12px; overflow:auto; min-height:800px;"></div>
+    </div>
 </div>
 
 <script>
 const inputEl=document.getElementById("input");
 const outputEl=document.getElementById("output");
-
-function numToEng(n) {
-    const words = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN"];
-    return words[parseInt(n)] || "SECTION";
-}
 
 function generate(){
     const text=inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
@@ -51,61 +32,75 @@ function generate(){
         line=line.trim();
         if(line==="") return;
 
-        // 1. 一级标题：采用 Table 嵌套逻辑，确保微信“保存”不丢格式
+        // 1. 一级标题：用 Table 物理强制分左右，数字背景色使用实色
         if(line.startsWith("# ")){
             let content = line.replace("# ","");
             let numMatch = content.match(/\d+/);
             let num = numMatch ? numMatch[0] : "01";
-            let cleanTitle = content.replace(num, "").replace(/PART/i, "").trim();
+            let cleanTitle = content.replace(num, "").trim();
             
             html += `
-            <section style="margin: 50px 0; overflow: hidden;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <tr>
-                        <td style="vertical-align: bottom; padding: 0;">
-                            <section style="margin-bottom: 12px; display: flex; align-items: center;">
-                                <section style="width: 12px; height: 12px; background-color: #FFD100; border-radius: 50%; margin-right: 12px;"></section>
-                                <section style="color: #FFD100; font-size: 14px; font-weight: bold; letter-spacing: 4px; font-family: Arial;">PART ${numToEng(num)}</section>
-                            </section>
-                            <section style="color: #2E84C5; font-size: 26px; font-weight: bold; line-height: 1.3;">${cleanTitle}</section>
-                        </td>
-                        <td style="width: 100px; text-align: right; vertical-align: bottom; padding: 0;">
-                            <span style="font-size: 80px; color: rgba(118, 185, 46, 0.2); font-family: Arial; font-weight: 900; line-height: 0.8; display: block;">${num.padStart(2, '0')}</span>
-                        </td>
-                    </tr>
-                </table>
-                <section style="color: #76B92E; font-size: 35px; font-weight: 900; margin-top: 5px; line-height: 1;">↘</section>
-            </section>`;
+            <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 40px 0 10px; border-collapse: collapse;">
+                <tr>
+                    <td valign="bottom" style="padding-bottom: 5px;">
+                        <div style="margin-bottom: 8px;">
+                            <span style="display:inline-block; width:10px; height:10px; background-color:#FFD100; border-radius:50%;"></span>
+                            <span style="color:#FFD100; font-size:14px; font-weight:bold; margin-left:8px;">PART ${num}</span>
+                        </div>
+                        <div style="color:#2E84C5; font-size:24px; font-weight:bold; line-height:1.3;">${cleanTitle}</div>
+                    </td>
+                    <td width="80" align="right" valign="bottom" style="padding: 0;">
+                        <span style="font-size:70px; color:#EBF4E2; font-family:Arial; font-weight:900; line-height:0.8;">${num.padStart(2, '0')}</span>
+                    </td>
+                </tr>
+            </table>
+            <div style="color:#76B92E; font-size:30px; font-weight:900; margin-bottom:30px;">↘</div>`;
         }
-        // 2. 二级标题：绿色竖线稳定版
+        // 2. 二级标题：绿色竖线
         else if(line.startsWith("## ")){
-            html += `<section style="margin: 35px 0 20px; border-left: 4px solid #76B92E; padding-left: 15px;"><h2 style="font-size:19px; font-weight:bold; color:#2E84C5; line-height:1.4; margin:0; border:none;">${line.replace("## ","")}</h2></section>`;
+            html += `
+            <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 30px 0 20px; border-collapse: collapse;">
+                <tr>
+                    <td width="4" style="background-color:#76B92E; padding:0;"></td>
+                    <td style="padding-left:15px;">
+                        <div style="font-size:19px; font-weight:bold; color:#2E84C5; line-height:1.4;">${line.replace("## ","")}</div>
+                    </td>
+                </tr>
+            </table>`;
         }
-        // 3. 引用块 (编者按蓝，普通黄)
+        // 3. 引用块
         else if(line.startsWith("> ")){
             let quoteContent = line.replace("> ","");
             let isNote = quoteContent.includes("编者按");
             let theme = isNote ? "#2E84C5" : "#FFD100";
             let bg = isNote ? "#F2F7FB" : "#FCFAF2";
-            html += `<section style="margin: 35px 0; background-color: ${bg}; border-left: 6px solid ${theme}; padding: 25px 30px; line-height: 2.1; color: #444; font-size: 16.5px; border-radius: 0 8px 8px 0; font-family: 'Ma Shan Zheng', cursive;">${quoteContent}</section>`;
+            html += `
+            <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:30px 0; border-collapse: collapse;">
+                <tr>
+                    <td width="6" style="background-color:${theme}; padding:0;"></td>
+                    <td style="background-color:${bg}; padding:25px; border-radius:0 8px 8px 0;">
+                        <div style="line-height:1.8; color:#444; font-size:16px;">${quoteContent}</div>
+                    </td>
+                </tr>
+            </table>`;
         }
-        // 4. HOPE 三色点分割线 (蓝、黄、绿)
+        // 4. 分割线：用 Table 承载，圆点内填入空格防止被删
         else if(line==="---"){
             html += `
-            <table style="width: 60px; margin: 50px auto; border-collapse: collapse;">
+            <table align="center" cellspacing="0" cellpadding="0" border="0" style="margin:50px auto; border-collapse: collapse;">
                 <tr>
-                    <td style="padding: 0 4px;"><div style="width: 8px; height: 8px; background-color: #2E84C5; border-radius: 50%;"></div></td>
-                    <td style="padding: 0 4px;"><div style="width: 10px; height: 10px; background-color: #FFD100; border-radius: 50%;"></div></td>
-                    <td style="padding: 0 4px;"><div style="width: 8px; height: 8px; background-color: #76B92E; border-radius: 50%;"></div></td>
+                    <td style="padding:0 5px;"><div style="width:8px; height:8px; background-color:#2E84C5; border-radius:50%; font-size:1px;">&nbsp;</div></td>
+                    <td style="padding:0 5px;"><div style="width:10px; height:10px; background-color:#FFD100; border-radius:50%; font-size:1px;">&nbsp;</div></td>
+                    <td style="padding:0 5px;"><div style="width:8px; height:8px; background-color:#76B92E; border-radius:50%; font-size:1px;">&nbsp;</div></td>
                 </tr>
             </table>`;
         }
         // 5. 正文
         else {
-            html += `<p style="text-indent: 2.1em; line-height: 2.1; margin-bottom: 25px; color: #333; font-size: 16.5px; text-align: justify;">${line}</p>`;
+            html += `<div style="text-indent:2.1em; line-height:1.9; margin-bottom:25px; color:#333; font-size:16.5px; text-align:justify;">${line}</div>`;
         }
     });
-    outputEl.innerHTML = html || '<p style="color:#cbd5e1; text-align:center; margin-top:300px;">🍓 贴入文案，这是防微信卸载格式版...</p>';
+    outputEl.innerHTML = html;
 }
 
 function copyHTML(){
@@ -114,9 +109,8 @@ function copyHTML(){
     window.getSelection().removeAllRanges();
     window.getSelection().addRange(range);
     document.execCommand('copy');
-    alert("🍓 格式已“焊死”在表格布局中，保存试试看！");
+    alert("🍓 格式已锁死！请在微信后台粘贴并点击【保存】。");
 }
-window.onload = generate;
 </script>
 </body>
 </html>
