@@ -3,90 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOPE 学堂无损排版系统</title>
+    <title>HOPE 学堂 | 像素级无损排版</title>
     <style>
-        /* 1. 样式重置：确保在所有浏览器下表现一致 */
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body { background: #fdfdfd; color: #3F3F3F; line-height: 1.8; margin: 0; font-family: "Optima", "PingFang SC", "Microsoft YaHei", sans-serif; }
+        :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; }
+        body { background: #F5F5F5; margin: 0; display: flex; font-family: -apple-system, "Noto Sans SC", sans-serif; }
+        
+        /* 编辑区 */
+        #input-area { width: 40%; height: 100vh; padding: 25px; border-right: 1px solid #DDD; box-sizing: border-box; background: #FFF; }
+        textarea { width: 100%; height: 90%; border: 1px solid #EEE; padding: 15px; font-size: 14px; line-height: 1.6; border-radius: 6px; }
+        
+        /* 预览区 (模拟 PDF/微信 画布) */
+        #preview-area { width: 60%; height: 100vh; overflow-y: auto; padding: 60px 50px; box-sizing: border-box; background: #F5F5F5; }
+        .canvas { background: #FFF; width: 100%; max-width: 650px; margin: 0 auto; padding: 50px 45px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); min-height: 80vh; }
 
-        /* 2. 模拟微信/PDF 的白色画布 */
-        #app-container { max-width: 680px; margin: 40px auto; background: #ffffff; padding: 60px 45px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); min-height: 100vh; }
-
-        /* 3. 核心视觉组件复刻 */
-        /* 大数字 01 */
-        .part-number { font-size: 64px; color: #EFEFEF; font-weight: 800; font-family: "Helvetica", sans-serif; line-height: 1; margin-bottom: -15px; }
-        /* PART ONE 蓝色标题 */
-        .part-header { color: #2E84C5; font-size: 19px; font-weight: bold; border-bottom: 3px solid #2E84C5; display: inline-block; padding-bottom: 4px; margin-bottom: 45px; letter-spacing: 1px; }
-
-        /* 切片标题 ● 🧩 */
-        .slice-title { color: #2E84C5; font-size: 17px; font-weight: bold; display: flex; align-items: center; margin: 40px 0 20px; }
-        .slice-title span { color: #7AB642; margin-right: 10px; font-size: 22px; }
-
-        /* 蓝色竖线副标题 */
-        .side-border-title { border-left: 5px solid #2E84C5; padding-left: 15px; font-weight: bold; font-size: 16px; margin: 30px 0 15px; color: #333; }
-
-        /* 黄色引导箭头 ↘ */
-        .guide-arrow { color: #FFD100; font-size: 32px; font-weight: bold; margin: 20px 0 30px 2em; }
-
-        /* 正文段落：锁定 2em 缩进与 1.8 倍行间距 */
-        p { text-indent: 2.1em; text-align: justify; margin-bottom: 25px; letter-spacing: 0.5px; }
-
-        /* 编者按背景块 */
-        .editor-note { background: #F4F9FC; border-left: 4px solid #2E84C5; padding: 25px; margin: 30px 0; font-style: normal; }
-
-        /* 输入框（隐藏/显示切换，方便伙伴使用） */
-        #editor-panel { position: fixed; left: 20px; top: 20px; width: 300px; background: white; padding: 20px; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 100; }
-        textarea { width: 100%; height: 200px; margin-top: 10px; border: 1px solid #eee; }
-        @media (max-width: 1100px) { #editor-panel { position: static; width: 100%; margin-bottom: 20px; } }
+        /* PDF 风格组件样式 */
+        .p-num { font-size: 60px; color: #EFEFEF; font-weight: 800; font-family: Arial; margin-bottom: -15px; line-height: 1; }
+        .p-title { color: var(--hope-blue); font-size: 19px; font-weight: bold; border-bottom: 2.5px solid var(--hope-blue); display: inline-block; padding-bottom: 5px; margin-bottom: 40px; }
+        .slice-h { color: var(--hope-blue); font-size: 17px; font-weight: bold; margin-top: 35px; display: flex; align-items: center; }
+        .slice-h span { color: var(--hope-green); margin-right: 10px; }
+        .v-line { border-left: 4px solid var(--hope-blue); padding-left: 12px; margin: 25px 0 15px; font-weight: bold; color: #333; }
+        .arrow { color: var(--hope-yellow); font-size: 30px; margin: 15px 0 25px 2em; line-height: 1; }
+        p { text-indent: 2em; line-height: 1.8; text-align: justify; color: #3F3F3F; margin-bottom: 22px; font-size: 15px; }
     </style>
 </head>
 <body>
 
-<div id="editor-panel">
-    <strong>草莓的排版实验室</strong>
-    <textarea id="raw-input" placeholder="在此粘贴文字，右侧自动渲染..."></textarea>
-    <p style="font-size: 12px; color: #999; text-indent: 0;">* 渲染后直接在右侧全选复制到微信</p>
+<div id="input-area">
+    <h3 style="color:#2E84C5; margin-top:0;">草莓的排版实验室</h3>
+    <textarea id="editor" placeholder="在此粘贴文字..."></textarea>
+    <p style="font-size:12px; color:#999; text-indent:0;">* 在右侧画布全选复制即可粘贴至公众号</p>
 </div>
 
-<div id="app-container">
-    <div id="render-target">
-        <div class="part-number">01</div>
-        <div class="part-header">PART ONE</div>
-        <div class="editor-note">亲爱的伙伴们，这是 HOPE 学堂的排版演示...</div>
-        <div class="slice-title"><span>● 🧩</span> 切片一：示例标题</div>
-        <div class="side-border-title">关于项目的观察</div>
-        <div class="guide-arrow">↘</div>
-        <p>当你在这里看到整齐的缩进和蓝色的组件时，说明风格已经成功加载。</p>
+<div id="preview-area">
+    <div class="canvas" id="render-box">
+        <p style="color:#CCC; text-align:center; margin-top:100px;">等待输入内容...</p>
     </div>
 </div>
 
 <script>
-    const input = document.getElementById('raw-input');
-    const target = document.getElementById('render-target');
+    const editor = document.getElementById('editor');
+    const renderBox = document.getElementById('render-box');
 
-    input.addEventListener('input', (e) => {
-        const text = e.target.value;
-        const lines = text.split('\n').filter(l => l.trim() !== '');
-        
+    editor.addEventListener('input', () => {
+        const lines = editor.value.split('\n').filter(l => l.trim() !== '');
         let html = '';
         lines.forEach(line => {
-            if (/^0\d/.test(line)) { // 识别大数字 01, 02
-                html += `<div class="part-number">${line}</div>`;
-            } else if (line.includes('PART')) { // 识别 PART ONE
-                html += `<div class="part-header">${line}</div>`;
-            } else if (line.includes('切片')) { // 识别切片标题
-                html += `<div class="slice-title"><span>● 🧩</span>${line.replace(/.*切片/, '切片')}</div>`;
-            } else if (line.includes('关于') || line.includes('——')) { // 识别竖线副标题
-                html += `<div class="side-border-title">${line.replace(/[—|]/g, '').trim()}</div>`;
-            } else if (line.includes('↘')) { // 识别引导箭头
-                html += `<div class="guide-arrow">↘</div>`;
-            } else if (line.includes('编者按')) {
-                html += `<div class="editor-note">${line}</div>`;
+            const cleanLine = line.trim();
+            if (/^0\d/.test(cleanLine)) {
+                html += `<div class="p-num">${cleanLine}</div>`;
+            } else if (cleanLine.includes('PART')) {
+                html += `<div class="p-title">${cleanLine}</div>`;
+            } else if (cleanLine.includes('切片')) {
+                html += `<div class="slice-h"><span>● 🧩</span>${cleanLine}</div>`;
+            } else if (cleanLine.includes('↘')) {
+                html += `<div class="arrow">↘</div>`;
+            } else if (cleanLine.includes('关于') || cleanLine.includes('——')) {
+                html += `<div class="v-line">${cleanLine.replace(/[—|]/g, '')}</div>`;
             } else {
-                html += `<p>${line.trim()}</p>`;
+                html += `<p>${cleanLine}</p>`;
             }
         });
-        target.innerHTML = html;
+        renderBox.innerHTML = html || '<p style="color:#CCC; text-align:center; margin-top:100px;">等待输入内容...</p>';
     });
 </script>
 
