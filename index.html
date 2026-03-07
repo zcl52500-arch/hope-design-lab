@@ -2,43 +2,42 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · 视觉锁定版</title>
+<title>HOPE Design Lab · 微信最终锁死版</title>
 <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Inter:wght@400;700&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; }
 body { margin:0; font-family:'Inter', sans-serif; background:#F4F6F9; height:100vh; display:flex; flex-direction:column; }
 header { background:white; padding:15px 30px; border-bottom:1px solid #e1e4e8; flex-shrink:0; }
 .header-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.header-hint { font-size:13px; color:#666; background:#f8f9fa; padding:10px 15px; border-radius:6px; border-left:4px solid #76B92E; }
-.header-hint code { background:#eee; padding:2px 5px; border-radius:3px; color:#2E84C5; font-family:monospace; font-weight:bold; }
+.header-hint { font-size:12px; color:#666; background:#f8f9fa; padding:10px 15px; border-radius:6px; border-left:4px solid #76B92E; line-height:1.6; }
+.header-hint code { background:#eee; padding:2px 4px; border-radius:3px; color:#2E84C5; font-family:monospace; font-weight:bold; }
 .main-workspace { display:grid; grid-template-columns: 1fr 1fr; flex-grow:1; overflow:hidden; }
 .editor-zone { border-right:1px solid #e1e4e8; background:#fafafa; }
 textarea { width:100%; height:100%; padding:30px; border:none; outline:none; font-size:15px; line-height:1.8; resize:none; font-family:inherit; }
 .preview-zone { background:white; overflow-y:auto; padding:40px; }
 button { background:#2E84C5; color:#fff; padding:8px 20px; border-radius:20px; border:none; cursor:pointer; font-weight:bold; }
-button:hover { background:#1a6da1; }
 </style>
 </head>
 <body>
 
 <header>
   <div class="header-top">
-    <h1 style="margin:0; font-size:20px;">🍓 HOPE Design Lab <span style="font-size:12px; background:#76B92E; color:#fff; padding:2px 8px; border-radius:10px; margin-left:10px;">v17.0 视觉锁定版</span></h1>
+    <h1 style="margin:0; font-size:20px;">🍓 HOPE Design Lab <span style="font-size:11px; background:#76B92E; color:#fff; padding:2px 8px; border-radius:10px; margin-left:10px;">v18.0 微信最终锁死版</span></h1>
     <button onclick="copyHTML()">一键复制 HTML</button>
   </div>
   <div class="header-hint">
-    💡 <b>排版指令：</b>
-    <code># 01 标题</code> 一级(大数字) | 
-    <code>## 标题</code> 二级(绿竖线蓝字) | 
-    <code>【内容】</code> 蓝色圆角胶囊 | 
-    <code>---</code> 三色点分割线 | 
+    💡 <b>指令提示：</b>
+    <code># 01 标题</code> 一级 | 
+    <code>## 标题</code> 二级(左绿竖线) | 
+    <code>【内容】</code> 胶囊 | 
+    <code>---</code> 分割线 | 
     <code>></code> 引用
   </div>
 </header>
 
 <div class="main-workspace">
   <div class="editor-zone">
-    <textarea id="input" oninput="generate()" placeholder="在此输入文案，右侧实时预览..."></textarea>
+    <textarea id="input" oninput="generate()" placeholder="在此输入文案..."></textarea>
   </div>
   <div id="output" class="preview-zone"></div>
 </div>
@@ -61,7 +60,7 @@ function generate(){
     line = line.trim();
     if(!line) return;
 
-    // 1. 一级标题 (使用 Table 锁死布局)
+    // 1. 一级标题 (物理对齐锁死)
     if(line.startsWith("# ")){
       let content = line.replace("# ","");
       let numMatch = content.match(/\d+/);
@@ -70,13 +69,11 @@ function generate(){
       html += `
       <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:50px 0 20px;">
         <tr>
-          <td width="90" valign="bottom" align="right">
-            <div style="font-size:75px; font-weight:900; color:#EBF4E2; line-height:0.8; font-family:Arial;">${num.padStart(2,'0')}</div>
-          </td>
+          <td width="90" valign="bottom" align="right" style="font-size:75px; font-weight:900; color:#EBF4E2; line-height:0.8; font-family:Arial;">${num.padStart(2,'0')}</td>
           <td valign="bottom" style="padding-left:15px;">
             <div style="margin-bottom:8px;">
               <span style="display:inline-block; width:12px; height:12px; background:#FFD100; border-radius:50%;"></span>
-              <span style="font-size:14px; font-weight:bold; color:#FFD100; margin-left:8px; letter-spacing:2px;">PART ${numToEng(num)}</span>
+              <span style="font-size:14px; font-weight:bold; color:#FFD100; margin-left:8px; letter-spacing:2px; font-family:Arial;">PART ${numToEng(num)}</span>
             </div>
             <div style="font-size:26px; font-weight:bold; color:#2E84C5; line-height:1.3;">${cleanTitle}</div>
           </td>
@@ -85,14 +82,14 @@ function generate(){
       <div style="color:#76B92E; font-size:35px; font-weight:900; margin-bottom:40px; margin-left:10px;">↘</div>`;
     }
 
-    // 2. 二级标题 (修正版：左侧绿竖线单元格 + 蓝色文字)
+    // 2. 二级标题 (修正版：表格物理竖线)
     else if(line.startsWith("## ")){
       html += `
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:35px 0 20px;">
+      <table border="0" cellspacing="0" cellpadding="0" style="margin:35px 0 20px; line-height: 1;">
         <tr>
-          <td width="4" style="background:#76B92E; font-size:1px;">&nbsp;</td>
+          <td width="4" height="24" style="background-color:#76B92E; border-radius:2px;"></td>
           <td style="padding-left:12px;">
-            <div style="font-size:16.5px; font-weight:bold; color:#2E84C5; line-height:1.8;">${line.replace("## ","")}</div>
+            <div style="font-size:21px; font-weight:bold; color:#2E84C5; letter-spacing:0.5px; font-family:'Microsoft YaHei', sans-serif;">${line.replace("## ","")}</div>
           </td>
         </tr>
       </table>`;
@@ -100,51 +97,44 @@ function generate(){
 
     // 3. 蓝色圆角胶囊
     else if(line.startsWith("【") && line.endsWith("】")){
-      html += `
-      <div style="text-align:center; margin:20px 0;">
-        <span style="display:inline-block; background:#2E84C5; color:#fff; padding:6px 28px; border-radius:50px; font-size:14px; font-weight:bold; letter-spacing:1px;">
-          ${line.replace(/[【】]/g,'')}
-        </span>
-      </div>`;
+      html += `<div style="text-align:center; margin:25px 0;"><span style="display:inline-block; background:#2E84C5; color:#fff; padding:6px 28px; border-radius:50px; font-size:14px; font-weight:bold; letter-spacing:1px;">${line.replace(/[【】]/g,'')}</span></div>`;
     }
 
-    // 4. 引用块 (Table 保证背景色和竖线不脱离)
+    // 4. 引用 (Table 锁死)
     else if(line.startsWith("> ")){
       let content = line.replace("> ","");
       let theme = content.includes("编者按") ? "#2E84C5" : "#FFD100";
       let bg = content.includes("编者按") ? "#F2F7FB" : "#FCFAF2";
       html += `
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:30px 0; background:${bg};">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:30px 0; background-color:${bg}; border-radius:8px; overflow:hidden;">
         <tr>
-          <td width="6" style="background:${theme}; font-size:1px;">&nbsp;</td>
+          <td width="6" style="background-color:${theme};"></td>
           <td style="padding:25px 30px;">
-            <div style="line-height:2.1; font-size:16.5px; color:#444; text-align:justify;">${content}</div>
+            <div style="line-height:2.1; font-size:16px; color:#444; text-align:justify;">${content}</div>
           </td>
         </tr>
       </table>`;
     }
 
-    // 5. 三色圆点分割线 (注入圆点符号防止被删)
+    // 5. 三色圆点分割线
     else if(line==="---"){
       html += `
-      <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin:60px 0;">
+      <table align="center" border="0" cellspacing="0" cellpadding="0" style="margin:60px auto;">
         <tr>
-          <td align="center">
-            <span style="display:inline-block; width:10px; height:10px; background:#2E84C5; border-radius:50%; margin:0 6px; color:#2E84C5; font-size:1px;">&bull;</span>
-            <span style="display:inline-block; width:12px; height:12px; background:#FFD100; border-radius:50%; margin:0 6px; color:#FFD100; font-size:1px;">&bull;</span>
-            <span style="display:inline-block; width:10px; height:10px; background:#76B92E; border-radius:50%; margin:0 6px; color:#76B92E; font-size:1px;">&bull;</span>
-          </td>
+          <td style="padding:0 8px;"><div style="width:10px; height:10px; background:#2E84C5; border-radius:50%;"></div></td>
+          <td style="padding:0 8px;"><div style="width:12px; height:12px; background:#FFD100; border-radius:50%;"></div></td>
+          <td style="padding:0 8px;"><div style="width:10px; height:10px; background:#76B92E; border-radius:50%;"></div></td>
         </tr>
       </table>`;
     }
 
-    // 正文与图片
+    // 6. 图片与正文
     else if(line.startsWith("![") && line.includes("](")){
       let match=line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
       if(match){ html += `<div style="text-align:center; margin:30px 0;"><img src="${match[2]}" style="max-width:100%; border-radius:8px; display:block; margin:0 auto;"></div>`; }
     }
     else{
-      html += `<div style="text-indent:2.1em; line-height:2.1; font-size:16.5px; color:#333; text-align:justify; margin-bottom:28px;">${line}</div>`;
+      html += `<div style="text-indent:2.1em; line-height:2.2; font-size:16px; color:#333; text-align:justify; margin-bottom:25px; letter-spacing:0.3px;">${line}</div>`;
     }
   });
 
@@ -157,9 +147,8 @@ function copyHTML(){
   window.getSelection().removeAllRanges();
   window.getSelection().addRange(range);
   document.execCommand('copy');
-  alert("🍓 HOPE 视觉锁定版已复制！请粘贴到公众号后台。");
+  alert("🍓 HOPE 稳定版已复制！粘贴到后台后，绿线不会再跑了。");
 }
-
 window.onload = generate;
 </script>
 </body>
