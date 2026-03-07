@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOPE Design Lab - 完整版</title>
+    <title>HOPE Design Lab - 稳健版</title>
+    <!-- 引入最基础、最稳定的库 -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -16,21 +20,8 @@
 <body>
     <div id="root"></div>
 
-    <!-- 使用 ESM 模式加载 React 和 Gemini SDK -->
-    <script type="importmap">
-    {
-        "imports": {
-            "react": "https://esm.sh/react@18",
-            "react-dom": "https://esm.sh/react-dom@18/client",
-            "@google/genai": "https://esm.sh/@google/genai"
-        }
-    }
-    </script>
-
-    <script type="module">
-        import React, { useState } from 'react';
-        import ReactDOM from 'react-dom';
-        import { GoogleGenAI } from "@google/genai";
+    <script type="text/babel">
+        const { useState } = React;
 
         // ⚠️ 请在此处粘贴您的 API KEY
         const API_KEY = "AIzaSyC3SKI49gYQ0WZZzNJtaf5DyFkaN0OAs5s";
@@ -49,14 +40,26 @@
                 
                 setLoading(true);
                 try {
-                    const genAI = new GoogleGenAI({ apiKey: API_KEY });
-                    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+                    // 直接使用 fetch 调用 API，不依赖 SDK
+                    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
                     
-                    const prompt = `你现在是 HOPE 学堂的排版专家。请将以下内容转换为符合 HOPE 学院风格的 HTML 排版（使用内联样式，保留所有文字，增加视觉层级感）：\n\n${text}`;
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [{
+                                    text: `你现在是 HOPE 学堂的排版专家。请将以下内容转换为符合 HOPE 学院风格的 HTML 排版（使用内联样式，保留所有文字，增加视觉层级感）：\n\n${text}`
+                                }]
+                            }]
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data.error) throw new Error(data.error.message);
                     
-                    const result = await model.generateContent(prompt);
-                    const response = await result.response;
-                    setResult(response.text());
+                    const aiText = data.candidates[0].content.parts[0].text;
+                    setResult(aiText);
                 } catch (error) {
                     console.error(error);
                     alert("AI 调用出错：" + error.message);
@@ -102,7 +105,7 @@
                             <div className="bg-white rounded-[2.5rem] p-8 md:p-10 shadow-2xl border border-slate-100 min-h-[500px]">
                                 <h2 className="text-2xl font-black mb-6 tracking-tight text-slate-400">预览效果</h2>
                                 {result ? (
-                                    <div className="markdown-body animate-in fade-in" dangerouslySetInnerHTML={{ __html: result }} />
+                                    <div className="markdown-body" dangerouslySetInnerHTML={{ __html: result }} />
                                 ) : (
                                     <div className="h-full flex flex-col items-center justify-center text-slate-200 py-20">
                                         <i className="fas fa-wand-magic-sparkles text-6xl mb-4"></i>
@@ -116,7 +119,8 @@
             );
         }
 
-        ReactDOM.render(<App />, document.getElementById('root'));
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
