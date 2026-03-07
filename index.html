@@ -2,74 +2,60 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab v7 · 最终版公众号排版器</title>
+<title>HOPE Design Lab v7.1 · 视觉补丁最终版</title>
 
-<!-- 字体引入 -->
 <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-<!-- Tailwind CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-  theme: {
-    extend: {
-      fontFamily: {
-        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-        playful: ['ZCOOL KuaiLe', 'cursive'],
-        handwritten: ['Ma Shan Zheng', 'cursive']
-      }
-    }
-  }
-}
-</script>
 
 <style>
-body { background-color:#F8FAFC; color:#1e293b; margin:0; padding:20px; }
-.container{display:flex; gap:20px; flex-wrap:wrap;}
-textarea{width:48%; min-width:280px; min-height:400px; padding:15px; font-size:15px; line-height:1.6; border-radius:8px; border:1px solid #ddd; resize:none; overflow:auto;}
-.preview{width:48%; min-width:280px; background:white; padding:30px; border-radius:10px; overflow:auto; max-width:640px;}
-.h1{font-size:28px; font-weight:700; margin:30px 0 20px; text-align:center; font-family:'ZCOOL KuaiLe', cursive;}
-.h2{font-size:22px; font-weight:bold; border-left:6px solid #1e90ff; padding-left:12px; margin:26px 0 14px;}
-.h3{font-size:18px; font-weight:bold; color:#1e90ff; margin:20px 0 10px;}
-.p{font-size:16px; line-height:1.8; color:#1e293b; margin:14px 0;}
-.quote{border-left:4px solid #ccc; padding-left:12px; color:#555; margin:18px 0; font-family:'Ma Shan Zheng', cursive;}
-.hr{border-top:1px solid #eee; margin:30px 0;}
-.qa-q{font-weight:bold; margin-top:18px; font-family:'ZCOOL KuaiLe', cursive;}
-.qa-a{margin:10px 0;}
-.card{background:#f0f9ff; padding:15px; border-radius:6px; margin:15px 0; box-shadow:0 2px 6px rgba(0,0,0,0.05);}
-figure{margin:15px 0; text-align:center;}
-figure img{max-width:100%; border-radius:8px;}
-figcaption{color:#666; font-size:14px; margin-top:6px; font-family:'Ma Shan Zheng', cursive;}
-.meta{color:#888; font-size:14px; margin-bottom:10px;}
+    body { background-color:#F0F2F5; color:#1e293b; margin:0; padding:20px; font-family: 'Inter', sans-serif; }
+    .container { display:flex; gap:25px; flex-wrap:wrap; max-width: 1400px; margin: 0 auto; }
+    textarea { width:45%; min-width:320px; min-height:600px; padding:20px; font-size:15px; line-height:1.7; border-radius:12px; border:1px solid #cbd5e1; outline:none; transition: all 0.3s; }
+    textarea:focus { border-color: #2E84C5; box-shadow: 0 0 0 3px rgba(46,132,197,0.1); }
+    .preview { width:50%; min-width:320px; background:white; padding:40px; border-radius:12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow:auto; }
+    
+    /* 预览容器内的基础样式，仅用于实时显示 */
+    #output { font-family: -apple-system, system-ui, sans-serif; }
 
-/* 动画 */
-@keyframes float {0%{transform:translateY(0px) rotate(-2deg);}50%{transform:translateY(-8px) rotate(-1deg);}100%{transform:translateY(0px) rotate(-2deg);}}
-.animate-float{animation:float 4s ease-in-out infinite;}
-@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-.animate-spin-slow{animation:spin 8s linear infinite;}
-@keyframes fade-in{from{opacity:0;}to{opacity:1;}}
-@keyframes slide-in-bottom{from{transform:translateY(1rem);}to{transform:translateY(0);}}
-.fade-in{animation:fade-in 0.5s both;}
-.slide-in-bottom{animation:slide-in-bottom 0.5s both;}
+    /* 动画 */
+    @keyframes float {0%{transform:translateY(0px) rotate(-1deg);}50%{transform:translateY(-6px) rotate(0deg);}100%{transform:translateY(0px) rotate(-1deg);}}
+    .animate-float{animation:float 4s ease-in-out infinite;}
+    .fade-in{animation: opacity 0.5s ease-in; }
 
-@media(max-width:800px){.container{flex-direction:column;}.preview,textarea{width:100%;}}
+    @media(max-width:1000px){.container{flex-direction:column;}.preview,textarea{width:100%;}}
 </style>
 </head>
 
 <body>
-<h1 class="animate-float">HOPE Design Lab · 最终版公众号排版器</h1>
-
-<div class="toolbar fade-in mb-4">
-  <button onclick="generate()" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">生成排版</button>
-  <button onclick="copyHTML()" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">复制公众号HTML</button>
-  <button onclick="uploadImage()" class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded">上传图片</button>
-  <span id="meta" class="meta"></span>
-  <input type="file" id="fileInput" style="display:none" accept="image/*">
+<div class="max-w-7xl mx-auto mb-6 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-slate-800 animate-float flex items-center">
+        <span class="text-blue-600 mr-2">🍓</span> HOPE Design Lab <span class="ml-2 px-2 py-1 bg-yellow-400 text-white text-xs rounded">v7.1 最终版</span>
+    </h1>
+    <div class="space-x-2">
+        <button onclick="generate()" class="bg-slate-800 hover:bg-black text-white px-5 py-2 rounded-full text-sm font-medium transition shadow-lg">生成排版</button>
+        <button onclick="copyHTML()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-sm font-medium transition shadow-lg">复制 HTML</button>
+        <button onclick="uploadImage()" class="bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 px-5 py-2 rounded-full text-sm font-medium transition">上传图片</button>
+    </div>
 </div>
 
-<div class="container slide-in-bottom">
-  <textarea id="input" placeholder="在这里粘贴或输入文章内容"></textarea>
-  <div id="output" class="preview"></div>
+<div class="max-w-7xl mx-auto mb-4 flex items-center justify-between text-slate-500 text-xs px-2">
+    <div id="meta">字数 0 · 预计阅读 0 分钟</div>
+    <div>提示：使用 ## 01 触发悬浮大数字标题</div>
 </div>
+
+<div class="container">
+    <textarea id="input" oninput="generate()" placeholder="在此贴入文案...
+支持：
+# 大标题
+## 01 分段标题
+> 引用或感性段落
+【蓝色胶囊】
+--- 分割线"></textarea>
+    
+    <div id="output" class="preview"></div>
+</div>
+
+<input type="file" id="fileInput" style="display:none" accept="image/*">
 
 <script>
 const inputEl=document.getElementById("input");
@@ -77,59 +63,104 @@ const outputEl=document.getElementById("output");
 const metaEl=document.getElementById("meta");
 const fileInput=document.getElementById("fileInput");
 
-// 自动扩展输入框
-inputEl.addEventListener("input",()=>{inputEl.style.height="auto";inputEl.style.height=(inputEl.scrollHeight)+"px";});
-
-// 图片上传
-function uploadImage(){ fileInput.click(); }
-fileInput.addEventListener("change",(e)=>{
-  const file=e.target.files[0];
-  if(file){
-    const reader=new FileReader();
-    reader.onload=function(evt){
-      const markdown=`![${file.name}](${evt.target.result} "${file.name}")`;
-      inputEl.value += "\n"+markdown+"\n";
-      generate();
-    }
-    reader.readAsDataURL(file);
-  }
-});
-
-// 排版生成
-function generate(){
-  const text=inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
-  const lines=text.split("\n");
-  let html="",wordCount=0,inCard=false;
-
-  lines.forEach(line=>{
-    line=line.trim();
-    if(line==="") return;
-    wordCount+=line.length;
-
-    if(line.startsWith("# ")){html+=`<p class="h1">${line.replace("# ","")}</p>`;}
-    else if(line.startsWith("## ")){html+=`<p class="h2">${line.replace("## ","")}</p>`;}
-    else if(line.startsWith("### ")){html+=`<p class="h3">${line.replace("### ","")}</p>`;}
-    else if(line.startsWith("> ")){html+=`<p class="quote">${line.replace("> ","")}</p>`;}
-    else if(line==="---"){html+=`<div class="hr"></div>`;}
-    else if(line.startsWith("Q：")||line.startsWith("Q:")){html+=`<p class="qa-q">${line}</p>`;}
-    else if(line.startsWith("A：")||line.startsWith("A:")){html+=`<p class="qa-a">${line}</p>`;}
-    else if(line==="[活动信息]"){html+=`<div class="card">`;inCard=true;}
-    else if(inCard && line===""){html+=`</div>`;inCard=false;}
-    else if(inCard){html+=`<p class="p">${line}</p>`;}
-    else if(line.startsWith("![") && line.includes("](")){
-      let match=line.match(/!\[([^\]]*)\]\(([^ )]+)(?: \"([^\"]*)\")?\)/);
-      if(match){ let alt=match[1], src=match[2], caption=match[3]||""; html+=`<figure><img src="${src}" alt="${alt}"><figcaption>${caption}</figcaption></figure>`;}
-    } else {html+=`<p class="p">${line}</p>`;}
-  });
-
-  outputEl.innerHTML=html;
-  metaEl.innerText=`字数 ${wordCount} · 预计阅读 ${Math.ceil(wordCount/300)} 分钟`;
+function numToEng(n) {
+    const words = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN"];
+    return words[parseInt(n)] || "SECTION";
 }
 
-// 一键复制
-function copyHTML(){ navigator.clipboard.writeText(outputEl.innerHTML); alert("已复制，可直接粘贴到公众号编辑器"); }
+function uploadImage(){ fileInput.click(); }
+fileInput.addEventListener("change",(e)=>{
+    const file=e.target.files[0];
+    if(file){
+        const reader=new FileReader();
+        reader.onload=function(evt){
+            const markdown=`\n![${file.name}](${evt.target.result})\n`;
+            inputEl.value += markdown;
+            generate();
+        }
+        reader.readAsDataURL(file);
+    }
+});
 
-window.onload=generate;
+function generate(){
+    const text=inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
+    const lines=text.split("\n");
+    let html="", wordCount=0;
+
+    lines.forEach(line=>{
+        line=line.trim();
+        if(line==="") return;
+        wordCount+=line.length;
+
+        // 1. HOPE 一级大标题 (居中带间距)
+        if(line.startsWith("# ")){
+            html += `<section style="text-align:center; margin: 40px 0 30px;"><h1 style="font-size:28px; font-weight:bold; color:#2E84C5; line-height:1.4; font-family:'ZCOOL KuaiLe', cursive;">${line.replace("# ","")}</h1></section>`;
+        }
+        // 2. HOPE 核心二级标题（悬浮大数字 + 黄圆点）
+        else if(line.startsWith("## ")){
+            let content = line.replace("## ","");
+            let numMatch = content.match(/\d+/);
+            let num = numMatch ? numMatch[0] : "01";
+            let cleanTitle = content.replace(num, "").replace(/PART/i, "").trim();
+            
+            html += `
+            <section style="margin: 60px 0 40px; position: relative;">
+                <section style="text-align: right; height: 0px; margin-bottom: -50px;">
+                    <span style="font-size: 90px; color: #F2F2F2; font-family: Arial; font-weight: 900; line-height: 1; display: inline-block;">${num.padStart(2, '0')}</span>
+                </section>
+                <section style="position: relative; z-index: 2;">
+                    <section style="margin-bottom: 12px; display: flex; align-items: center;">
+                        <section style="width: 10px; height: 10px; background-color: #FFD100; border-radius: 50%; margin-right: 10px;"></section>
+                        <section style="color: #FFD100; font-size: 14px; font-weight: bold; letter-spacing: 3px; font-family: Arial;">PART ${numToEng(num)}</section>
+                    </section>
+                    <section style="color: #2E84C5; font-size: 26px; font-weight: bold; line-height: 1.4; padding-right: 60px;">${cleanTitle}</section>
+                    <section style="color: #FFD100; font-size: 32px; font-weight: 900; margin-top: 8px;">↘</section>
+                </section>
+                <section style="clear: both;"></section>
+            </section>`;
+        }
+        // 3. 蓝色胶囊
+        else if(line.startsWith("【") && line.endsWith("】")){
+            html += `<section style="margin: 30px 0 15px;"><span style="display: inline-block; background-color: #2E84C5; color: #ffffff; padding: 6px 22px; border-radius: 50px; font-size: 15px; font-weight: bold; line-height: 1.2;">${line.replace(/[【】]/g, '')}</span></section>`;
+        }
+        // 4. 感性引用（春日段落补丁：淡淡暖色背景 + 3px 黄线）
+        else if(line.startsWith("> ")){
+            html += `<section style="margin: 35px 0; background-color: #FCFAF2; border-left: 4px solid #FFD100; padding: 25px 30px; line-height: 2.0; color: #444; font-size: 16px; border-radius: 0 4px 4px 0; text-align: justify; font-family: 'Ma Shan Zheng', cursive;">${line.replace("> ","")}</section>`;
+        }
+        // 5. 分割线
+        else if(line==="---"){
+            html += `<section style="margin: 40px auto; width: 30%; border-top: 2px dashed #FFD100;"></section>`;
+        }
+        // 6. 图片处理
+        else if(line.startsWith("![") && line.includes("](")){
+            let match=line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
+            if(match){ html += `<section style="margin: 25px 0; text-align: center;"><img src="${match[2]}" style="max-width:100%; border-radius:8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></section>`; }
+        }
+        // 7. 正文段落 (强制 text-align: justify 确保排版整齐)
+        else {
+            html += `<p style="text-indent: 2em; line-height: 2.2; margin-bottom: 25px; color: #333; font-size: 16px; text-align: justify; letter-spacing: 0.5px;">${line}</p>`;
+        }
+    });
+
+    outputEl.innerHTML = html || '<p style="color:#cbd5e1; text-align:center; margin-top:200px;">🍓 期待你的文章内容...</p>';
+    metaEl.innerText = `字数 ${wordCount} · 预计阅读 ${Math.ceil(wordCount/400)} 分钟`;
+}
+
+function copyHTML(){
+    const range = document.createRange();
+    range.selectNode(outputEl);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    try {
+        document.execCommand('copy');
+        alert("🍓 HOPE 专属格式已打包！直接去公众号后台粘贴即可。");
+    } catch (err) {
+        alert("复制失败，请手动选择预览区内容复制");
+    }
+}
+
+// 初始化
+window.onload = generate;
 </script>
 </body>
 </html>
