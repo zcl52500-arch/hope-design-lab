@@ -2,9 +2,8 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · 微信左右布局版</title>
-<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+<title>HOPE Design Lab · 滚动同步增强版</title>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 <style>
 body {
     background:#F0F2F5;
@@ -15,10 +14,11 @@ body {
 }
 h1 span { font-size:12px; background:#76B92E; color:#fff; padding:2px 8px; border-radius:10px; }
 .container { display:flex; gap:20px; max-width:1400px; margin:0 auto; flex-wrap:wrap; }
-textarea { width:45%; min-width:300px; min-height:850px; padding:20px; border-radius:12px; border:1px solid #cbd5e1; font-size:15px; line-height:1.7; resize:none; }
-.preview { width:55%; min-width:300px; background:white; padding:30px; border-radius:12px; overflow:auto; min-height:850px; }
+textarea { width:45%; min-width:300px; min-height:850px; padding:20px; border-radius:12px; border:1px solid #cbd5e1; font-size:15px; line-height:1.7; resize:none; overflow-y:scroll; }
+.preview { width:55%; min-width:300px; background:white; padding:30px; border-radius:12px; overflow:auto; min-height:850px; position:relative; }
 button { background:#2E84C5; color:#fff; padding:10px 25px; border-radius:20px; border:none; cursor:pointer; font-weight:bold; margin-left:5px; }
 .capsule { display:inline-block; background:#2E84C5; color:#fff; padding:6px 20px; border-radius:50px; font-size:14px; font-weight:bold; margin:6px 0; }
+.highlight { background-color: rgba(255, 235, 59, 0.2); border-radius:4px; transition: background 0.3s; }
 @media(max-width:1000px){ .container{flex-direction:column;} textarea,.preview{width:100%;} }
 </style>
 </head>
@@ -26,11 +26,10 @@ button { background:#2E84C5; color:#fff; padding:10px 25px; border-radius:20px; 
 
 <div style="max-width:1400px; margin:0 auto 20px;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h1>🍓 HOPE Design Lab <span>v8.1 左右布局版</span></h1>
+        <h1>🍓 HOPE Design Lab <span>v10.0 滚动同步增强版</span></h1>
         <div>
-            <button onclick="generate()">生成排版</button>
-            <button onclick="copyHTML()">一键复制</button>
-            <button onclick="uploadImage()">上传图片</button>
+            <button id="btnGenerate">生成排版</button>
+            <button id="btnCopy">一键复制</button>
         </div>
     </div>
     <div style="margin-bottom:10px; color:#555;">提示：# 一级标题（悬浮数字） | ## 二级标题（居中） | > 引用 | --- 分割线 | 【标签】</div>
@@ -41,67 +40,54 @@ button { background:#2E84C5; color:#fff; padding:10px 25px; border-radius:20px; 
     <div id="output" class="preview"></div>
 </div>
 
-<input type="file" id="fileInput" style="display:none" accept="image/*">
-
 <script>
-const inputEl=document.getElementById("input");
-const outputEl=document.getElementById("output");
-const fileInput=document.getElementById("fileInput");
+const inputEl = document.getElementById("input");
+const outputEl = document.getElementById("output");
+let paragraphNodes = [];
 
-// 上传图片
-function uploadImage(){ fileInput.click(); }
-fileInput.addEventListener("change",(e)=>{
-    const file=e.target.files[0];
-    if(file){
-        const reader=new FileReader();
-        reader.onload=function(evt){
-            inputEl.value += `\n![${file.name}](${evt.target.result})\n`;
-            generate();
-        }
-        reader.readAsDataURL(file);
-    }
-});
-
-// 转英文数字
-function numToEng(n) {
+// 将数字转英文 PART 名称
+function numToEng(n){
     const words = ["ZERO","ONE","TWO","THREE","FOUR","FIVE","SIX","SEVEN","EIGHT","NINE","TEN"];
-    return words[parseInt(n)]||"SECTION";
+    return words[parseInt(n)] || "SECTION";
 }
 
 // 生成排版
 function generate(){
-    const text=inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
-    const lines=text.split("\n");
-    let html="", wordCount=0;
+    const text = inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
+    const lines = text.split("\n");
+    let html = "";
+    paragraphNodes = [];
 
-    lines.forEach(line=>{
+    lines.forEach((line,index)=>{
         line=line.trim();
         if(line==="") return;
-        wordCount+=line.length;
 
-        // 一级标题：悬浮大数字
+        let nodeHTML = "";
+        // 一级标题
         if(line.startsWith("# ")){
             let content=line.replace("# ","");
             let numMatch=content.match(/\d+/);
             let num=numMatch?numMatch[0]:"01";
             let cleanTitle=content.replace(num,"").trim();
-            html += `
-            <div style="position:relative; margin:50px 0 25px;">
-                <span style="font-size:80px; color:#EBF4E2; font-weight:900; position:absolute; left:-5px; top:-15px;">${num.padStart(2,'0')}</span>
-                <div style="display:flex; align-items:center; margin-left:10px;">
-                    <div style="width:10px; height:10px; background:#FFD100; border-radius:50%; margin-right:8px;"></div>
-                    <div style="font-size:14px; font-weight:bold; color:#FFD100; letter-spacing:2px;">PART ${numToEng(num)}</div>
+            nodeHTML = `
+            <div style="display:flex; align-items:center; margin:50px 0 25px;" class="para">
+                <div style="flex-shrink:0; font-size:80px; font-weight:900; color:#EBF4E2; line-height:0.8; width:90px; text-align:right;">${num.padStart(2,'0')}</div>
+                <div style="margin-left:20px;">
+                    <div style="display:flex; align-items:center; margin-bottom:5px;">
+                        <div style="width:12px; height:12px; background:#FFD100; border-radius:50%; margin-right:8px;"></div>
+                        <div style="font-size:14px; font-weight:bold; color:#FFD100; letter-spacing:2px;">PART ${numToEng(num)}</div>
+                    </div>
+                    <div style="font-size:28px; font-weight:bold; color:#2E84C5; line-height:1.3;">${cleanTitle}</div>
                 </div>
-                <div style="font-size:24px; font-weight:bold; color:#2E84C5; margin-top:5px; text-align:left;">${cleanTitle}</div>
             </div>`;
         }
-        // 二级标题：居中显示
+        // 二级标题
         else if(line.startsWith("## ")){
-            html += `<p style="text-align:center; font-size:26px; font-weight:bold; color:#2E84C5; margin:35px 0 20px; font-family:'ZCOOL KuaiLe', cursive;">${line.replace("## ","")}</p>`;
+            nodeHTML = `<p style="text-align:center; font-size:26px; font-weight:bold; color:#2E84C5; margin:35px 0 20px; font-family:'ZCOOL KuaiLe', cursive;" class="para">${line.replace("## ","")}</p>`;
         }
         // 蓝色胶囊
         else if(line.startsWith("【") && line.endsWith("】")){
-            html += `<span class="capsule">${line.replace(/[【】]/g,'')}</span>`;
+            nodeHTML = `<span class="capsule para">${line.replace(/[【】]/g,'')}</span>`;
         }
         // 引用
         else if(line.startsWith("> ")){
@@ -109,11 +95,11 @@ function generate(){
             let isNote=content.includes("编者按");
             let bg=isNote?"#F2F7FB":"#FCFAF2";
             let color=isNote?"#2E84C5":"#FFD100";
-            html += `<p style="background:${bg}; border-left:4px solid ${color}; padding:15px; line-height:1.9; color:#444; font-size:16px; text-align:justify; border-radius:0 4px 4px 0; margin:25px 0;">${content}</p>`;
+            nodeHTML = `<p style="background:${bg}; border-left:4px solid ${color}; padding:15px; line-height:1.9; color:#444; font-size:16px; text-align:justify; border-radius:0 4px 4px 0; margin:25px 0;" class="para">${content}</p>`;
         }
-        // 分割线：三色圆点
+        // 分割线
         else if(line==="---"){
-            html += `<p style="text-align:center; margin:30px 0;">
+            nodeHTML = `<p style="text-align:center; margin:30px 0;" class="para">
                 <span style="display:inline-block; width:12px; height:12px; background:#2E84C5; border-radius:50%; margin:0 4px;"></span>
                 <span style="display:inline-block; width:12px; height:12px; background:#FFD100; border-radius:50%; margin:0 4px;"></span>
                 <span style="display:inline-block; width:12px; height:12px; background:#76B92E; border-radius:50%; margin:0 4px;"></span>
@@ -122,15 +108,17 @@ function generate(){
         // 图片
         else if(line.startsWith("![") && line.includes("](")){
             let match=line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
-            if(match){ html += `<p style="text-align:center; margin:25px 0;"><img src="${match[2]}" style="max-width:100%; border-radius:8px;"></p>`; }
+            if(match){ nodeHTML = `<p style="text-align:center; margin:25px 0;" class="para"><img src="${match[2]}" style="max-width:100%; border-radius:8px;"></p>`; }
         }
         // 正文
         else{
-            html += `<p style="text-indent:2em; line-height:1.8; font-size:16px; color:#333; text-align:justify; margin-bottom:20px;">${line}</p>`;
+            nodeHTML = `<p style="text-indent:2em; line-height:1.8; font-size:16px; color:#333; text-align:justify; margin-bottom:20px;" class="para">${line}</p>`;
         }
+        html += nodeHTML;
     });
 
-    outputEl.innerHTML=html || '<p style="color:#cbd5e1; text-align:center; margin-top:200px;">🍓 期待你的文章内容...</p>';
+    outputEl.innerHTML = html;
+    paragraphNodes = Array.from(outputEl.getElementsByClassName("para"));
 }
 
 // 一键复制
@@ -139,11 +127,31 @@ function copyHTML(){
     range.selectNode(outputEl);
     window.getSelection().removeAllRanges();
     window.getSelection().addRange(range);
-    try{ document.execCommand('copy'); alert("🍓 HOPE 专属格式已打包！直接去公众号后台粘贴即可。"); }
-    catch(err){ alert("复制失败，请手动选择预览区内容复制"); }
+    try{
+        document.execCommand('copy');
+        alert("🍓 HOPE 专属格式已打包！直接去公众号后台粘贴即可。");
+    }catch(e){
+        alert("复制失败，请手动选择预览区内容复制");
+    }
 }
 
-window.onload=generate;
+// 滚动同步高亮
+inputEl.addEventListener("scroll", ()=>{
+    const scrollTop = inputEl.scrollTop;
+    const lineHeight = parseInt(window.getComputedStyle(inputEl).lineHeight);
+    const firstVisibleLine = Math.floor(scrollTop/lineHeight);
+    paragraphNodes.forEach((p,i)=>{
+        p.classList.remove("highlight");
+        if(i===firstVisibleLine){ p.classList.add("highlight"); }
+    });
+});
+
+// 绑定按钮
+document.getElementById("btnGenerate").addEventListener("click", generate);
+document.getElementById("btnCopy").addEventListener("click", copyHTML);
+
+// 页面加载时生成一次
+window.onload = generate;
 </script>
 </body>
 </html>
