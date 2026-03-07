@@ -2,16 +2,13 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · 混合逻辑终极版</title>
-
+<title>HOPE Design Lab · 逻辑修正版</title>
 <link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-
 <style>
     body { background-color:#F0F2F5; color:#1e293b; margin:0; padding:20px; font-family:'Inter', sans-serif; }
     .container { display:flex; gap:25px; flex-wrap:wrap; max-width: 1400px; margin: 0 auto; }
     textarea { width:45%; min-width:320px; min-height:750px; padding:25px; font-size:15px; line-height:1.7; border-radius:12px; border:1px solid #cbd5e1; outline:none; background: #fafafa; }
-    textarea:focus { border-color: #2E84C5; background: #fff; box-shadow: 0 0 0 4px rgba(46,132,197,0.1); }
     .preview { width:50%; min-width:320px; background:white; padding:45px; border-radius:12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow:auto; }
     @keyframes float {0%{transform:translateY(0px) rotate(-1deg);}50%{transform:translateY(-6px) rotate(0.5deg);}100%{transform:translateY(0px) rotate(-1deg);}}
     .animate-float{animation:float 4s ease-in-out infinite;}
@@ -24,18 +21,20 @@
     <h1 class="text-2xl font-bold text-slate-800 animate-float flex items-center">
         <span style="font-size:30px; margin-right:10px;">🍓</span> 
         HOPE Design Lab 
-        <span class="ml-3 px-3 py-1 bg-blue-600 text-white text-xs rounded-full shadow-sm">v7.3 混合逻辑版</span>
+        <span class="ml-3 px-3 py-1 bg-yellow-400 text-white text-xs rounded-full shadow-sm">v7.4 逻辑修正版</span>
     </h1>
     <div class="flex gap-3">
-        <button onclick="generate()" class="bg-slate-800 hover:bg-black text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg active:scale-95">生成排版</button>
-        <button onclick="copyHTML()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg active:scale-95">复制 HTML</button>
+        <button onclick="generate()" class="bg-slate-800 hover:bg-black text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg">生成排版</button>
+        <button onclick="copyHTML()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg">复制 HTML</button>
     </div>
 </div>
 
 <div class="container">
-    <textarea id="input" oninput="generate()" placeholder="贴入文案...
-> 编者按：(会自动变蓝色)
-> 其他文字 (会自动变黄色)"></textarea>
+    <textarea id="input" oninput="generate()" placeholder="
+# 01 激活大标题(大数字+PART)
+## 激活二级标题(纯文字蓝标题)
+--- 激活三色点分割线
+> 编者按 (自动变蓝)"></textarea>
     <div id="output" class="preview"></div>
 </div>
 
@@ -51,20 +50,15 @@ function numToEng(n) {
 function generate(){
     const text=inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
     const lines=text.split("\n");
-    let html="", wordCount=0;
+    let html="";
 
     lines.forEach(line=>{
         line=line.trim();
         if(line==="") return;
-        wordCount+=line.length;
 
-        // 1. 一级标题
+        // 1. 一级标题：现在是那个最华丽的“大数字+PART”
         if(line.startsWith("# ")){
-            html += `<section style="text-align:center; margin: 45px 0 35px;"><h1 style="font-size:28px; font-weight:bold; color:#2E84C5; font-family:'ZCOOL KuaiLe', cursive; border:none; margin:0;">${line.replace("# ","")}</h1></section>`;
-        }
-        // 2. 二级标题 (右侧漂浮大数字 + 底部引导箭头)
-        else if(line.startsWith("## ")){
-            let content = line.replace("## ","");
+            let content = line.replace("# ","");
             let numMatch = content.match(/\d+/);
             let num = numMatch ? numMatch[0] : "01";
             let cleanTitle = content.replace(num, "").replace(/PART/i, "").trim();
@@ -84,30 +78,33 @@ function generate(){
                 </section>
             </section>`;
         }
-        // 3. 蓝色胶囊
-        else if(line.startsWith("【") && line.endsWith("】")){
-            html += `<section style="margin: 35px 0 20px;"><span style="display: inline-block; background-color: #2E84C5; color: #ffffff; padding: 7px 28px; border-radius: 50px; font-size: 16px; font-weight: bold; line-height: 1.2;">${line.replace(/[【】]/g, '')}</span></section>`;
+        // 2. 二级标题：简洁的 HOPE 蓝标题
+        else if(line.startsWith("## ")){
+            html += `<section style="margin: 40px 0 25px;"><h2 style="font-size:20px; font-weight:bold; color:#2E84C5; line-height:1.4; border-left:4px solid #FFD100; padding-left:15px; margin:0;">${line.replace("## ","")}</h2></section>`;
         }
-        // 4. 混合逻辑引用块
+        // 3. 混合逻辑引用块 (编者按自动蓝)
         else if(line.startsWith("> ")){
             let quoteContent = line.replace("> ","");
-            let isEditorNote = quoteContent.includes("编者按");
-            let themeColor = isEditorNote ? "#2E84C5" : "#FFD100";
-            let bgColor = isEditorNote ? "#F2F7FB" : "#FCFAF2";
-            
-            html += `<section style="margin: 40px 0; background-color: ${bgColor}; border-left: 6px solid ${themeColor}; padding: 30px 35px; line-height: 2.1; color: #444; font-size: 17px; border-radius: 0 8px 8px 0; text-align: justify; font-family: 'Ma Shan Zheng', cursive;">${quoteContent}</section>`;
+            let isNote = quoteContent.includes("编者按");
+            let theme = isNote ? "#2E84C5" : "#FFD100";
+            let bg = isNote ? "#F2F7FB" : "#FCFAF2";
+            html += `<section style="margin: 40px 0; background-color: ${bg}; border-left: 6px solid ${theme}; padding: 30px 35px; line-height: 2.1; color: #444; font-size: 17px; border-radius: 0 8px 8px 0; text-align: justify; font-family: 'Ma Shan Zheng', cursive;">${quoteContent}</section>`;
         }
-        // 5. 分割线
+        // 4. HOPE 三色点分割线
         else if(line==="---"){
-            html += `<section style="margin: 50px auto; width: 40%; border-top: 2px dashed #FFD100; opacity: 0.6;"></section>`;
+            html += `
+            <section style="display: flex; justify-content: center; align-items: center; gap: 12px; margin: 55px 0;">
+                <section style="width: 8px; height: 8px; background-color: #2E84C5; border-radius: 50%;"></section>
+                <section style="width: 10px; height: 10px; background-color: #FFD100; border-radius: 50%;"></section>
+                <section style="width: 8px; height: 8px; background-color: #E0E0E0; border-radius: 50%;"></section>
+            </section>`;
         }
-        // 6. 正文 (极致空气感)
+        // 5. 正文
         else {
             html += `<p style="text-indent: 2.1em; line-height: 2.2; margin-bottom: 28px; color: #333; font-size: 16.5px; text-align: justify; letter-spacing: 0.5px;">${line}</p>`;
         }
     });
-
-    outputEl.innerHTML = html || '<p style="color:#cbd5e1; text-align:center; margin-top:300px;">🍓 贴入文案，自动识别编者按逻辑...</p>';
+    outputEl.innerHTML = html || '<p style="color:#cbd5e1; text-align:center; margin-top:300px;">🍓 逻辑已修正：使用 # 激活大数字分段</p>';
 }
 
 function copyHTML(){
@@ -116,9 +113,8 @@ function copyHTML(){
     window.getSelection().removeAllRanges();
     window.getSelection().addRange(range);
     document.execCommand('copy');
-    alert("🍓 混合逻辑已焊死，直接去后台粘贴！");
+    alert("🍓 逻辑与分割线已更新，去粘贴吧！");
 }
-
 window.onload = generate;
 </script>
 </body>
