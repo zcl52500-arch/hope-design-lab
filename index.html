@@ -2,28 +2,27 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 公众号直通车 v21.0</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap" rel="stylesheet">
+    <title>HOPE 像素级重构 v22.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; display: flex; height: 100vh; font-family: sans-serif; background: #eaeff2; }
+        body { margin: 0; display: flex; height: 100vh; font-family: sans-serif; background: #f0f2f5; }
         #editor-side { width: 30%; background: #fff; border-right: 1px solid #d1d9e0; padding: 25px; display: flex; flex-direction: column; }
-        textarea { flex: 1; border: 1px solid #e1e4e8; border-radius: 10px; padding: 18px; font-size: 14px; outline: none; background: #fafafa; }
+        textarea { flex: 1; border: 1px solid #e1e4e8; border-radius: 12px; padding: 18px; font-size: 14px; outline: none; background: #fafafa; transition: 0.3s; }
+        textarea:focus { border-color: #2E84C5; box-shadow: 0 0 0 3px rgba(46,132,197,0.1); }
         #preview-side { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-        .canvas-wrapper { width: 100%; max-width: 580px; background: white; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
-        .copy-btn { margin-bottom: 20px; padding: 12px 30px; background: #2E84C5; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
-        .copy-btn:hover { background: #246ba1; }
+        .copy-btn { margin-bottom: 25px; padding: 14px 40px; background: #2E84C5; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(46,132,197,0.3); }
+        .canvas-wrapper { width: 100%; max-width: 580px; background: white; padding: 50px 45px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
     </style>
 </head>
 <body>
 
 <div id="editor-side">
-    <h3 style="color:#2E84C5;">🍓 公众号搬运版 v21.0</h3>
-    <p style="font-size: 12px; color: #666;">贴入文案后，点击上方蓝按钮，再去微信后台粘贴。</p>
-    <textarea id="input" placeholder="输入 01 [回车] 标题"></textarea>
+    <h3 style="color:#2E84C5;">🍓 像素复刻版 v22.0</h3>
+    <textarea id="input" placeholder="输入 01 [回车] 标题即可"></textarea>
 </div>
 
 <div id="preview-side">
-    <button class="copy-btn" onclick="copyToWechat()">✨ 点击复制，直接去公众号粘贴</button>
+    <button class="copy-btn" onclick="copyToWechat()">✨ 点击一键搬运（保留高级错位感）</button>
     <div class="canvas-wrapper" id="render"></div>
 </div>
 
@@ -31,36 +30,37 @@
     const input = document.getElementById('input');
     const render = document.getElementById('render');
 
-    // 渲染逻辑
     input.addEventListener('input', () => {
         const lines = input.value.split('\n').map(l => l.trim()).filter(l => l !== '');
         let html = '';
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
+
+            // 核心：复刻原版的高级错位构图
             if (/^\d{1,2}$/.test(line) && i + 1 < lines.length) {
                 const title = lines[i+1];
                 html += `
-                <section style="display: flex; justify-content: space-between; align-items: flex-start; margin: 40px 0;">
-                    <section style="flex: 1;">
+                <section style="margin: 50px 0 60px; position: relative; overflow: visible;">
+                    <section style="position: absolute; right: -15px; top: -20px; font-size: 110px; color: #F7F7F7; font-weight: 900; font-family: Arial; line-height: 1; z-index: 1;">${line.padStart(2, '0')}</section>
+                    
+                    <section style="position: relative; z-index: 2;">
                         <section style="display: flex; align-items: center; margin-bottom: 15px;">
-                            <section style="width: 8px; height: 8px; background-color: #FFD100; border-radius: 50%; margin-right: 10px;"></section>
-                            <section style="color: #FFD100; font-size: 15px; font-weight: 800; letter-spacing: 3px; font-family: Montserrat, sans-serif;">PART ${numToEng(line)}</section>
+                            <section style="width: 10px; height: 10px; background-color: #FFD100; border-radius: 50%; margin-right: 12px;"></section>
+                            <section style="color: #FFD100; font-size: 16px; font-weight: 800; letter-spacing: 4px; font-family: 'Montserrat', sans-serif;">PART ${numToEng(line)}</section>
                         </section>
-                        <section style="color: #2E84C5; font-size: 24px; font-weight: bold; line-height: 1.4;">${title}</section>
-                        <section style="color: #FFD100; font-size: 30px; font-weight: 900; margin-top: 10px;">↘</section>
+                        <section style="color: #2E84C5; font-size: 27px; font-weight: bold; line-height: 1.35; max-width: 85%;">${title}</section>
+                        <section style="color: #FFD100; font-size: 34px; font-weight: 900; margin-top: 12px;">↘</section>
                     </section>
-                    <section style="font-size: 80px; color: #F2F2F2; font-weight: 900; font-family: Arial; line-height: 0.8; margin-left: 10px;">${line.padStart(2, '0')}</section>
                 </section>`;
                 i++;
             } else if (line.startsWith('（')) {
                 const txt = line.replace(/[（）]/g, '');
-                const isAiry = txt.length > 50;
-                html += isAiry 
-                    ? `<section style="background: rgba(255, 209, 0, 0.1); border-left: 6px solid #FFD100; padding: 20px; margin: 25px 0; color: #444; line-height: 1.8;">${txt}</section>`
-                    : `<section style="background: #FFD100; color: #222; padding: 20px; margin: 25px 0; border-radius: 4px; font-weight: bold; line-height: 1.8;">${txt}</section>`;
+                html += txt.length > 50 
+                    ? `<section style="background: #FDFCF5; border-left: 6px solid #FFD100; padding: 25px 30px; margin: 30px 0; color: #444; line-height: 1.95; font-size: 16px;">${txt}</section>`
+                    : `<section style="background: #FFD100; color: #222; padding: 25px 30px; margin: 30px 0; border-radius: 4px; font-weight: bold; line-height: 1.8; font-size: 17px;">${txt}</section>`;
             } else {
-                html += `<p style="text-indent: 2em; line-height: 2.0; margin-bottom: 20px; color: #333; font-size: 16px;">${line}</p>`;
+                html += `<p style="text-indent: 2em; line-height: 2.1; margin-bottom: 25px; color: #333; font-size: 16.5px; text-align: justify;">${line}</p>`;
             }
         }
         render.innerHTML = html;
@@ -68,22 +68,16 @@
 
     function numToEng(n) {
         const words = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN"];
-        return words[parseInt(n)] || "SECTION";
+        return words[parseInt(n)] || "CHAPTER";
     }
 
-    // 核心搬家函数
     function copyToWechat() {
-        const layout = document.getElementById('render');
         const range = document.createRange();
-        range.selectNode(layout);
+        range.selectNode(document.getElementById('render'));
         window.getSelection().removeAllRanges();
         window.getSelection().addRange(range);
-        try {
-            document.execCommand('copy');
-            alert('🍓 已成功复制到粘贴板！请直接在公众号后台 Ctrl+V (或 Cmd+V) 粘贴。');
-        } catch (err) {
-            alert('复制失败，请手动选预览区右侧内容复制。');
-        }
+        document.execCommand('copy');
+        alert('🍓 像素级搬运已就绪！请去公众号后台 Ctrl+V。');
         window.getSelection().removeAllRanges();
     }
 </script>
