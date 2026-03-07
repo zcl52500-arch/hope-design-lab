@@ -23,7 +23,7 @@ button:hover { background:#1a6da1; }
 
 <header>
   <div class="header-top">
-    <h1 style="margin:0; font-size:20px;">🍓 HOPE Design Lab <span style="font-size:12px; background:#76B92E; color:#fff; padding:2px 8px; border-radius:10px; margin-left:10px;">v15 微信稳定版</span></h1>
+    <h1 style="margin:0; font-size:20px;">🍓 HOPE Design Lab <span style="font-size:12px; background:#76B92E; color:#fff; padding:2px 8px; border-radius:10px; margin-left:10px;">v16 微信稳定版</span></h1>
     <button onclick="copyHTML()">一键复制 HTML</button>
   </div>
   <div class="header-hint">
@@ -84,9 +84,9 @@ function generate(){
     // 二级标题
     else if(line.startsWith("## ")){
       html += `
-      <div style="display:flex; align-items:center; margin:35px 0 20px;">
-        <div style="width:4px; height:fit-content; background:#76B92E; margin-right:12px;"></div>
-        <div style="font-size:16.5px; font-weight:bold; color:#2E84C5; line-height:2.1;">${line.replace("## ","")}</div>
+      <div style="display:flex; align-items:flex-start; margin:35px 0 20px;">
+        <span style="display:inline-block; width:4px; min-height:16px; background:#76B92E; margin-right:12px;">&nbsp;</span>
+        <span style="font-size:16.5px; font-weight:bold; color:#2E84C5; line-height:2.1;">${line.replace("## ","")}</span>
       </div>`;
     }
 
@@ -107,7 +107,7 @@ function generate(){
       let bg = content.includes("编者按") ? "#F2F7FB" : "#FCFAF2";
       html += `
       <div style="display:flex; margin:30px 0; background:${bg};">
-        <div style="width:6px; background:${theme};"></div>
+        <span style="display:inline-block; width:6px; background:${theme}; margin-right:6px;">&nbsp;</span>
         <div style="padding:25px 30px; line-height:2.1; font-size:16.5px; color:#444; text-align:justify;">${content}</div>
       </div>`;
     }
@@ -149,6 +149,5 @@ function copyHTML(){
 
 window.onload = generate;
 </script>
-
 </body>
 </html>
