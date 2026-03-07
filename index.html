@@ -3,27 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HOPE Design Lab</title>
-    <!-- 引入最稳定的库链接 -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <title>HOPE Design Lab - 完整版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: sans-serif; background-color: #F8FAFB; }
+        .markdown-body h1 { font-size: 1.5rem; font-weight: 900; color: #2589D0; margin-top: 2rem; margin-bottom: 1rem; }
+        .markdown-body p { margin-bottom: 1.2rem; line-height: 1.8; color: #334155; }
+        .markdown-body blockquote { border-left: 4px solid #2589D0; padding-left: 1rem; color: #64748b; font-style: italic; margin: 1.5rem 0; }
+    </style>
 </head>
-<body class="bg-slate-50">
-    <!-- 状态提示：如果 JS 运行失败，用户能看到这个 -->
-    <div id="root">
-        <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; font-family: sans-serif; color: #94a3b8;">
-            <div style="text-align: center;">
-                <h1 style="font-size: 24px; font-weight: bold; margin-bottom: 10px;">🚀 系统启动中...</h1>
-                <p>如果长时间停留在该页面，请尝试刷新或检查 API Key 配置。</p>
-            </div>
-        </div>
-    </div>
+<body>
+    <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState } = React;
+    <!-- 使用 ESM 模式加载 React 和 Gemini SDK -->
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@18",
+            "react-dom": "https://esm.sh/react-dom@18/client",
+            "@google/genai": "https://esm.sh/@google/genai"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import React, { useState } from 'react';
+        import ReactDOM from 'react-dom';
+        import { GoogleGenAI } from "@google/genai";
 
         // ⚠️ 请在此处粘贴您的 API KEY
         const API_KEY = "AIzaSyC3SKI49gYQ0WZZzNJtaf5DyFkaN0OAs5s";
@@ -31,6 +38,32 @@
         function App() {
             const [tab, setTab] = useState('layout');
             const [text, setText] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [result, setResult] = useState('');
+
+            const handleRun = async () => {
+                if (!text || !API_KEY || API_KEY.includes("粘贴")) {
+                    alert("请先输入内容并确保已配置 API Key");
+                    return;
+                }
+                
+                setLoading(true);
+                try {
+                    const genAI = new GoogleGenAI({ apiKey: API_KEY });
+                    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+                    
+                    const prompt = `你现在是 HOPE 学堂的排版专家。请将以下内容转换为符合 HOPE 学院风格的 HTML 排版（使用内联样式，保留所有文字，增加视觉层级感）：\n\n${text}`;
+                    
+                    const result = await model.generateContent(prompt);
+                    const response = await result.response;
+                    setResult(response.text());
+                } catch (error) {
+                    console.error(error);
+                    alert("AI 调用出错：" + error.message);
+                } finally {
+                    setLoading(false);
+                }
+            };
 
             return (
                 <div className="min-h-screen flex flex-col">
@@ -45,34 +78,45 @@
                         </div>
                     </nav>
 
-                    <main className="flex-1 p-6 md:p-10 max-w-4xl mx-auto w-full">
-                        <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl border border-slate-100">
-                            <h2 className="text-3xl font-black mb-2 tracking-tight">欢迎使用 HOPE 排版助手</h2>
-                            <p className="text-slate-400 text-sm mb-8 font-medium">输入您的文章，AI 将为您自动优化视觉层级</p>
-                            
-                            <textarea 
-                                className="w-full h-80 p-8 rounded-[1.5rem] bg-slate-50 border-none outline-none focus:ring-4 focus:ring-blue-50 transition-all text-lg leading-relaxed mb-6"
-                                placeholder="在此粘贴您的文章内容..."
-                                value={text}
-                                onChange={(e) => setText(e.target.value)}
-                            />
-                            
-                            <button className="w-full py-6 bg-slate-900 text-white rounded-[1.5rem] font-black tracking-widest hover:bg-blue-600 transition-all shadow-lg active:scale-[0.98]">
-                                开始智能排版
-                            </button>
+                    <main className="flex-1 p-6 md:p-10 max-w-6xl mx-auto w-full">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                            {/* 输入区 */}
+                            <div className="bg-white rounded-[2.5rem] p-8 md:p-10 shadow-xl border border-slate-100">
+                                <h2 className="text-2xl font-black mb-6 tracking-tight">输入原文</h2>
+                                <textarea 
+                                    className="w-full h-96 p-6 rounded-[1.5rem] bg-slate-50 border-none outline-none focus:ring-4 focus:ring-blue-50 transition-all text-base leading-relaxed mb-6"
+                                    placeholder="在此粘贴您的文章内容..."
+                                    value={text}
+                                    onChange={(e) => setText(e.target.value)}
+                                />
+                                <button 
+                                    onClick={handleRun}
+                                    disabled={loading}
+                                    className="w-full py-5 bg-slate-900 text-white rounded-[1.5rem] font-black tracking-widest hover:bg-blue-600 transition-all shadow-lg disabled:opacity-50"
+                                >
+                                    {loading ? 'AI 正在排版中...' : '开始智能排版'}
+                                </button>
+                            </div>
+
+                            {/* 预览区 */}
+                            <div className="bg-white rounded-[2.5rem] p-8 md:p-10 shadow-2xl border border-slate-100 min-h-[500px]">
+                                <h2 className="text-2xl font-black mb-6 tracking-tight text-slate-400">预览效果</h2>
+                                {result ? (
+                                    <div className="markdown-body animate-in fade-in" dangerouslySetInnerHTML={{ __html: result }} />
+                                ) : (
+                                    <div className="h-full flex flex-col items-center justify-center text-slate-200 py-20">
+                                        <i className="fas fa-wand-magic-sparkles text-6xl mb-4"></i>
+                                        <p className="font-bold uppercase tracking-widest text-sm">等待生成预览</p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </main>
-                    
-                    <footer className="p-10 text-center opacity-20">
-                        <p className="text-[10px] font-black uppercase tracking-[1em]">HOPE STUDIO 2025</p>
-                    </footer>
                 </div>
             );
         }
 
-        // 使用 React 18 的渲染方式
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        ReactDOM.render(<App />, document.getElementById('root'));
     </script>
 </body>
 </html>
