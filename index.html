@@ -1,1 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOPE 学堂无损排版</title>
+    <style>
+        :root { --hope-blue: #2E84C5; --hope-gray: #3F3F3F; }
+        body { margin: 0; display: flex; height: 100vh; font-family: -apple-system, sans-serif; background: #f0f2f5; }
+        
+        /* 左侧：纯净输入区 */
+        #input-panel { width: 45%; padding: 20px; background: #fff; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
+        textarea { flex: 1; padding: 15px; border: 1px solid #eee; font-size: 14px; line-height: 1.6; resize: none; outline: none; border-radius: 4px; }
+        
+        /* 右侧：HOPE 视觉画布 */
+        #preview-panel { width: 55%; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
+        .canvas { width: 100%; max-width: 600px; background: #fff; padding: 60px 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 100%; }
 
+        /* --- 这里是锁定 PDF 风格的样式 --- */
+        .p-num { font-size: 50px; color: #EFEFEF; font-weight: 800; font-family: Arial; margin-bottom: -10px; line-height: 1; }
+        .p-title { color: var(--hope-blue); font-size: 20px; font-weight: bold; border-bottom: 3px solid var(--hope-blue); display: inline-block; padding-bottom: 5px; margin-bottom: 40px; }
+        .slice-h { color: var(--hope-blue); font-size: 18px; font-weight: bold; margin-top: 30px; display: flex; align-items: center; }
+        .slice-h::before { content: "● 🧩"; color: #7AB642; margin-right: 10px; }
+        .v-line { border-left: 5px solid var(--hope-blue); padding-left: 15px; margin: 30px 0 15px; font-weight: bold; color: #333; }
+        .arrow { color: #FFD100; font-size: 32px; margin: 15px 0 20px 2em; line-height: 1; }
+        p { text-indent: 2em; line-height: 1.8; text-align: justify; color: var(--hope-gray); margin-bottom: 22px; font-size: 15.5px; }
+    </style>
+</head>
+<body>
+
+<div id="input-panel">
+    <h2 style="color:var(--hope-blue); margin-top:0;">草莓的排版实验室</h2>
+    <textarea id="editor" placeholder="请在这里粘贴智谱或其他地方出的纯文字..."></textarea>
+    <p style="font-size:12px; color:#999;">* 右侧渲染后，直接鼠标全选复制粘贴到微信后台</p>
+</div>
+
+<div id="preview-panel">
+    <div class="canvas" id="viewer">
+        <p style="color:#ccc; text-align:center; margin-top:100px;">等待内容输入...</p>
+    </div>
+</div>
+
+<script>
+    const editor = document.getElementById('editor');
+    const viewer = document.getElementById('viewer');
+
+    editor.addEventListener('input', () => {
+        const lines = editor.value.split('\n').filter(l => l.trim() !== '');
+        let html = '';
+        lines.forEach(line => {
+            const l = line.trim();
+            if (/^0\d/.test(l)) { // 识别 01, 02
+                html += `<div class="p-num">${l}</div>`;
+            } else if (l.includes('PART')) { // 识别 PART ONE
+                html += `<div class="p-title">${l}</div>`;
+            } else if (l.includes('切片')) { // 识别切片标题
+                html += `<div class="slice-h">${l.replace(/●|🧩/g, '').trim()}</div>`;
+            } else if (l.includes('↘')) { // 识别黄色箭头
+                html += `<div class="arrow">↘</div>`;
+            } else if (l.includes('关于') || l.includes('——')) { // 识别蓝色竖线副标题
+                html += `<div class="v-line">${l.replace(/[—|]/g, '').trim()}</div>`;
+            } else { // 普通正文
+                html += `<p>${l}</p>`;
+            }
+        });
+        viewer.innerHTML = html || '<p style="color:#ccc; text-align:center; margin-top:100px;">等待内容输入...</p>';
+    });
+</script>
+
+</body>
+</html>
