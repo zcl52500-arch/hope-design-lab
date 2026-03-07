@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · 高级公众号排版器</title>
+<title>HOPE Design Lab · 全自动公众号排版器</title>
 <style>
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Microsoft YaHei",sans-serif;background:#f4f5f7;margin:0;padding:30px;}
 h1,h2,h3{margin:0;}
@@ -35,7 +35,7 @@ textarea{width:48%;min-width:300px;height:75vh;padding:20px;font-size:15px;line-
 </head>
 <body>
 
-<h1>HOPE Design Lab · 高级公众号排版器</h1>
+<h1>HOPE Design Lab · 全自动公众号排版器</h1>
 
 <div class="toolbar">
 <button onclick="generate()">生成排版</button>
@@ -43,10 +43,8 @@ textarea{width:48%;min-width:300px;height:75vh;padding:20px;font-size:15px;line-
 <span id="meta" class="meta"></span>
 </div>
 
-<div class="article-selector">
-<button onclick="loadArticle(0)">文章 1</button>
-<button onclick="loadArticle(1)">文章 2</button>
-<button onclick="loadArticle(2)">文章 3</button>
+<div class="article-selector" id="article-selector">
+<!-- 文章列表按钮自动生成 -->
 </div>
 
 <div class="toc" id="toc">
@@ -55,14 +53,8 @@ textarea{width:48%;min-width:300px;height:75vh;padding:20px;font-size:15px;line-
 </div>
 
 <div class="container">
-<textarea id="input"></textarea>
-<div id="output" class="preview"></div>
-</div>
-
-<script>
-// 多篇文章示例
-const articles=[
-`# HOPE学堂观察
+<textarea id="input">
+# HOPE学堂观察
 
 ## 为什么要做社区教育
 
@@ -90,9 +82,9 @@ A：因为这里可以自由表达。
 地点：HOPE学堂  
 报名：公众号后台
 
-![示例图片](assets/images/sample.jpg "图片说明示例")`,
+![示例图片](assets/images/sample.jpg "图片说明示例")
 
-`# 第二篇文章示例
+# 第二篇文章示例
 
 ## 样例段落
 
@@ -106,23 +98,54 @@ A：因为这里可以自由表达。
 
 Q：你喜欢HOPE吗？
 
-A：非常喜欢！`,
+A：非常喜欢！
+</textarea>
 
-`# 第三篇文章示例
+<div id="output" class="preview"></div>
+</div>
 
-## 段落示例
+<script>
+// 自动识别文章
+let articles=[];
+function parseArticles(){
+  const text=document.getElementById("input").value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
+  const lines=text.split("\n");
+  let currentArticle="", allArticles=[];
+  lines.forEach(line=>{
+    if(line.startsWith("# ") && currentArticle!==""){
+      allArticles.push(currentArticle);
+      currentArticle="";
+    }
+    currentArticle+=line+"\n";
+  });
+  if(currentArticle!=="") allArticles.push(currentArticle);
+  articles=allArticles;
+}
 
-正文内容。`
-];
+// 渲染文章选择按钮
+function renderArticleButtons(){
+  const selector=document.getElementById("article-selector");
+  selector.innerHTML="";
+  articles.forEach((art,i)=>{
+    const btn=document.createElement("button");
+    btn.textContent=`文章 ${i+1}`;
+    btn.onclick=()=>{loadArticle(i)};
+    selector.appendChild(btn);
+  });
+}
 
+// 加载文章
 function loadArticle(idx){
   document.getElementById("input").value=articles[idx];
   generate();
 }
 
+// 生成 HTML 排版
 function generate(){
-  let text=document.getElementById("input").value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
-  let lines=text.split("\n");
+  parseArticles();
+  renderArticleButtons();
+  const text=document.getElementById("input").value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
+  const lines=text.split("\n");
   let html="", wordCount=0, inCard=false, tocList=[];
 
   lines.forEach((line,index)=>{
@@ -182,13 +205,16 @@ function generate(){
   document.getElementById("meta").innerText=`字数 ${wordCount} · 预计阅读 ${readTime} 分钟`;
 }
 
+// 一键复制
 function copyHTML(){
   let html=document.getElementById("output").innerHTML;
   navigator.clipboard.writeText(html);
   alert("已复制，可直接粘贴到公众号编辑器");
 }
 
-// 默认加载第一篇文章
+// 初始化
+parseArticles();
+renderArticleButtons();
 loadArticle(0);
 </script>
 </body>
