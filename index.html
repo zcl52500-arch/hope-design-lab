@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 像素回溯 v27.0</title>
+    <title>HOPE 像素级复刻 v28.0</title>
     <style>
         body { margin: 0; display: flex; height: 100vh; font-family: sans-serif; background: #eaeff2; }
         #editor-side { width: 32%; background: #fff; border-right: 1px solid #ddd; padding: 20px; display: flex; flex-direction: column; }
@@ -15,12 +15,13 @@
 <body>
 
 <div id="editor-side">
-    <h3 style="color:#2E84C5;">🍓 像素回溯版 v27.0</h3>
-    <textarea id="input" placeholder="输入 01 [回车] 标题"></textarea>
+    <h3 style="color:#2E84C5;">🍓 像素复刻版 v28.0</h3>
+    <p style="font-size:12px;color:#999;">贴入任何 HOPE 文案，会自动识别标题和切片</p>
+    <textarea id="input" placeholder="贴入文案..."></textarea>
 </div>
 
 <div id="preview-side">
-    <button class="copy-btn" onclick="copyToWechat()">✨ 点击一键复制（找回原版神韵）</button>
+    <button class="copy-btn" onclick="copyToWechat()">✨ 点击一键复制（找回飞跃的大数字）</button>
     <div class="canvas-container" id="render"></div>
 </div>
 
@@ -35,41 +36,41 @@
         for (let i = 0; i < lines.length; i++) {
             let line = lines[i].trim();
 
-            // 1. 复刻原版：利用负边距实现“数字悬浮标题上方”
-            if (/^\d{1,2}$/.test(line) && i + 1 < lines.length) {
+            // 1. 核心复刻：识别 PART 或 数字开头的标题
+            if (/^PART|^\d{1,2}$/i.test(line) && i + 1 < lines.length) {
+                let num = line.match(/\d+/g) ? line.match(/\d+/g)[0] : "01";
                 let title = lines[i+1].trim();
                 html += `
-                <section style="margin: 50px 0 40px; position: relative;">
-                    <section style="float: right; margin-top: -30px; margin-right: -10px;">
-                        <span style="font-size: 95px; color: #F2F2F2; font-family: Arial; font-weight: 900; line-height: 1;">${line.padStart(2, '0')}</span>
+                <section style="margin: 60px 0 40px; position: relative; clear: both;">
+                    <section style="text-align: right; height: 0px; margin-bottom: -50px;">
+                        <span style="font-size: 90px; color: #F6F6F6; font-family: Arial; font-weight: 900; line-height: 1; display: inline-block; transform: translateY(-20px);">${num.padStart(2, '0')}</span>
                     </section>
-                    <section>
-                        <section style="margin-bottom: 12px;">
-                            <span style="display: inline-block; width: 9px; height: 9px; background: #FFD100; border-radius: 50%; margin-right: 8px; vertical-align: middle;"></span>
-                            <span style="color: #FFD100; font-size: 14px; font-weight: bold; letter-spacing: 3px; font-family: Arial; vertical-align: middle;">PART ${numToEng(line)}</span>
+                    <section style="position: relative; z-index: 2;">
+                        <section style="margin-bottom: 15px;">
+                            <span style="display: inline-block; width: 10px; height: 10px; background: #FFD100; border-radius: 50%; margin-right: 10px; vertical-align: middle;"></span>
+                            <span style="color: #FFD100; font-size: 14px; font-weight: 800; letter-spacing: 3px; font-family: Arial; vertical-align: middle;">PART ${numToEng(num)}</span>
                         </section>
-                        <section style="color: #2E84C5; font-size: 25px; font-weight: bold; line-height: 1.35; padding-right: 60px;">${title}</section>
-                        <section style="color: #FFD100; font-size: 34px; font-weight: 900; margin-top: 5px;">↘</section>
+                        <section style="color: #2E84C5; font-size: 26px; font-weight: bold; line-height: 1.4; padding-right: 50px;">${title}</section>
+                        <section style="color: #FFD100; font-size: 34px; font-weight: 900; margin-top: 10px;">↘</section>
                     </section>
-                    <section style="clear: both;"></section>
                 </section>`;
                 i++;
             }
-            // 2. 蓝色胶囊：瘦身处理，找回精致感
-            else if (line.startsWith('【')) {
+            // 2. 识别【】或特定短行作为蓝色胶囊
+            else if (line.startsWith('【') || (line.length < 15 && line.includes('：'))) {
                 let content = line.replace(/[【】]/g, '');
                 html += `
-                <section style="margin: 25px 0 15px;">
-                    <section style="display: inline-block; background-color: #2E84C5; border-radius: 30px; padding: 4px 16px;">
+                <section style="margin: 30px 0 15px;">
+                    <section style="display: inline-block; background-color: #2E84C5; border-radius: 40px; padding: 5px 20px;">
                         <span style="color: #ffffff; font-size: 14px; font-weight: bold; line-height: 1.4;">${content}</span>
                     </section>
                 </section>`;
             }
-            // 3. 春日段落：空气感还原
-            else if (line.startsWith('（')) {
+            // 3. 识别（）或开头缩进作为春日感性段落
+            else if (line.startsWith('（') || line.startsWith('亲爱的')) {
                 let content = line.replace(/[（）]/g, '');
                 html += `
-                <section style="margin: 35px 0; background-color: #FCFBF7; border-left: 3px solid #FFD100; padding: 20px 25px; line-height: 2.0; color: #555; font-size: 16px; text-align: justify;">
+                <section style="margin: 40px 0; background-color: #FCFBF6; border-left: 4px solid #FFD100; padding: 25px 30px; line-height: 2.0; color: #555; font-size: 16px; border-radius: 0 4px 4px 0; text-align: justify;">
                     ${content}
                 </section>`;
             }
@@ -77,7 +78,7 @@
                 html += `<p style="text-indent: 2em; line-height: 2.1; margin-bottom: 25px; color: #333; font-size: 16px; text-align: justify;">${line}</p>`;
             }
         }
-        render.innerHTML = html;
+        render.innerHTML = html || '<p style="color:#ccc;text-align:center;padding-top:100px;">在此贴入文案，格式自动归位</p>';
     });
 
     function numToEng(n) {
@@ -92,7 +93,7 @@
         window.getSelection().removeAllRanges();
         window.getSelection().addRange(range);
         document.execCommand('copy');
-        alert('🍓 v27.0 像素修复版已就绪！这次神韵回来了。');
+        alert('🍓 v28.0 像素修复版已就绪！这次换文章也不会丢格式了。');
     }
 </script>
 </body>
