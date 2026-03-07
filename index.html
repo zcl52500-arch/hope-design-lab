@@ -2,104 +2,114 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 语义实验室 | 复杂文案适配版</title>
+    <title>HOPE 像素级排版实验室 v11.0</title>
     <style>
-        :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; --hope-gray: #F2F2F2; }
-        body { margin: 0; display: flex; height: 100vh; font-family: "Optima", "PingFang SC", sans-serif; background: #f4f4f4; }
+        :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; --hope-bg: #FFFFFF; }
+        body { margin: 0; display: flex; height: 100vh; font-family: -apple-system, "PingFang SC", sans-serif; background: #f5f5f5; }
         
         /* 布局 */
-        #editor-side { width: 35%; background: #fff; border-right: 1px solid #ddd; padding: 20px; display: flex; flex-direction: column; }
+        #editor-pane { width: 35%; background: white; border-right: 1px solid #ddd; padding: 25px; display: flex; flex-direction: column; }
         textarea { flex: 1; border: 1px solid #eee; border-radius: 8px; padding: 15px; font-size: 14px; line-height: 1.6; outline: none; background: #fafafa; }
         
-        #preview-side { flex: 1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
-        .paper { width: 100%; max-width: 650px; background: white; padding: 60px 50px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); min-height: 100%; }
+        #preview-pane { flex: 1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
+        .article-canvas { width: 100%; max-width: 620px; background: var(--hope-bg); padding: 60px 50px; box-shadow: 0 5px 25px rgba(0,0,0,0.05); min-height: 100%; box-sizing: border-box; }
 
-        /* --- 多级语义样式库 --- */
-        /* Level 1: 大标背景数与 PART 标题 */
-        .h1-num { font-size: 60px; color: var(--hope-gray); font-weight: 800; font-family: Arial; line-height: 1; margin-top: 30px; }
-        .h1-title { color: var(--hope-blue); font-size: 20px; font-weight: bold; border-bottom: 3.5px solid var(--hope-blue); display: inline-block; padding-bottom: 5px; margin-bottom: 40px; }
-
-        /* Level 2: 序列标题（如：五、更深层的需求）*/
-        .h2-series { color: #333; font-size: 18px; font-weight: bold; margin: 40px 0 20px; border-left: 5px solid var(--hope-green); padding-left: 12px; }
-
-        /* Level 3: 切片/项目标题 */
-        .h3-slice { color: var(--hope-blue); font-size: 17px; font-weight: bold; margin: 30px 0 15px; display: flex; align-items: center; }
-        .h3-slice::before { content: "● 🧩"; color: var(--hope-green); margin-right: 10px; }
-
-        /* 特殊组件：胶囊与高亮 */
-        .capsule { background: var(--hope-blue); color: white; display: inline-block; padding: 4px 18px; border-radius: 50px; font-weight: bold; margin: 20px 0 10px; font-size: 14px; }
-        .highlight { background: var(--hope-yellow); padding: 15px 20px; border-radius: 4px; margin: 20px 0; font-weight: bold; line-height: 1.7; display: block; }
-
-        /* 列表符号解析 */
-        .list-dot { padding-left: 1.5em; position: relative; color: #444; margin-bottom: 12px; line-height: 1.6; }
-        .list-dot::before { content: "●"; color: var(--hope-green); position: absolute; left: 0; font-size: 12px; top: 2px; }
-
-        /* 微信标准正文 */
-        p { text-indent: 2em; line-height: 1.9; text-align: justify; margin-bottom: 24px; color: #3F3F3F; font-size: 15.5px; }
+        /* --- 深度还原：HOPE 视觉组件 --- */
         
-        .editor-note { background: #F8F9FB; border-left: 4px solid var(--hope-blue); padding: 20px; font-size: 14px; color: #666; margin-bottom: 30px; }
+        /* 01. 一级大数标号 (H1-Num) */
+        .h1-num { font-size: 65px; color: #EFEFEF; font-weight: 900; font-family: Arial; line-height: 1; margin: 40px 0 -10px; }
+        
+        /* 02. 蓝色下划线标题 (H1-Title) */
+        .h1-title { color: var(--hope-blue); font-size: 22px; font-weight: bold; border-bottom: 4px solid var(--hope-blue); display: inline-block; padding-bottom: 8px; margin-bottom: 45px; letter-spacing: 1px; }
+
+        /* 03. 蓝色胶囊标题 (Capsule) */
+        .capsule { background: var(--hope-blue); color: white; display: inline-block; padding: 6px 25px; border-radius: 50px; font-weight: bold; font-size: 16px; margin: 35px 0 15px; letter-spacing: 1px; }
+
+        /* 04. 黄色高亮块 (Highlight) */
+        .highlight-block { background: var(--hope-yellow); color: #222; padding: 25px 30px; border-radius: 4px; margin: 30px 0; font-weight: bold; font-size: 17px; line-height: 1.7; text-align: justify; display: block; }
+
+        /* 05. 绿色二级标题 (H2-Series) - 用于《实践地图》等复杂逻辑 */
+        .h2-series { border-left: 6px solid var(--hope-green); padding-left: 15px; font-size: 19px; font-weight: bold; color: #333; margin: 45px 0 20px; }
+
+        /* 06. 蓝色切片/项目标 (H3-Slice) */
+        .h3-slice { color: var(--hope-blue); font-size: 17.5px; font-weight: bold; margin: 30px 0 15px; display: flex; align-items: center; }
+        .h3-slice::before { content: "● 🧩"; color: var(--hope-green); margin-right: 12px; font-size: 16px; }
+
+        /* 07. 装饰性箭头 */
+        .decoration-arrow { color: var(--hope-yellow); font-size: 40px; margin: 15px 0 25px 1.5em; line-height: 1; }
+
+        /* 08. 微信标准正文 */
+        p { text-indent: 2em; line-height: 1.9; text-align: justify; margin-bottom: 25px; color: #3F3F3F; font-size: 16px; }
+        
+        /* 列表项 */
+        .list-item { padding-left: 1.8em; position: relative; margin-bottom: 15px; color: #444; line-height: 1.7; }
+        .list-item::before { content: "●"; color: var(--hope-green); position: absolute; left: 0; top: 0; font-size: 14px; }
     </style>
 </head>
 <body>
 
-<div id="editor-side">
-    <h3 style="color:var(--hope-blue);">🍓 HOPE 语义排版 v10.0</h3>
-    <textarea id="editor" placeholder="在此粘贴《实践地图》全文...
-系统将自动识别：
-1. 纯数字/PART -> 一级标题
-2. 一、二、三、或 12. -> 二级标题
-3. 【】 -> 蓝色胶囊
-4. （） -> 黄色高光
-5. ● 或 ◆ -> 自动列表"></textarea>
+<div id="editor-pane">
+    <h3 style="color:var(--hope-blue);">🍓 HOPE 实践排版系统 v11.0</h3>
+    <textarea id="main-editor" placeholder="在此粘贴文案...
+    
+💡 复杂文章排版逻辑：
+1. 01, 02 -> 大背景数字
+2. PART... -> 蓝色下划线标题
+3. [胶囊标题] -> 蓝色圆角条
+4. (黄色高光段落) -> 铺满黄色背景块
+5. 五、或 12. -> 绿色竖线二级标题
+6. ● 开头 -> 悬挂缩进列表"></textarea>
 </div>
 
-<div id="preview-side">
-    <div class="paper" id="viewer"></div>
+<div id="preview-pane">
+    <div class="article-canvas" id="renderer"></div>
 </div>
 
 <script>
-    const editor = document.getElementById('editor');
-    const viewer = document.getElementById('viewer');
+    const editor = document.getElementById('main-editor');
+    const renderer = document.getElementById('renderer');
 
     editor.addEventListener('input', () => {
         const lines = editor.value.split('\n').map(l => l.trim()).filter(l => l !== '');
         let html = '';
 
         lines.forEach((line, i) => {
-            // 1. 编者按识别
-            if (line.includes('编者按')) {
-                html += `<div class="editor-note">${line}</div>`;
-            }
-            // 2. 纯数字标号 (01, 02)
-            else if (/^\d{1,2}$/.test(line)) {
+            // 1. 数字标号
+            if (/^\d{1,2}$/.test(line)) {
                 html += `<div class="h1-num">${line.padStart(2, '0')}</div>`;
             }
-            // 3. 胶囊 【】
-            else if (line.startsWith('【') && line.endsWith('】')) {
-                html += `<div class="capsule">${line.replace(/[【】]/g, '')}</div>`;
+            // 2. 胶囊标题：[文字]
+            else if (line.startsWith('[') || line.startsWith('【')) {
+                const content = line.replace(/[\[\]【】]/g, '');
+                html += `<div class="capsule">${content}</div>`;
             }
-            // 4. 高亮 （）
-            else if (line.startsWith('（') && line.endsWith('）')) {
-                html += `<div class="highlight">${line.replace(/[（）]/g, '')}</div>`;
+            // 3. 黄色高亮块：(文字)
+            else if (line.startsWith('(') || line.startsWith('（')) {
+                const content = line.replace(/[\(\)（）]/g, '');
+                html += `<div class="highlight-block">${content}</div>`;
             }
-            // 5. 二级标题 (汉字序号或数字点序号)
-            else if (/^[一二三四五六七八九十]、/.test(line) || /^\d{1,2}\.\s/.test(line)) {
+            // 4. 二级绿色标题：匹配序号开头
+            else if (/^[一二三四五六七八九十]、/.test(line) || /^\d{1,2}\./.test(line)) {
                 html += `<div class="h2-series">${line}</div>`;
             }
-            // 6. 一级标题 (PART 或 数字后的短行)
-            else if (line.toUpperCase().includes('PART') || (i > 0 && /^\d{1,2}$/.test(lines[i-1]) && line.length < 20)) {
+            // 5. 蓝色主标题：紧跟数字之后或带 PART
+            else if (line.toUpperCase().includes('PART') || (i > 0 && /^\d{1,2}$/.test(lines[i-1]) && line.length < 25)) {
                 html += `<div class="h1-title">${line}</div>`;
             }
-            // 7. 列表识别 (● 或 ◆)
+            // 6. 切片标题
+            else if (line.includes('切片') || line.includes('项目：')) {
+                html += `<div class="h3-slice">${line.replace(/[●🧩]/g, '')}</div>`;
+            }
+            // 7. 列表识别
             else if (line.startsWith('●') || line.startsWith('◆')) {
-                html += `<div class="list-dot">${line.replace(/[●◆]/g, '').trim()}</div>`;
+                html += `<div class="list-item">${line.slice(1).trim()}</div>`;
             }
             // 8. 默认正文
             else {
                 html += `<p>${line}</p>`;
             }
         });
-        viewer.innerHTML = html || '<p style="color:#ccc; text-align:center; margin-top:150px;">等候草莓投喂文案...</p>';
+        renderer.innerHTML = html || '<p style="color:#ccc; text-align:center; margin-top:150px;">投喂文案中...</p>';
     });
 </script>
 </body>
