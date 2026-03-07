@@ -2,154 +2,108 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · v21.0 视觉复刻版</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<title>HOPE Design Lab · v22.0 最终复刻版</title>
 <style>
-/* 编辑器 UI */
-* { box-sizing: border-box; }
-body { margin:0; font-family:'Inter', sans-serif; background:#F4F6F9; height:100vh; display:flex; flex-direction:column; }
-header { background:white; padding:15px 30px; border-bottom:1px solid #e1e4e8; flex-shrink:0; }
-.header-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.header-hint { font-size:12px; color:#666; background:#f8f9fa; padding:10px 15px; border-radius:6px; border-left:4px solid #76B92E; }
-.header-hint code { background:#eee; padding:2px 4px; border-radius:3px; color:#2E84C5; font-family:monospace; font-weight:bold; }
-.main-workspace { display:grid; grid-template-columns: 1fr 1fr; flex-grow:1; overflow:hidden; }
-.editor-zone { border-right:1px solid #e1e4e8; background:#fafafa; }
-textarea { width:100%; height:100%; padding:30px; border:none; outline:none; font-size:15px; line-height:1.8; resize:none; font-family:inherit; }
-.preview-zone { background:white; overflow-y:auto; padding:40px; }
-button { background:#2E84C5; color:#fff; padding:8px 20px; border-radius:20px; border:none; cursor:pointer; font-weight:bold; }
+/* 界面 UI */
+body { margin:0; font-family: sans-serif; background:#F4F6F9; display:flex; flex-direction:column; height:100vh; }
+.header { background:white; padding:20px; border-bottom:1px solid #ddd; }
+.main { display:flex; flex:1; overflow:hidden; }
+.editor { width:35%; border-right:1px solid #ddd; padding:20px; overflow-y:auto; background:#fafafa; }
+.preview { width:65%; padding:40px; overflow-y:auto; background:white; }
+pre { background:#eee; padding:10px; border-radius:5px; font-size:12px; white-space: pre-wrap; word-wrap: break-word; }
+.copy-btn { background:#2E84C5; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold; margin-bottom:10px; }
+.hint { font-size:13px; color:#666; line-height:1.6; background:#fff9e6; padding:10px; border-radius:5px; border-left:4px solid #FFD100; margin-bottom:15px;}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-top">
-    <h1 style="margin:0; font-size:20px;">🍓 HOPE Design Lab <span style="font-size:11px; background:#76B92E; color:#fff; padding:2px 8px; border-radius:10px; margin-left:10px;">v21.0 视觉复刻版</span></h1>
-    <button onclick="copyHTML()">一键复制 HTML</button>
-  </div>
-  <div class="header-hint">
-    💡 <b>指令提示：</b> <code># 01 标题内容</code> (一级) | <code>## 标题内容</code> (二级) | <code>---</code> (分割线)
-  </div>
-</header>
+<div class="header">
+  <h1 style="margin:0; font-size:18px; color:#333;">🍓 HOPE Design Lab v22.0 <span style="color:#76B92E;">(微信后台锁死版)</span></h1>
+</div>
 
-<div class="main-workspace">
-  <div class="editor-zone">
-    <textarea id="input" oninput="generate()" placeholder="输入 # 01 标题内容 试试..."></textarea>
+<div class="main">
+  <div class="editor">
+    <div class="hint">说明：由于微信屏蔽自动脚本，请点击下方按钮复制对应的标题模块，然后直接粘贴到微信后台修改文字。</div>
+    
+    <h3>1. 一级标题模块 (01)</h3>
+    <button class="copy-btn" onclick="copyToClipboard('h1_01')">复制 01 标题代码</button>
+    <div id="h1_01" style="display:none;">
+      <section style="margin: 50px 0 30px; position: relative; clear: both;">
+        <section style="display: flex; align-items: flex-end;">
+          <section style="font-size: 80px; font-weight: 900; color: #EBF4E2; font-family: Arial; line-height: 1; margin-right: 15px;">01</section>
+          <section style="padding-bottom: 10px;">
+            <section style="margin-bottom: 8px;">
+              <span style="display: inline-block; width: 10px; height: 10px; background: #FFD100; border-radius: 50%;"></span>
+              <span style="font-size: 13px; font-weight: bold; color: #FFD100; letter-spacing: 2px; margin-left: 5px; font-family: Arial;">PART ONE</span>
+            </section>
+            <section style="font-size: 24px; font-weight: bold; color: #2E84C5; line-height: 1.3;">这里输入标题文字</section>
+          </section>
+        </section>
+        <section style="color: #76B92E; font-size: 35px; font-weight: 900; margin: 10px 0 0 10px;">↘</section>
+      </section>
+    </div>
+
+    <h3>2. 一级标题模块 (02)</h3>
+    <button class="copy-btn" onclick="copyToClipboard('h1_02')">复制 02 标题代码</button>
+    <div id="h1_02" style="display:none;">
+      <section style="margin: 50px 0 30px; position: relative; clear: both;">
+        <section style="display: flex; align-items: flex-end;">
+          <section style="font-size: 80px; font-weight: 900; color: #EBF4E2; font-family: Arial; line-height: 1; margin-right: 15px;">02</section>
+          <section style="padding-bottom: 10px;">
+            <section style="margin-bottom: 8px;">
+              <span style="display: inline-block; width: 10px; height: 10px; background: #FFD100; border-radius: 50%;"></span>
+              <span style="font-size: 13px; font-weight: bold; color: #FFD100; letter-spacing: 2px; margin-left: 5px; font-family: Arial;">PART TWO</span>
+            </section>
+            <section style="font-size: 24px; font-weight: bold; color: #2E84C5; line-height: 1.3;">这里输入标题文字</section>
+          </section>
+        </section>
+        <section style="color: #76B92E; font-size: 35px; font-weight: 900; margin: 10px 0 0 10px;">↘</section>
+      </section>
+    </div>
+
+    <h3>3. 一级标题模块 (03)</h3>
+    <button class="copy-btn" onclick="copyToClipboard('h1_03')">复制 03 标题代码</button>
+    <div id="h1_03" style="display:none;">
+      <section style="margin: 50px 0 30px; position: relative; clear: both;">
+        <section style="display: flex; align-items: flex-end;">
+          <section style="font-size: 80px; font-weight: 900; color: #EBF4E2; font-family: Arial; line-height: 1; margin-right: 15px;">03</section>
+          <section style="padding-bottom: 10px;">
+            <section style="margin-bottom: 8px;">
+              <span style="display: inline-block; width: 10px; height: 10px; background: #FFD100; border-radius: 50%;"></span>
+              <span style="font-size: 13px; font-weight: bold; color: #FFD100; letter-spacing: 2px; margin-left: 5px; font-family: Arial;">PART THREE</span>
+            </section>
+            <section style="font-size: 24px; font-weight: bold; color: #2E84C5; line-height: 1.3;">这里输入标题文字</section>
+          </section>
+        </section>
+        <section style="color: #76B92E; font-size: 35px; font-weight: 900; margin: 10px 0 0 10px;">↘</section>
+      </section>
+    </div>
+
   </div>
-  <div id="output" class="preview-zone"></div>
+
+  <div id="preview-area" class="preview">
+    <div style="color:#999; text-align:center; margin-top:100px;">点击左侧按钮复制样式，在微信后台粘贴即可</div>
+  </div>
 </div>
 
 <script>
-const inputEl = document.getElementById("input");
-const outputEl = document.getElementById("output");
-
-function numToEng(n){
-  const words = ["ZERO","ONE","TWO","THREE","FOUR","FIVE","SIX","SEVEN","EIGHT","NINE","TEN"];
-  let index = parseInt(n);
-  return words[index] || "SECTION";
-}
-
-function generate(){
-  const text = inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
-  const lines = text.split("\n");
-  let html = "";
-
-  lines.forEach(line => {
-    line = line.trim();
-    if(!line) return;
-
-    // --- 一级标题: 完整复刻《数字世界》版 ---
-    if(line.startsWith("# ")){
-      let rawContent = line.replace("# ","");
-      let numMatch = rawContent.match(/^\d+/);
-      let numStr = numMatch ? numMatch[0] : "01";
-      let cleanTitle = rawContent.replace(/^\d+/, "").trim();
-      
-      html += `
-      <section style="margin: 60px 0 20px; clear: both; background: transparent;">
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:none !important; border-collapse:collapse; background:none;">
-          <tbody style="border:none;">
-            <tr style="border:none;">
-              <td width="95" valign="bottom" align="right" style="border:none; padding:0; margin:0; line-height: 1;">
-                <div style="font-size: 85px; font-weight: 900; color: #EBF4E2; font-family: Arial, sans-serif; line-height: 0.75; margin:0;">${numStr.padStart(2,'0')}</div>
-              </td>
-              <td valign="bottom" style="border:none; padding: 0 0 8px 15px; margin:0;">
-                <div style="margin-bottom: 12px; line-height: 1;">
-                  <span style="display:inline-block; width:12px; height:12px; background:#FFD100; border-radius:50%; vertical-align: middle;"></span>
-                  <span style="font-size:14px; font-weight:bold; color:#FFD100; margin-left:8px; letter-spacing:2px; font-family: Arial; vertical-align: middle;">PART ${numToEng(numStr)}</span>
-                </div>
-                <div style="font-size:28px; font-weight:bold; color:#2E84C5; line-height:1.2; letter-spacing:0.5px;">${cleanTitle}</div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div style="color:#76B92E; font-size:38px; font-weight:900; margin: 15px 0 40px 15px; line-height: 1;">↘</div>
-      </section>`;
-    }
-
-    // --- 二级标题: 稳定边框版 ---
-    else if(line.startsWith("## ")){
-      let content = line.replace("## ","");
-      html += `
-      <section style="margin: 40px 0 20px; padding: 0; clear: both;">
-        <section style="display: inline-block; border-left: 4px solid #76B92E; padding-left: 14px; line-height: 1.4;">
-          <span style="font-size: 21px; font-weight: bold; color: #2E84C5; display: inline-block; vertical-align: middle;">
-            ${content}
-          </span>
-        </section>
-      </section>`;
-    }
-
-    // --- 蓝色圆角胶囊 ---
-    else if(line.startsWith("【") && line.endsWith("】")){
-      let content = line.replace(/[【】]/g,'');
-      html += `
-      <section style="text-align: center; margin: 30px 0;">
-        <span style="display: inline-block; background-color: #2E84C5; color: #ffffff; padding: 6px 30px; border-radius: 50px; font-size: 14px; font-weight: bold; letter-spacing: 1px;">
-          ${content}
-        </span>
-      </section>`;
-    }
-
-    // --- 引用: 编者按/金句 ---
-    else if(line.startsWith("> ")){
-      let content = line.replace("> ","");
-      let theme = content.includes("编者按") ? "#2E84C5" : "#FFD100";
-      let bg = content.includes("编者按") ? "#F2F7FB" : "#FCFAF2";
-      html += `
-      <section style="margin: 35px 0; background-color: ${bg}; border-left: 5px solid ${theme}; padding: 25px 30px; line-height: 2.1; font-size: 16px; color: #444; text-align: justify;">
-        ${content}
-      </section>`;
-    }
-
-    // --- 三色分割线 ---
-    else if(line==="---"){
-      html += `
-      <section style="text-align: center; margin: 60px 0;">
-        <span style="display: inline-block; width: 10px; height: 10px; background: #2E84C5; border-radius: 50%; margin: 0 7px;"></span>
-        <span style="display: inline-block; width: 12px; height: 12px; background: #FFD100; border-radius: 50%; margin: 0 7px;"></span>
-        <span style="display: inline-block; width: 10px; height: 10px; background: #76B92E; border-radius: 50%; margin: 0 7px;"></span>
-      </section>`;
-    }
-
-    // --- 正文 ---
-    else{
-      html += `<p style="text-indent: 2.1em; line-height: 2.2; font-size: 16px; color: #333; margin-bottom: 28px; text-align: justify; letter-spacing: 0.5px;">${line}</p>`;
-    }
-  });
-
-  outputEl.innerHTML = html;
-}
-
-function copyHTML(){
+function copyToClipboard(elementId) {
+  const node = document.getElementById(elementId);
+  const preview = document.getElementById('preview-area');
+  
+  // 渲染预览
+  preview.innerHTML = node.innerHTML;
+  
+  // 执行复制
   const range = document.createRange();
-  range.selectNode(outputEl);
+  range.selectNode(preview);
   window.getSelection().removeAllRanges();
   window.getSelection().addRange(range);
   document.execCommand('copy');
-  alert("🍓 v21.0 视觉复刻版 复制成功！");
+  
+  alert("🍓 样式已复制！请直接在微信后台粘贴，然后修改标题文字。");
 }
-
-window.onload = generate;
 </script>
+
 </body>
 </html>
