@@ -2,107 +2,99 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 学堂 | 智能排版实验室 v5.0</title>
+    <title>HOPE 学堂 | 语义排版系统</title>
     <style>
-        :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; --bg: #F8F9FA; }
-        body { margin: 0; display: flex; height: 100vh; font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: var(--bg); color: #3F3F3F; }
+        :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; }
+        body { margin: 0; display: flex; height: 100vh; font-family: "Optima", "PingFang SC", sans-serif; background: #f4f7f9; color: #333; }
         
-        /* 编辑区 */
-        #editor-container { width: 40%; background: #fff; border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.02); }
-        textarea { flex: 1; border: 1px solid #eee; border-radius: 8px; padding: 20px; font-size: 14px; line-height: 1.6; outline: none; resize: none; background: #fafafa; transition: 0.3s; }
-        textarea:focus { border-color: var(--hope-blue); background: #fff; box-shadow: 0 0 0 3px rgba(46, 132, 197, 0.1); }
+        /* 界面布局 */
+        #editor-side { width: 35%; background: #fff; border-right: 1px solid #d1d1d1; display: flex; flex-direction: column; padding: 25px; }
+        textarea { flex: 1; border: 1px solid #e2e2e2; border-radius: 5px; padding: 20px; font-size: 14px; line-height: 1.6; outline: none; resize: none; background: #fdfdfd; }
+        
+        #preview-side { flex: 1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
+        .paper { width: 100%; max-width: 600px; background: white; padding: 65px 55px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); min-height: 100%; box-sizing: border-box; }
 
-        /* 渲染区 */
-        #preview-container { flex: 1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
-        .page-canvas { width: 100%; max-width: 650px; background: white; padding: 70px 60px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); min-height: 100%; position: relative; }
-
-        /* --- HOPE 视觉规范组件 --- */
-        .block-container { margin-bottom: 50px; position: relative; }
+        /* --- 语义化样式库 --- */
+        /* H1: 大背景数字 */
+        .h1-num { font-size: 68px; color: #F2F2F2; font-weight: 900; font-family: Arial; line-height: 1; margin-bottom: -12px; letter-spacing: -2px; }
+        /* H1-Sub: 蓝色主标题 */
+        .h1-title { color: var(--hope-blue); font-size: 21px; font-weight: bold; border-bottom: 3.5px solid var(--hope-blue); display: inline-block; padding-bottom: 6px; margin-bottom: 45px; letter-spacing: 1.5px; }
         
-        /* 动态大数字 */
-        .dynamic-num { font-size: 72px; font-weight: 800; color: #F0F0F0; font-family: "Arial Black", sans-serif; line-height: 1; margin-bottom: -20px; letter-spacing: -2px; }
+        /* H2: 绿色切片标题 */
+        .h2-slice { color: var(--hope-blue); font-size: 18px; font-weight: bold; margin: 35px 0 22px; display: flex; align-items: center; }
+        .h2-slice::before { content: "● 🧩"; color: var(--hope-green); margin-right: 10px; font-size: 18px; }
         
-        /* 核心蓝标题 */
-        .hope-title { color: var(--hope-blue); font-size: 22px; font-weight: bold; border-bottom: 4px solid var(--hope-blue); display: inline-block; padding-bottom: 6px; margin-bottom: 35px; letter-spacing: 1px; }
+        /* H3: 蓝色竖线副标题 */
+        .h3-sidebar { border-left: 5px solid var(--hope-blue); padding-left: 16px; margin: 28px 0 18px; font-weight: bold; color: #222; font-size: 16.5px; }
         
-        /* 绿色切片标题 */
-        .slice-header { color: var(--hope-blue); font-size: 18px; font-weight: bold; margin: 30px 0 20px; display: flex; align-items: center; }
-        .slice-header::before { content: "● 🧩"; color: var(--hope-green); margin-right: 12px; font-size: 18px; }
+        /* Decor: 引导箭头 */
+        .decor-arrow { color: var(--hope-yellow); font-size: 35px; margin: 15px 0 25px 1.8em; line-height: 1; }
         
-        /* 蓝色竖线引言 */
-        .quote-box { border-left: 5px solid var(--hope-blue); padding: 5px 0 5px 20px; margin: 30px 0; font-weight: bold; color: #222; font-size: 17px; line-height: 1.5; }
-        
-        /* 黄金箭头 */
-        .hope-arrow { color: var(--hope-yellow); font-size: 38px; margin: 10px 0 20px 1.8em; font-family: "Apple Color Emoji"; }
-
-        /* 纯净正文 */
-        p { text-indent: 2em; line-height: 1.9; text-align: justify; margin-bottom: 24px; font-size: 16px; color: #444; word-break: break-all; }
+        /* Body: 正文 */
+        p { text-indent: 2.1em; line-height: 1.85; text-align: justify; margin-bottom: 24px; font-size: 15.5px; color: #444; }
     </style>
 </head>
 <body>
 
-<div id="editor-container">
-    <h2 style="color:var(--hope-blue); font-size:18px; margin-bottom:15px;">🍓 草莓的无损排版实验室</h2>
-    <textarea id="main-editor" placeholder="直接粘贴全文，代码会自动识别数字和标题..."></textarea>
-    <div style="margin-top:15px; font-size:12px; color:#999; line-height:1.6;">
-        💡 <b>排版技巧：</b><br>
-        1. 想要大数字？那一号单独写 01, 02<br>
-        2. 想要蓝标题？把标题写在数字下面一行<br>
-        3. 想要竖线？标题里带上“关于”二字
-    </div>
+<div id="editor-side">
+    <h2 style="color:var(--hope-blue); font-size:18px; margin:0 0 15px 0;">🍓 排版实验室 v6.0</h2>
+    <textarea id="source" placeholder="直接粘贴全文...
+系统逻辑：
+1. 极短行(数字) -> 标号
+2. 紧随其后的短行 -> 蓝色主标题
+3. 包含关键符号或中等长度 -> 切片
+4. 带‘关于’或‘——’ -> 竖线副标题"></textarea>
 </div>
 
-<div id="preview-container">
-    <div class="page-canvas" id="render-target">
-        <p style="color:#ccc; text-align:center; margin-top:150px;">内容加载中，请在左侧输入...</p>
+<div id="preview-side">
+    <div class="paper" id="canvas">
+        <p style="color:#ccc; text-align:center; margin-top:150px;">等待解析内容...</p>
     </div>
 </div>
 
 <script>
-    const editor = document.getElementById('main-editor');
-    const target = document.getElementById('render-target');
+    const source = document.getElementById('source');
+    const canvas = document.getElementById('canvas');
 
-    function smartRender() {
-        const raw = editor.value;
-        if (!raw.trim()) {
-            target.innerHTML = '<p style="color:#ccc; text-align:center; margin-top:150px;">等待内容输入...</p>';
-            return;
-        }
+    source.addEventListener('input', () => {
+        const raw = source.value;
+        if (!raw.trim()) { canvas.innerHTML = ''; return; }
 
         const lines = raw.split('\n').map(l => l.trim()).filter(l => l !== '');
-        let htmlContent = '';
+        let html = '';
 
-        lines.forEach((line, index) => {
-            // 1. 识别数字行 (01, 02, 1, 2...)
-            if (/^\d+$/.test(line) || /^[0123456789]{2}$/.test(line)) {
-                htmlContent += `<div class="dynamic-num">${line.length < 2 ? '0' + line : line}</div>`;
+        lines.forEach((line, i) => {
+            const isShort = line.length < 18;
+            const hasNum = /^\d+$/.test(line);
+            
+            // 逻辑 A：如果是纯数字行
+            if (hasNum && isShort) {
+                html += `<div class="h1-num">${line.padStart(2, '0')}</div>`;
             }
-            // 2. 识别主标题 (如果紧跟在数字后面，或者是包含 PART 的简短文字)
-            else if (line.toUpperCase().includes('PART') || (index > 0 && /^\d+$/.test(lines[index-1]) && line.length < 15)) {
-                htmlContent += `<div class="hope-title">${line}</div>`;
+            // 逻辑 B：主标题（紧跟数字后，或全英文短句）
+            else if (isShort && ((i > 0 && /^\d+$/.test(lines[i-1])) || /^[A-Z\s]+$/.test(line))) {
+                html += `<div class="h1-title">${line.toUpperCase()}</div>`;
             }
-            // 3. 识别切片标题 (带“切片”或“项目”)
-            else if (line.includes('切片') || (line.includes('：') && line.length < 20 && !line.includes('关于'))) {
-                htmlContent += `<div class="slice-header">${line.replace(/[●🧩*]/g, '').trim()}</div>`;
+            // 逻辑 C：切片标题（中等长度，非段落，包含切片字样或特定结构）
+            else if (isShort && (line.includes('切片') || (line.includes('：') && !line.includes('关于')))) {
+                html += `<div class="h2-slice">${line.replace(/[●🧩]/g, '')}</div>`;
             }
-            // 4. 识别副标题/竖线引言 (带“关于”或“————”)
-            else if (line.includes('关于') || line.includes('——')) {
-                htmlContent += `<div class="quote-box">${line.replace(/[—|]/g, '').trim()}</div>`;
+            // 逻辑 D：副标题（带关于或横线）
+            else if (line.includes('关于') || line.includes('——') || line.includes('┃')) {
+                html += `<div class="h3-sidebar">${line.replace(/[—|┃]/g, '').trim()}</div>`;
             }
-            // 5. 识别箭头
-            else if (line.includes('↘') || line.includes('->')) {
-                htmlContent += `<div class="hope-arrow">↘</div>`;
+            // 逻辑 E：装饰箭头
+            else if (line.includes('↘')) {
+                html += `<div class="decor-arrow">↘</div>`;
             }
-            // 6. 默认正文
+            // 逻辑 F：正文
             else {
-                htmlContent += `<p>${line}</p>`;
+                html += `<p>${line}</p>`;
             }
         });
 
-        target.innerHTML = htmlContent;
-    }
-
-    editor.addEventListener('input', smartRender);
+        canvas.innerHTML = html;
+    });
 </script>
 </body>
 </html>
