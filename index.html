@@ -1,32 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 学堂无损排版工具</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOPE 学堂排版工具</title>
     <style>
-        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; display: flex; gap: 20px; }
-        #input { width: 50%; height: 90vh; padding: 20px; border: 1px solid #ddd; }
-        #preview { width: 50%; height: 90vh; background: white; padding: 40px; overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        /* 下面是 HOPE 学堂的专属样式 */
-        .p-text { text-indent: 2em; line-height: 1.75; margin-bottom: 20px; text-align: justify; color: #3F3F3F; }
-        .hope-blue { color: #2E84C5; font-weight: bold; }
-        .part-num { font-size: 50px; color: #EAEAEA; font-family: Arial; }
+        /* 核心视觉规范 */
+        :root {
+            --hope-blue: #2E84C5;
+            --hope-green: #7AB642;
+            --hope-yellow: #FFD100;
+            --text-main: #3F3F3F;
+            --bg-gray: #F8F9FA;
+        }
+
+        body { background-color: var(--bg-gray); margin: 0; padding: 40px 20px; font-family: "PingFang SC", "Microsoft YaHei", sans-serif; }
+        
+        /* 模拟微信后台的画布 */
+        .editor-container { display: flex; gap: 20px; max-width: 1200px; margin: 0 auto; height: 90vh; }
+        textarea { width: 50%; padding: 20px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; line-height: 1.6; outline: none; }
+        
+        /* 预览区样式的核心逻辑 */
+        #preview { 
+            width: 50%; background: white; padding: 50px 40px; overflow-y: auto; 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-radius: 8px;
+        }
+
+        /* 以下是 PDF 风格的像素级还原 CSS */
+        .part-num { font-size: 56px; color: #E9E9E9; font-weight: bold; font-family: Arial; margin-bottom: -20px; line-height: 1; }
+        .part-text { color: var(--hope-blue); font-size: 18px; font-weight: bold; letter-spacing: 1px; border-bottom: 2.5px solid var(--hope-blue); display: inline-block; padding-bottom: 5px; margin-bottom: 35px; }
+        
+        .slice-header { color: var(--hope-blue); font-size: 17px; font-weight: bold; display: flex; align-items: center; margin-top: 40px; }
+        .slice-icon { color: var(--hope-green); margin-right: 8px; font-size: 20px; }
+        
+        .subtitle-line { border-left: 4px solid var(--hope-blue); padding-left: 12px; margin: 25px 0 15px; font-weight: bold; font-size: 16px; color: #333; }
+        
+        .guide-arrow { color: var(--hope-yellow); font-size: 28px; margin: 15px 0 25px 2em; line-height: 1; }
+        
+        p { 
+            text-indent: 2em; 
+            line-height: 1.8; 
+            text-align: justify; 
+            color: var(--text-main); 
+            margin-bottom: 22px; 
+            letter-spacing: 0.3px;
+        }
     </style>
 </head>
 <body>
-    <textarea id="input" placeholder="请在这里粘贴智谱生成的带缩进的文字..."></textarea>
-    <div id="preview">
-        <div class="part-num">01</div>
-        <div class="hope-blue" style="font-size:20px; margin-bottom:30px;">PART ONE</div>
-        <div id="output">预览区（在这里复制到微信）</div>
+    <div class="editor-container">
+        <textarea id="inputText" placeholder="请在这里粘贴智谱生成的文案..."></textarea>
+        <div id="preview">
+            <div id="outputContent">
+                <div class="part-num">01</div>
+                <div class="part-text">PART ONE</div>
+                <p>在左侧输入文字后，这里将呈现 HOPE 学堂专属排版效果...</p>
+            </div>
+        </div>
     </div>
+
     <script>
-        const input = document.getElementById('input');
-        const output = document.getElementById('output');
-        input.addEventListener('input', (e) => {
-            // 将普通文字转化为带 HOPE 格式的 HTML
-            const lines = e.target.value.split('\n');
-            output.innerHTML = lines.map(line => `<p class="p-text">${line}</p>`).join('');
+        const input = document.getElementById('inputText');
+        const output = document.getElementById('outputContent');
+
+        input.addEventListener('input', () => {
+            const rawText = input.value;
+            const paragraphs = rawText.split('\n').filter(p => p.trim() !== '');
+            
+            let htmlBuffer = '';
+            paragraphs.forEach(p => {
+                if (p.includes('PART')) {
+                    const num = p.match(/\d+/) || '01';
+                    htmlBuffer += `<div class="part-num">${num}</div><div class="part-text">${p.toUpperCase()}</div>`;
+                } else if (p.includes('切片')) {
+                    htmlBuffer += `<div class="slice-header"><span class="slice-icon">● 🧩</span>${p}</div>`;
+                } else if (p.includes('关于') || p.includes('————')) {
+                    htmlBuffer += `<div class="subtitle-line">${p.replace(/—/g, '')}</div>`;
+                } else if (p.includes('↘')) {
+                    htmlBuffer += `<div class="guide-arrow">↘</div>`;
+                } else {
+                    htmlBuffer += `<p>${p.trim()}</p>`;
+                }
+            });
+            output.innerHTML = htmlBuffer;
         });
     </script>
 </body>
