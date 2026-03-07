@@ -2,9 +2,9 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · v24.0 镜像锁死版</title>
+<title>HOPE Design Lab · v25.0 终极锁死版</title>
 <style>
-/* 编辑器 UI */
+/* 界面 UI */
 * { box-sizing: border-box; }
 body { margin:0; font-family: sans-serif; background:#F4F6F9; display:flex; flex-direction:column; height:100vh; }
 header { background:white; padding:15px 30px; border-bottom:1px solid #e1e4e8; display:flex; justify-content:space-between; align-items:center; }
@@ -18,7 +18,7 @@ button { background:#2E84C5; color:#fff; padding:10px 25px; border-radius:20px; 
 <body>
 
 <header>
-  <h1 style="margin:0; font-size:18px;">🍓 HOPE Design Lab <span style="font-size:12px; color:#76B92E;">v24.0 (数字对齐锁死版)</span></h1>
+  <h1 style="margin:0; font-size:18px;">🍓 HOPE Design Lab <span style="font-size:12px; color:#76B92E;">v25.0 (防堆叠稳定版)</span></h1>
   <button onclick="copyHTML()">一键复制 HTML 全文</button>
 </header>
 
@@ -44,7 +44,7 @@ function generate(){
     line = line.trim();
     if(!line) return;
 
-    // --- 一级标题 (物理对齐，无边框 Table) ---
+    // --- 一级标题 (v25.0 物理锁死防堆叠结构) ---
     if(line.startsWith("# ")){
       let raw = line.replace("# ","");
       let numStr = (raw.match(/^\d+/) || ["01"])[0];
@@ -52,18 +52,18 @@ function generate(){
       let engStr = engMap[numStr] || "SECTION";
       
       html += `
-      <section style="margin: 50px 0 40px; clear: both; background: transparent;">
-        <table border="0" cellpadding="0" cellspacing="0" style="border:none; border-collapse:collapse; width:100%; background:none;">
+      <section style="margin: 50px 0 40px; clear: both;">
+        <table border="0" cellpadding="0" cellspacing="0" style="border:none; border-collapse:collapse; width:100%; table-layout: fixed;">
           <tr>
-            <td width="95" valign="bottom" style="border:none; padding:0; margin:0; text-align:right;">
-              <span style="font-size: 80px; font-weight: 900; color: #EBF4E2; font-family: Arial, sans-serif; line-height: 1.1; display: block;">${numStr}</span>
+            <td width="85" valign="bottom" style="border:none; padding:0; margin:0; white-space: nowrap !important;">
+              <span style="font-size: 75px; font-weight: 900; color: #EBF4E2; font-family: Arial, sans-serif; line-height: 1; display: inline-block;">${numStr}</span>
             </td>
-            <td valign="bottom" style="border:none; padding: 0 0 10px 15px; margin:0; text-align:left;">
+            <td valign="bottom" style="border:none; padding: 0 0 10px 10px; margin:0; text-align:left;">
               <div style="margin-bottom: 8px; line-height: 1;">
                 <span style="display: inline-block; width: 10px; height: 10px; background: #FFD100; border-radius: 50%;"></span>
                 <span style="font-size: 13px; font-weight: bold; color: #FFD100; letter-spacing: 2px; margin-left: 6px; font-family: Arial;">PART ${engStr}</span>
               </div>
-              <div style="font-size: 26px; font-weight: bold; color: #2E84C5; line-height: 1.3;">${titleStr}</div>
+              <div style="font-size: 24px; font-weight: bold; color: #2E84C5; line-height: 1.3;">${titleStr}</div>
             </td>
           </tr>
         </table>
@@ -71,20 +71,20 @@ function generate(){
       </section>`;
     }
 
-    // --- 二级标题 (物理对齐) ---
+    // --- 二级标题 ---
     else if(line.startsWith("## ")){
       html += `
       <section style="margin: 40px 0 20px; border-left: 4px solid #76B92E; padding-left: 14px; line-height: 1.4;">
-        <span style="font-size: 21px; font-weight: bold; color: #2E84C5;">${line.replace("## ","")}</span>
+        <span style="font-size: 20px; font-weight: bold; color: #2E84C5;">${line.replace("## ","")}</span>
       </section>`;
     }
 
-    // --- 引用 (编者按样式) ---
+    // --- 引用 ---
     else if(line.startsWith("> ")){
       let content = line.replace("> ","");
       let theme = content.includes("编者按") ? "#2E84C5" : "#FFD100";
       let bg = content.includes("编者按") ? "#F2F7FB" : "#FCFAF2";
-      html += `<section style="margin: 35px 0; background: ${bg}; border-left: 5px solid ${theme}; padding: 25px 30px; line-height: 2.1; font-size: 16px; color: #444; text-align: justify; border-radius: 0 8px 8px 0;">${content}</section>`;
+      html += `<section style="margin: 35px 0; background: ${bg}; border-left: 5px solid ${theme}; padding: 25px 30px; line-height: 2.1; font-size: 16px; color: #444; text-align: justify;">${content}</section>`;
     }
 
     // --- 分割线 ---
@@ -107,7 +107,7 @@ function copyHTML(){
   window.getSelection().removeAllRanges();
   window.getSelection().addRange(range);
   document.execCommand('copy');
-  alert("🍓 HOPE v24.0 已复制！\n1. 修正了数字重叠问题\n2. 根除了表格细线\n3. 支持全文一键排版");
+  alert("🍓 HOPE v25.0 终极版复制成功！\n1. 物理禁止数字折行堆叠\n2. 优化了表格布局兼容性\n3. 保持全文一键自动化");
 }
 window.onload = generate;
 </script>
