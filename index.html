@@ -2,28 +2,26 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 像素级重构 v22.0</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <title>HOPE 终极适配 v23.0</title>
     <style>
-        body { margin: 0; display: flex; height: 100vh; font-family: sans-serif; background: #f0f2f5; }
-        #editor-side { width: 30%; background: #fff; border-right: 1px solid #d1d9e0; padding: 25px; display: flex; flex-direction: column; }
-        textarea { flex: 1; border: 1px solid #e1e4e8; border-radius: 12px; padding: 18px; font-size: 14px; outline: none; background: #fafafa; transition: 0.3s; }
-        textarea:focus { border-color: #2E84C5; box-shadow: 0 0 0 3px rgba(46,132,197,0.1); }
-        #preview-side { flex: 1; padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
-        .copy-btn { margin-bottom: 25px; padding: 14px 40px; background: #2E84C5; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(46,132,197,0.3); }
-        .canvas-wrapper { width: 100%; max-width: 580px; background: white; padding: 50px 45px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); }
+        body { margin: 0; display: flex; height: 100vh; font-family: sans-serif; background: #f4f6f9; }
+        #editor-side { width: 30%; background: #fff; border-right: 1px solid #ddd; padding: 20px; display: flex; flex-direction: column; }
+        textarea { flex: 1; border: 1px solid #ccc; border-radius: 8px; padding: 15px; font-size: 14px; outline: none; }
+        #preview-side { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        .canvas-container { width: 100%; max-width: 560px; background: white; padding: 40px; }
+        .copy-btn { margin-bottom: 20px; padding: 12px 30px; background: #2E84C5; color: white; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div id="editor-side">
-    <h3 style="color:#2E84C5;">🍓 像素复刻版 v22.0</h3>
-    <textarea id="input" placeholder="输入 01 [回车] 标题即可"></textarea>
+    <h3 style="color:#2E84C5;">🍓 公众号无损搬运 v23.0</h3>
+    <textarea id="input" placeholder="贴入文案..."></textarea>
 </div>
 
 <div id="preview-side">
-    <button class="copy-btn" onclick="copyToWechat()">✨ 点击一键搬运（保留高级错位感）</button>
-    <div class="canvas-wrapper" id="render"></div>
+    <button class="copy-btn" onclick="copyToWechat()">✨ 点击复制（解决【年终总结】消失问题）</button>
+    <div class="canvas-container" id="render"></div>
 </div>
 
 <script>
@@ -37,30 +35,44 @@
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
 
-            // 核心：复刻原版的高级错位构图
+            // 1. 修复：一级标题错位构图（使用 table 确保左右分布稳定）
             if (/^\d{1,2}$/.test(line) && i + 1 < lines.length) {
                 const title = lines[i+1];
                 html += `
-                <section style="margin: 50px 0 60px; position: relative; overflow: visible;">
-                    <section style="position: absolute; right: -15px; top: -20px; font-size: 110px; color: #F7F7F7; font-weight: 900; font-family: Arial; line-height: 1; z-index: 1;">${line.padStart(2, '0')}</section>
-                    
-                    <section style="position: relative; z-index: 2;">
-                        <section style="display: flex; align-items: center; margin-bottom: 15px;">
-                            <section style="width: 10px; height: 10px; background-color: #FFD100; border-radius: 50%; margin-right: 12px;"></section>
-                            <section style="color: #FFD100; font-size: 16px; font-weight: 800; letter-spacing: 4px; font-family: 'Montserrat', sans-serif;">PART ${numToEng(line)}</section>
-                        </section>
-                        <section style="color: #2E84C5; font-size: 27px; font-weight: bold; line-height: 1.35; max-width: 85%;">${title}</section>
-                        <section style="color: #FFD100; font-size: 34px; font-weight: 900; margin-top: 12px;">↘</section>
-                    </section>
-                </section>`;
+                <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 40px 0;">
+                    <tr>
+                        <td valign="top">
+                            <section style="display: flex; align-items: center; margin-bottom: 12px;">
+                                <section style="width: 10px; height: 10px; background-color: #FFD100; border-radius: 50%; margin-right: 10px;"></section>
+                                <section style="color: #FFD100; font-size: 14px; font-weight: 800; letter-spacing: 3px; font-family: Arial;">PART ${numToEng(line)}</section>
+                            </section>
+                            <section style="color: #2E84C5; font-size: 24px; font-weight: bold; line-height: 1.4;">${title}</section>
+                            <section style="color: #FFD100; font-size: 30px; font-weight: 900; margin-top: 10px;">↘</section>
+                        </td>
+                        <td align="right" valign="top" style="width: 100px;">
+                            <section style="font-size: 85px; color: #F5F5F5; font-weight: 900; font-family: Arial; line-height: 0.8;">${line.padStart(2, '0')}</section>
+                        </td>
+                    </tr>
+                </table>`;
                 i++;
-            } else if (line.startsWith('（')) {
+            } 
+            // 2. 修复：【年终总结】蓝色胶囊格式（增加内联 padding 和 display 属性）
+            else if (line.startsWith('【') && line.endsWith('】')) {
+                html += `
+                <section style="margin: 25px 0 15px; text-align: left;">
+                    <span style="background-color: #2E84C5; color: #ffffff; padding: 6px 22px; border-radius: 50px; font-size: 15px; font-weight: bold; display: inline-block; line-height: 1.2;">${line.replace(/[【】]/g, '')}</span>
+                </section>`;
+            }
+            // 3. 修复：（春日）部分的高级感（针对长文本使用背景色+左边线的稳健方案）
+            else if (line.startsWith('（') && line.endsWith('）')) {
                 const txt = line.replace(/[（）]/g, '');
-                html += txt.length > 50 
-                    ? `<section style="background: #FDFCF5; border-left: 6px solid #FFD100; padding: 25px 30px; margin: 30px 0; color: #444; line-height: 1.95; font-size: 16px;">${txt}</section>`
-                    : `<section style="background: #FFD100; color: #222; padding: 25px 30px; margin: 30px 0; border-radius: 4px; font-weight: bold; line-height: 1.8; font-size: 17px;">${txt}</section>`;
-            } else {
-                html += `<p style="text-indent: 2em; line-height: 2.1; margin-bottom: 25px; color: #333; font-size: 16.5px; text-align: justify;">${line}</p>`;
+                html += `
+                <section style="margin: 30px 0; background-color: #fdfcf5; border-left: 5px solid #FFD100; padding: 25px; line-height: 1.8; color: #444; font-size: 16px;">
+                    ${txt}
+                </section>`;
+            } 
+            else {
+                html += `<p style="text-indent: 2em; line-height: 2.0; margin-bottom: 22px; color: #333; font-size: 16px; text-align: justify;">${line}</p>`;
             }
         }
         render.innerHTML = html;
@@ -68,17 +80,17 @@
 
     function numToEng(n) {
         const words = ["ZERO", "ONE", "TWO", "THREE", "FOUR", "FIVE", "SIX", "SEVEN", "EIGHT", "NINE", "TEN"];
-        return words[parseInt(n)] || "CHAPTER";
+        return words[parseInt(n)] || "SECTION";
     }
 
     function copyToWechat() {
+        const layout = document.getElementById('render');
         const range = document.createRange();
-        range.selectNode(document.getElementById('render'));
+        range.selectNode(layout);
         window.getSelection().removeAllRanges();
         window.getSelection().addRange(range);
         document.execCommand('copy');
-        alert('🍓 像素级搬运已就绪！请去公众号后台 Ctrl+V。');
-        window.getSelection().removeAllRanges();
+        alert('🍓 修复版已就绪！这次【年终总结】不会丢了。');
     }
 </script>
 </body>
