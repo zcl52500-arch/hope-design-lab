@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOPE Design Lab - 职校生排版与海报工坊</title>
+    <!-- 引入核心样式与图标 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFB; }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .hope-blue { color: #2589D0; }
+        .bg-hope-blue { background-color: #2589D0; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- 引入 React 和核心库 (使用 ESM 模式) -->
+    <script type="importmap">
+    {
+        "imports": {
+            "react": "https://esm.sh/react@19",
+            "react-dom": "https://esm.sh/react-dom@19",
+            "@google/genai": "https://esm.sh/@google/genai",
+            "html-to-image": "https://esm.sh/html-to-image"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import React, { useState, useRef, useEffect } from 'react';
+        import ReactDOM from 'react-dom';
+        import { GoogleGenAI, Type } from "@google/genai";
+        import { toPng } from 'html-to-image';
+
+        // ==========================================
+        // ⚠️ 在这里填入您的 GEMINI API KEY
+        // ==========================================
+        const GEMINI_API_KEY = "在此处替换您的_API_KEY";
+
+        const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+
+        // --- 核心逻辑：AI 排版引擎 ---
+        const analyzeArticle = async (rawText) => {
+            const model = ai.models.getGenerativeModel({ model: "gemini-2.0-flash" });
+            const prompt = `你现在是 HOPE 学堂的排版专家。请将以下内容转换为符合 HOPE 学院风格的 HTML 排版，使用内联样式，保留所有文字：\n\n${rawText}`;
+            const result = await model.generateContent(prompt);
+            return {
+                formattedHtml: result.response.text(),
+                title: "智能排版结果"
+            };
+        };
+
+        // --- UI 组件：海报画布 ---
+        const PosterCanvas = ({ data, canvasRef }) => (
+            <div ref={canvasRef} className="w-full max-w-[400px] aspect-[1/1.5] bg-white relative shadow-2xl flex flex-col border-[10px] border-white rounded-lg overflow-hidden">
+                <div className="p-6 flex justify-between items-start">
+                    <div className="flex gap-1">
+                        <div className="w-8 h-10 bg-[#2589D0] rounded flex items-center justify-center text-white font-black italic">2</div>
+                        <div className="w-8 h-10 bg-[#FDCB02] rounded flex items-center justify-center text-white font-black italic">0</div>
+                        <div className="w-8 h-10 bg-[#76B82D] rounded flex items-center justify-center text-white font-black italic">2</div>
+                        <div className="w-8 h-10 bg-[#FF6B6B] rounded flex items-center justify-center text-white font-black italic">5</div>
+                    </div>
+                    <h2 className="text-2xl font-black text-[#2589D0]">{data.title}</h2>
+                </div>
+                <div className="flex-1 mx-4 bg-slate-100 rounded-[2rem] overflow-hidden relative">
+                    <img src="https://picsum.photos/seed/hope/800/1000" className="w-full h-full object-cover" />
+                    <div className="absolute bottom-4 right-4 bg-[#2589D0] text-white px-4 py-1 rounded-full text-xs italic font-bold">Nice Try!</div>
+                </div>
+                <div className="p-8 text-center italic text-slate-700 font-medium">
+                    “ {data.quote} ”
+                </div>
+                <div className="p-4 border-t border-slate-50 flex justify-between items-center px-8">
+                    <div className="text-[10px] font-black text-[#2589D0]">HOPE STUDIO 2025</div>
+                    <i className="fas fa-qrcode text-slate-200"></i>
+                </div>
+            </div>
+        );
+
+        // --- 主应用组件 ---
+        const App = () => {
+            const [tab, setTab] = useState('layout');
+            const [text, setText] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [result, setResult] = useState(null);
+            const canvasRef = useRef(null);
+
+            const handleRun = async () => {
+                setLoading(true);
+                try {
+                    const data = await analyzeArticle(text);
+                    setResult(data);
+                } catch (e) { alert("AI 引擎调用失败，请检查 API Key"); }
+                setLoading(false);
+            };
+
+            const downloadPoster = async () => {
+                const dataUrl = await toPng(canvasRef.current);
+                const link = document.createElement('a');
+                link.download = 'hope-poster.png';
+                link.href = dataUrl;
+                link.click();
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    <nav className="bg-white border-b p-6 flex justify-between items-center shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-3 h-10 bg-[#2589D0] rounded-full"></div>
+                            <h1 className="text-xl font-black">HOPE <span className="text-[#2589D0]">Design Lab</span></h1>
+                        </div>
+                        <div className="flex bg-slate-100 p-1 rounded-xl">
+                            <button onClick={() => setTab('layout')} className={`px-6 py-2 rounded-lg text-xs font-bold ${tab === 'layout' ? 'bg-white shadow-sm text-[#2589D0]' : 'text-slate-500'}`}>排版</button>
+                            <button onClick={() => setTab('poster')} className={`px-6 py-2 rounded-lg text-xs font-bold ${tab === 'poster' ? 'bg-white shadow-sm text-[#2589D0]' : 'text-slate-500'}`}>海报</button>
+                        </div>
+                    </nav>
+
+                    <main className="flex-1 p-8 max-w-6xl mx-auto w-full">
+                        {tab === 'layout' ? (
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                                <div className="space-y-6">
+                                    <textarea 
+                                        value={text} onChange={e => setText(e.target.value)}
+                                        placeholder="粘贴文章原文..."
+                                        className="w-full h-[500px] p-8 rounded-[2rem] border-none bg-white shadow-xl focus:ring-4 focus:ring-blue-50 outline-none text-lg"
+                                    />
+                                    <button onClick={handleRun} disabled={loading} className="w-full py-6 bg-slate-900 text-white rounded-[1.5rem] font-black tracking-widest hover:bg-blue-600 transition-all">
+                                        {loading ? '排版中...' : '执行 HOPE 标准排版'}
+                                    </button>
+                                </div>
+                                <div className="bg-white rounded-[2rem] p-10 shadow-2xl min-h-[500px] overflow-auto">
+                                    {result ? <div dangerouslySetInnerHTML={{ __html: result.formattedHtml }} /> : <div className="h-full flex items-center justify-center text-slate-300 font-bold uppercase tracking-widest">等待预览</div>}
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col items-center gap-10">
+                                <PosterCanvas data={{ title: '职校生新声', quote: '每一个努力的瞬间，都值得被温柔以待。' }} canvasRef={canvasRef} />
+                                <button onClick={downloadPoster} className="px-10 py-4 bg-[#2589D0] text-white rounded-full font-black shadow-xl hover:scale-105 transition-all">下载海报</button>
+                            </div>
+                        )}
+                    </main>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
