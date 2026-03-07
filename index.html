@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · 修复版公众号排版器</title>
+<title>HOPE Design Lab · 极简公众号排版器</title>
 <style>
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Microsoft YaHei",sans-serif;background:#f4f5f7;margin:0;padding:30px;}
 h1,h2,h3{margin:0;}
@@ -25,32 +25,16 @@ figure{margin:15px 0;text-align:center;}
 figure img{max-width:100%;border-radius:8px;}
 figcaption{color:#666;font-size:14px;margin-top:6px;}
 .meta{color:#888;font-size:14px;margin-bottom:10px;}
-.toc{background:#f0f0f0;border-radius:8px;padding:12px 16px;margin-bottom:20px;}
-.toc h2{margin-top:0;}
-.toc ul{list-style:none;padding-left:0;}
-.toc li{margin:4px 0;}
-.toc a{text-decoration:none;color:#1e90ff;}
-.toc li a.active{font-weight:bold;text-decoration:underline;}
-.article-selector{margin-bottom:20px;}
-.article-selector button{background:#ffa500;}
-.article-selector button:hover{background:#e69500;}
 </style>
 </head>
 <body>
 
-<h1>HOPE Design Lab · 修复版公众号排版器</h1>
+<h1>HOPE Design Lab · 极简公众号排版器</h1>
 
 <div class="toolbar">
 <button onclick="generate()">生成排版</button>
 <button onclick="copyHTML()">复制公众号HTML</button>
 <span id="meta" class="meta"></span>
-</div>
-
-<div class="article-selector" id="article-selector"></div>
-
-<div class="toc" id="toc">
-<h2>文章目录</h2>
-<ul id="toc-list"></ul>
 </div>
 
 <div class="container">
@@ -84,137 +68,60 @@ A：因为这里可以自由表达。
 报名：公众号后台
 
 ![示例图片](assets/images/sample.jpg "图片说明示例")
-
-# 第二篇文章示例
-
-## 样例段落
-
-这是第二篇文章的正文内容。
-
-> 引用示例。
-
----
-
-### 小故事2
-
-Q：你喜欢HOPE吗？
-
-A：非常喜欢！
 </textarea>
 
 <div id="output" class="preview"></div>
 </div>
 
 <script>
-// 自动识别文章
-let articles=[];
-function parseArticles(){
-  const text=document.getElementById("input").value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
-  const lines=text.split("\n");
-  let currentArticle="", allArticles=[];
-  lines.forEach(line=>{
-    if(line.startsWith("# ") && currentArticle!==""){
-      allArticles.push(currentArticle);
-      currentArticle="";
-    }
-    currentArticle+=line+"\n";
-  });
-  if(currentArticle!=="") allArticles.push(currentArticle);
-  articles=allArticles;
-}
+function generate(){
+  const text = document.getElementById("input").value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
+  const lines = text.split("\n");
+  let html = "", wordCount = 0, inCard = false;
 
-// 渲染文章选择按钮
-function renderArticleButtons(){
-  const selector=document.getElementById("article-selector");
-  selector.innerHTML="";
-  articles.forEach((art,i)=>{
-    const btn=document.createElement("button");
-    btn.textContent=`文章 ${i+1}`;
-    btn.onclick=()=>{loadArticle(i)};
-    selector.appendChild(btn);
-  });
-}
-
-// 加载文章
-function loadArticle(idx){
-  document.getElementById("input").value=articles[idx];
-  generateArticle();
-}
-
-// 生成 HTML 排版
-function generateArticle(){
-  const text=document.getElementById("input").value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
-  const lines=text.split("\n");
-  let html="", wordCount=0, inCard=false, tocList=[];
-
-  lines.forEach((line,index)=>{
-    line=line.trim();
+  lines.forEach((line, index) => {
+    line = line.trim();
     if(line==="") return;
-    wordCount+=line.length;
+    wordCount += line.length;
 
     if(line.startsWith("# ")){
-      html+=`<p class="h1" id="h1-${index}">${line.replace("# ","")}</p>`;
-      tocList.push({text:line.replace("# ",""), id:`h1-${index}`, level:1});
+      html += `<p class="h1">${line.replace("# ","")}</p>`;
     } else if(line.startsWith("## ")){
-      html+=`<p class="h2" id="h2-${index}">${line.replace("## ","")}</p>`;
-      tocList.push({text:line.replace("## ",""), id:`h2-${index}`, level:2});
+      html += `<p class="h2">${line.replace("## ","")}</p>`;
     } else if(line.startsWith("### ")){
-      html+=`<p class="h3" id="h3-${index}">${line.replace("### ","")}</p>`;
-      tocList.push({text:line.replace("### ",""), id:`h3-${index}`, level:3});
+      html += `<p class="h3">${line.replace("### ","")}</p>`;
     } else if(line.startsWith("> ")){
-      html+=`<p class="quote">${line.replace("> ","")}</p>`;
+      html += `<p class="quote">${line.replace("> ","")}</p>`;
     } else if(line==="---"){
-      html+=`<div class="hr"></div>`;
+      html += `<div class="hr"></div>`;
     } else if(line.startsWith("Q：") || line.startsWith("Q:")){
-      html+=`<p class="qa-q">${line}</p>`;
+      html += `<p class="qa-q">${line}</p>`;
     } else if(line.startsWith("A：") || line.startsWith("A:")){
-      html+=`<p class="qa-a">${line}</p>`;
+      html += `<p class="qa-a">${line}</p>`;
     } else if(line==="[活动信息]"){
-      html+=`<div class="card">`; inCard=true;
-    } else if(inCard && line===""){ html+=`</div>`; inCard=false;
-    } else if(inCard){ html+=`<p class="p">${line}</p>`;
+      html += `<div class="card">`; inCard = true;
+    } else if(inCard && line===""){ html += `</div>`; inCard = false;
+    } else if(inCard){ html += `<p class="p">${line}</p>`;
     } else if(line.startsWith("![") && line.includes("](")){
-      let match=line.match(/!\[([^\]]*)\]\(([^ )]+)(?: \"([^\"]*)\")?\)/);
-      if(match){ let alt=match[1], src=match[2], caption=match[3]||""; html+=`<figure><img src="${src}" alt="${alt}"><figcaption>${caption}</figcaption></figure>`;}
-    } else { html+=`<p class="p">${line}</p>`;}
+      let match = line.match(/!\[([^\]]*)\]\(([^ )]+)(?: \"([^\"]*)\")?\)/);
+      if(match){ let alt=match[1], src=match[2], caption=match[3]||""; html += `<figure><img src="${src}" alt="${alt}"><figcaption>${caption}</figcaption></figure>`;}
+    } else { html += `<p class="p">${line}</p>`;}
   });
 
-  document.getElementById("output").innerHTML=html;
-
-  // 生成目录
-  let tocHtml="";
-  tocList.forEach(item=>{
-    let indent=item.level===1?0:item.level===2?10:20;
-    tocHtml+=`<li style="margin-left:${indent}px"><a href="#${item.id}">${item.text}</a></li>`;
-  });
-  document.getElementById("toc-list").innerHTML=tocHtml;
-
-  // 高亮当前章节
-  window.onscroll=function(){
-    let fromTop=window.scrollY+50;
-    tocList.forEach(item=>{
-      let elem=document.getElementById(item.id);
-      let link=document.querySelector(`#toc-list a[href="#${item.id}"]`);
-      if(elem.offsetTop<=fromTop && elem.offsetTop + elem.offsetHeight>fromTop){link.classList.add("active");}
-      else{link.classList.remove("active");}
-    });
-  }
-
-  let readTime=Math.ceil(wordCount/300);
-  document.getElementById("meta").innerText=`字数 ${wordCount} · 预计阅读 ${readTime} 分钟`;
+  document.getElementById("output").innerHTML = html;
+  const readTime = Math.ceil(wordCount/300);
+  document.getElementById("meta").innerText = `字数 ${wordCount} · 预计阅读 ${readTime} 分钟`;
 }
 
-// 一键复制
 function copyHTML(){
-  let html=document.getElementById("output").innerHTML;
+  const html = document.getElementById("output").innerHTML;
   navigator.clipboard.writeText(html);
   alert("已复制，可直接粘贴到公众号编辑器");
 }
 
-// 初始化
-parseArticles();
-renderArticleButtons();
-loadArticle(0);
+// 页面加载自动生成排版
+window.onload = generate;
 </script>
+
 </body>
 </html>
