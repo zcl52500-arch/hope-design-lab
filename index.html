@@ -2,21 +2,82 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · 物理生存版</title>
-<link href="https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+<title>HOPE Design Lab · 微信兼容版</title>
+<style>
+body {
+    background-color:#F0F2F5; 
+    padding:20px; 
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color:#1e293b;
+}
+.container {
+    display:flex;
+    gap:20px;
+    max-width:1200px;
+    margin:0 auto;
+    flex-wrap:wrap;
+}
+textarea {
+    width:45%;
+    min-width:300px;
+    min-height:850px;
+    padding:20px;
+    border-radius:12px;
+    border:1px solid #cbd5e1;
+    font-size:15px;
+    line-height:1.7;
+    resize:none;
+}
+.preview {
+    width:55%;
+    min-width:300px;
+    background:white;
+    padding:30px 35px;
+    border-radius:12px;
+    overflow:auto;
+    min-height:850px;
+}
+button {
+    background:#2E84C5;
+    color:#fff;
+    padding:10px 25px;
+    border-radius:20px;
+    border:none;
+    cursor:pointer;
+    font-weight:bold;
+}
+h1 span {
+    font-size:12px;
+    background:#76B92E;
+    color:#fff;
+    padding:2px 8px;
+    border-radius:10px;
+}
+@media(max-width:1000px){
+    .container{flex-direction:column;}
+    textarea,.preview{width:100%;}
+}
+</style>
 </head>
-<body style="background-color:#F0F2F5; padding:20px;">
+<body>
 
-<div style="max-width:1200px; margin:0 auto;">
-    <div style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
-        <h1 style="font-size:24px; font-weight:bold; color:#333;">🍓 HOPE Design Lab <span style="font-size:12px; background:#76B92E; color:#fff; padding:2px 8px; border-radius:10px;">v7.9 物理生存版</span></h1>
-        <button onclick="copyHTML()" style="background:#2E84C5; color:#fff; padding:10px 25px; border-radius:20px; border:none; cursor:pointer; font-weight:bold;">一键复制</button>
+<div style="max-width:1200px; margin:0 auto 20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h1>🍓 HOPE Design Lab <span>v7.9 微信兼容版</span></h1>
+        <button onclick="copyHTML()">一键复制</button>
     </div>
-    <div style="display:flex; gap:20px;">
-        <textarea id="input" oninput="generate()" style="width:45%; height:850px; padding:20px; border-radius:12px; border:1px solid #cbd5e1;" placeholder="贴入文案..."></textarea>
-        <div id="output" style="width:55%; background:white; padding:40px; border-radius:12px; overflow:auto; min-height:850px;"></div>
-    </div>
+</div>
+
+<div class="container">
+    <textarea id="input" oninput="generate()" placeholder="在此粘贴文案...
+支持：
+# 一级标题
+## 二级标题
+> 引用/编者按
+---
+正文段落
+"></textarea>
+    <div id="output" class="preview"></div>
 </div>
 
 <script>
@@ -26,81 +87,40 @@ const outputEl=document.getElementById("output");
 function generate(){
     const text=inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
     const lines=text.split("\n");
-    let html="";
+    let html="", wordCount=0;
 
     lines.forEach(line=>{
         line=line.trim();
         if(line==="") return;
+        wordCount+=line.length;
 
-        // 1. 一级标题：用 Table 锁死左右布局，防止微信重置
+        // 一级标题
         if(line.startsWith("# ")){
-            let content = line.replace("# ","");
-            let numMatch = content.match(/\d+/);
-            let num = numMatch ? numMatch[0] : "01";
-            let cleanTitle = content.replace(num, "").trim();
-            
-            html += `
-            <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 45px 0 15px; border-collapse: collapse; line-height: 1.4;">
-                <tr>
-                    <td valign="bottom">
-                        <div style="margin-bottom: 8px;">
-                            <span style="display:inline-block; width:12px; height:12px; background-color:#FFD100; border-radius:50%; vertical-align:middle;"></span>
-                            <span style="color:#FFD100; font-size:15px; font-weight:bold; margin-left:8px; font-family:Arial;">PART ${num}</span>
-                        </div>
-                        <div style="color:#2E84C5; font-size:26px; font-weight:bold;">${cleanTitle}</div>
-                    </td>
-                    <td width="90" align="right" valign="bottom">
-                        <span style="font-size:75px; color:#EBF4E2; font-family:Arial, sans-serif; font-weight:900; line-height:0.7;">${num.padStart(2, '0')}</span>
-                    </td>
-                </tr>
-            </table>
-            <div style="color:#76B92E; font-size:35px; font-weight:900; margin-bottom:40px; margin-left:5px;">↘</div>`;
+            html += `<p style="text-align:center; font-size:28px; font-weight:bold; color:#2E84C5; margin:40px 0 25px;">${line.replace("# ","")}</p>`;
         }
-        // 2. 二级标题：绿色竖线 (用 Table 锁死)
+        // 二级标题
         else if(line.startsWith("## ")){
-            html += `
-            <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 35px 0 20px; border-collapse: collapse;">
-                <tr>
-                    <td width="5" style="background-color:#76B92E; border-radius:2px;"></td>
-                    <td style="padding-left:15px;">
-                        <div style="font-size:20px; font-weight:bold; color:#2E84C5; line-height:1.5;">${line.replace("## ","")}</div>
-                    </td>
-                </tr>
-            </table>`;
+            html += `<p style="border-left:4px solid #76B92E; padding-left:10px; font-size:20px; font-weight:bold; color:#2E84C5; margin:30px 0 20px;">${line.replace("## ","")}</p>`;
         }
-        // 3. 引用块 (编者按自动变色)
+        // 引用块
         else if(line.startsWith("> ")){
-            let quoteContent = line.replace("> ","");
-            let isNote = quoteContent.includes("编者按");
-            let theme = isNote ? "#2E84C5" : "#FFD100";
+            let content = line.replace("> ","");
+            let isNote = content.includes("编者按");
             let bg = isNote ? "#F2F7FB" : "#FCFAF2";
-            html += `
-            <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:35px 0; border-collapse: collapse;">
-                <tr>
-                    <td width="6" style="background-color:${theme};"></td>
-                    <td style="background-color:${bg}; padding:25px 30px;">
-                        <div style="line-height:2.1; color:#444; font-size:16.5px; text-align:justify;">${quoteContent}</div>
-                    </td>
-                </tr>
-            </table>`;
+            let color = isNote ? "#2E84C5" : "#FFD100";
+            html += `<p style="background:${bg}; border-left:4px solid ${color}; padding:12px 10px; line-height:1.8; color:#444; font-size:16px; text-align:justify; margin:25px 0;">${content}</p>`;
         }
-        // 4. 三色点分割线 (注入内容防止消失)
+        // 分割线
         else if(line==="---"){
-            html += `
-            <table align="center" cellspacing="0" cellpadding="0" border="0" style="margin:60px auto; border-collapse: collapse; text-align:center;">
-                <tr>
-                    <td style="padding:0 6px;"><div style="width:10px; height:10px; background-color:#2E84C5; border-radius:50%; line-height:10px; color:#2E84C5; font-size:1px;">&bull;</div></td>
-                    <td style="padding:0 6px;"><div style="width:12px; height:12px; background-color:#FFD100; border-radius:50%; line-height:12px; color:#FFD100; font-size:1px;">&bull;</div></td>
-                    <td style="padding:0 6px;"><div style="width:10px; height:10px; background-color:#76B92E; border-radius:50%; line-height:10px; color:#76B92E; font-size:1px;">&bull;</div></td>
-                </tr>
-            </table>`;
+            html += `<p style="text-align:center; margin:30px 0; color:#76B92E; font-weight:bold;">•••</p>`;
         }
-        // 5. 正文
+        // 正文
         else {
-            html += `<div style="text-indent:2.1em; line-height:2.2; margin-bottom:28px; color:#333; font-size:16.5px; text-align:justify; letter-spacing:0.5px;">${line}</div>`;
+            html += `<p style="text-indent:2em; line-height:1.8; font-size:16px; color:#333; text-align:justify; margin-bottom:20px;">${line}</p>`;
         }
     });
-    outputEl.innerHTML = html;
+
+    outputEl.innerHTML = html || '<p style="color:#cbd5e1; text-align:center; margin-top:200px;">🍓 期待你的文章内容...</p>';
 }
 
 function copyHTML(){
@@ -108,10 +128,16 @@ function copyHTML(){
     range.selectNode(outputEl);
     window.getSelection().removeAllRanges();
     window.getSelection().addRange(range);
-    document.execCommand('copy');
-    alert("🍓 物理生存版已复制！请粘贴到微信后台并【保存】。");
+    try {
+        document.execCommand('copy');
+        alert("🍓 HOPE 专属格式已打包！直接去公众号后台粘贴即可。");
+    } catch (err) {
+        alert("复制失败，请手动选择预览区内容复制");
+    }
 }
+
 window.onload = generate;
 </script>
+
 </body>
 </html>
