@@ -2,10 +2,10 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · v20.0 智能感知版</title>
+<title>HOPE Design Lab · v21.0 视觉复刻版</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-/* 界面 UI */
+/* 编辑器 UI */
 * { box-sizing: border-box; }
 body { margin:0; font-family:'Inter', sans-serif; background:#F4F6F9; height:100vh; display:flex; flex-direction:column; }
 header { background:white; padding:15px 30px; border-bottom:1px solid #e1e4e8; flex-shrink:0; }
@@ -23,18 +23,17 @@ button { background:#2E84C5; color:#fff; padding:8px 20px; border-radius:20px; b
 
 <header>
   <div class="header-top">
-    <h1 style="margin:0; font-size:20px;">🍓 HOPE Design Lab <span style="font-size:11px; background:#76B92E; color:#fff; padding:2px 8px; border-radius:10px; margin-left:10px;">v20.0 智能对齐版</span></h1>
+    <h1 style="margin:0; font-size:20px;">🍓 HOPE Design Lab <span style="font-size:11px; background:#76B92E; color:#fff; padding:2px 8px; border-radius:10px; margin-left:10px;">v21.0 视觉复刻版</span></h1>
     <button onclick="copyHTML()">一键复制 HTML</button>
   </div>
   <div class="header-hint">
-    💡 <b>智能识别：</b>
-    一级标题请使用 <code># 01 标题</code> 格式，数字会自动关联英文。
+    💡 <b>指令提示：</b> <code># 01 标题内容</code> (一级) | <code>## 标题内容</code> (二级) | <code>---</code> (分割线)
   </div>
 </header>
 
 <div class="main-workspace">
   <div class="editor-zone">
-    <textarea id="input" oninput="generate()" placeholder="输入 # 01 标题 试试看..."></textarea>
+    <textarea id="input" oninput="generate()" placeholder="输入 # 01 标题内容 试试..."></textarea>
   </div>
   <div id="output" class="preview-zone"></div>
 </div>
@@ -45,7 +44,8 @@ const outputEl = document.getElementById("output");
 
 function numToEng(n){
   const words = ["ZERO","ONE","TWO","THREE","FOUR","FIVE","SIX","SEVEN","EIGHT","NINE","TEN"];
-  return words[parseInt(n)] || "SECTION";
+  let index = parseInt(n);
+  return words[index] || "SECTION";
 }
 
 function generate(){
@@ -57,38 +57,41 @@ function generate(){
     line = line.trim();
     if(!line) return;
 
-    // --- 一级标题 (v20.0 锁死边框 + 智能匹配) ---
+    // --- 一级标题: 完整复刻《数字世界》版 ---
     if(line.startsWith("# ")){
       let rawContent = line.replace("# ","");
-      // 匹配开头的数字
       let numMatch = rawContent.match(/^\d+/);
       let numStr = numMatch ? numMatch[0] : "01";
-      // 移除数字后的剩余部分作为标题
       let cleanTitle = rawContent.replace(/^\d+/, "").trim();
       
       html += `
-      <section style="margin: 50px 0 20px; clear: both;">
-        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:none; border-collapse:collapse; background:none;">
-          <tr>
-            <td width="95" valign="bottom" style="border:none; padding:0; margin:0;">
-              <div style="font-size: 75px; font-weight: 900; color: #EBF4E2; font-family: Arial; line-height: 0.8; text-align: right;">${numStr.padStart(2,'0')}</div>
-            </td>
-            <td valign="bottom" style="border:none; padding: 0 0 5px 15px; margin:0;">
-               <div style="font-size: 13px; font-weight: bold; color: #FFD100; margin-bottom: 8px; letter-spacing: 2px; font-family: Arial;">PART ${numToEng(numStr)}</div>
-               <div style="font-size: 26px; font-weight: bold; color: #2E84C5; line-height: 1.2;">${cleanTitle}</div>
-            </td>
-          </tr>
+      <section style="margin: 60px 0 20px; clear: both; background: transparent;">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="border:none !important; border-collapse:collapse; background:none;">
+          <tbody style="border:none;">
+            <tr style="border:none;">
+              <td width="95" valign="bottom" align="right" style="border:none; padding:0; margin:0; line-height: 1;">
+                <div style="font-size: 85px; font-weight: 900; color: #EBF4E2; font-family: Arial, sans-serif; line-height: 0.75; margin:0;">${numStr.padStart(2,'0')}</div>
+              </td>
+              <td valign="bottom" style="border:none; padding: 0 0 8px 15px; margin:0;">
+                <div style="margin-bottom: 12px; line-height: 1;">
+                  <span style="display:inline-block; width:12px; height:12px; background:#FFD100; border-radius:50%; vertical-align: middle;"></span>
+                  <span style="font-size:14px; font-weight:bold; color:#FFD100; margin-left:8px; letter-spacing:2px; font-family: Arial; vertical-align: middle;">PART ${numToEng(numStr)}</span>
+                </div>
+                <div style="font-size:28px; font-weight:bold; color:#2E84C5; line-height:1.2; letter-spacing:0.5px;">${cleanTitle}</div>
+              </td>
+            </tr>
+          </tbody>
         </table>
-        <div style="color: #76B92E; font-size: 35px; font-weight: 900; margin: 15px 0 30px 10px;">↘</div>
+        <div style="color:#76B92E; font-size:38px; font-weight:900; margin: 15px 0 40px 15px; line-height: 1;">↘</div>
       </section>`;
     }
 
-    // --- 二级标题 (维持 v19.0 稳定结构) ---
+    // --- 二级标题: 稳定边框版 ---
     else if(line.startsWith("## ")){
       let content = line.replace("## ","");
       html += `
-      <section style="margin: 35px 0 20px; padding: 0; clear: both;">
-        <section style="display: inline-block; border-left: 4px solid #76B92E; padding-left: 12px; line-height: 1.4;">
+      <section style="margin: 40px 0 20px; padding: 0; clear: both;">
+        <section style="display: inline-block; border-left: 4px solid #76B92E; padding-left: 14px; line-height: 1.4;">
           <span style="font-size: 21px; font-weight: bold; color: #2E84C5; display: inline-block; vertical-align: middle;">
             ${content}
           </span>
@@ -100,20 +103,20 @@ function generate(){
     else if(line.startsWith("【") && line.endsWith("】")){
       let content = line.replace(/[【】]/g,'');
       html += `
-      <section style="text-align: center; margin: 25px 0;">
-        <span style="display: inline-block; background-color: #2E84C5; color: #ffffff; padding: 6px 28px; border-radius: 50px; font-size: 14px; font-weight: bold; letter-spacing: 1px;">
+      <section style="text-align: center; margin: 30px 0;">
+        <span style="display: inline-block; background-color: #2E84C5; color: #ffffff; padding: 6px 30px; border-radius: 50px; font-size: 14px; font-weight: bold; letter-spacing: 1px;">
           ${content}
         </span>
       </section>`;
     }
 
-    // --- 引用 ---
+    // --- 引用: 编者按/金句 ---
     else if(line.startsWith("> ")){
       let content = line.replace("> ","");
       let theme = content.includes("编者按") ? "#2E84C5" : "#FFD100";
       let bg = content.includes("编者按") ? "#F2F7FB" : "#FCFAF2";
       html += `
-      <section style="margin: 30px 0; background-color: ${bg}; border-left: 5px solid ${theme}; padding: 25px; line-height: 2.1; font-size: 16px; color: #444; text-align: justify; border-radius: 0 8px 8px 0;">
+      <section style="margin: 35px 0; background-color: ${bg}; border-left: 5px solid ${theme}; padding: 25px 30px; line-height: 2.1; font-size: 16px; color: #444; text-align: justify;">
         ${content}
       </section>`;
     }
@@ -121,20 +124,16 @@ function generate(){
     // --- 三色分割线 ---
     else if(line==="---"){
       html += `
-      <section style="text-align: center; margin: 50px 0;">
-        <span style="display: inline-block; width: 8px; height: 8px; background: #2E84C5; border-radius: 50%; margin: 0 6px;"></span>
-        <span style="display: inline-block; width: 10px; height: 10px; background: #FFD100; border-radius: 50%; margin: 0 6px;"></span>
-        <span style="display: inline-block; width: 8px; height: 8px; background: #76B92E; border-radius: 50%; margin: 0 6px;"></span>
+      <section style="text-align: center; margin: 60px 0;">
+        <span style="display: inline-block; width: 10px; height: 10px; background: #2E84C5; border-radius: 50%; margin: 0 7px;"></span>
+        <span style="display: inline-block; width: 12px; height: 12px; background: #FFD100; border-radius: 50%; margin: 0 7px;"></span>
+        <span style="display: inline-block; width: 10px; height: 10px; background: #76B92E; border-radius: 50%; margin: 0 7px;"></span>
       </section>`;
     }
 
-    // --- 图片与正文 ---
-    else if(line.startsWith("![") && line.includes("](")){
-      let match=line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
-      if(match){ html += `<section style="text-align: center; margin: 30px 0;"><img src="${match[2]}" style="max-width: 100%; border-radius: 8px;"></section>`; }
-    }
+    // --- 正文 ---
     else{
-      html += `<p style="text-indent: 2.1em; line-height: 2.2; font-size: 16px; color: #333; margin-bottom: 25px; text-align: justify; letter-spacing: 0.3px;">${line}</p>`;
+      html += `<p style="text-indent: 2.1em; line-height: 2.2; font-size: 16px; color: #333; margin-bottom: 28px; text-align: justify; letter-spacing: 0.5px;">${line}</p>`;
     }
   });
 
@@ -147,7 +146,7 @@ function copyHTML(){
   window.getSelection().removeAllRanges();
   window.getSelection().addRange(range);
   document.execCommand('copy');
-  alert("🍓 HOPE v20.0 智能版已复制！");
+  alert("🍓 v21.0 视觉复刻版 复制成功！");
 }
 
 window.onload = generate;
