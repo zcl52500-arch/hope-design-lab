@@ -2,163 +2,51 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · 公众号排版器</title>
-
+<title>HOPE Design Lab · 高级公众号排版器</title>
 <style>
-body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Microsoft YaHei",sans-serif;
-  background:#f4f5f7;
-  margin:0;
-  padding:30px;
-}
-
-h1,h2,h3{
-  margin:0;
-}
-
-.toolbar{
-  margin-bottom:15px;
-}
-
-button{
-  background:#1e90ff;
-  color:white;
-  border:none;
-  padding:10px 16px;
-  border-radius:6px;
-  cursor:pointer;
-  margin-right:10px;
-}
-
-button:hover{
-  background:#1877cc;
-}
-
-.container{
-  display:flex;
-  gap:20px;
-  flex-wrap:wrap;
-}
-
-textarea{
-  width:48%;
-  min-width:300px;
-  height:75vh;
-  padding:20px;
-  font-size:15px;
-  line-height:1.6;
-  border-radius:8px;
-  border:1px solid #ddd;
-  resize:none;
-}
-
-.preview{
-  width:48%;
-  min-width:300px;
-  background:white;
-  padding:40px;
-  border-radius:10px;
-  overflow:auto;
-  max-width:640px;
-}
-
-.h1{
-  font-size:28px;
-  font-weight:700;
-  margin:30px 0 20px 0;
-  text-align:center;
-}
-
-.h2{
-  font-size:22px;
-  font-weight:bold;
-  border-left:6px solid #1e90ff;
-  padding-left:12px;
-  margin:26px 0 14px 0;
-}
-
-.h3{
-  font-size:18px;
-  font-weight:bold;
-  color:#1e90ff;
-  margin:20px 0 10px 0;
-}
-
-.p{
-  font-size:16px;
-  line-height:1.8;
-  color:#333;
-  margin:14px 0;
-}
-
-.quote{
-  border-left:4px solid #ccc;
-  padding-left:12px;
-  color:#555;
-  margin:18px 0;
-}
-
-.hr{
-  border-top:1px solid #eee;
-  margin:30px 0;
-}
-
-.qa-q{
-  font-weight:bold;
-  margin-top:18px;
-}
-
-.qa-a{
-  margin:10px 0;
-}
-
-.card{
-  background:#f7f7f7;
-  padding:15px;
-  border-radius:6px;
-  margin:15px 0;
-}
-
-.meta{
-  color:#888;
-  font-size:14px;
-  margin-bottom:10px;
-}
-
-.toc{
-  background:#f0f0f0;
-  border-radius:8px;
-  padding:12px 16px;
-  margin-bottom:20px;
-}
-
-.toc h2{
-  margin-top:0;
-}
-
-.toc ul{
-  list-style:none;
-  padding-left:0;
-}
-
-.toc li{
-  margin:4px 0;
-}
-.toc a{
-  text-decoration:none;
-  color:#1e90ff;
-}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Microsoft YaHei",sans-serif;background:#f4f5f7;margin:0;padding:30px;}
+h1,h2,h3{margin:0;}
+.toolbar{margin-bottom:15px;}
+button{background:#1e90ff;color:white;border:none;padding:10px 16px;border-radius:6px;cursor:pointer;margin-right:10px;}
+button:hover{background:#1877cc;}
+.container{display:flex;gap:20px;flex-wrap:wrap;}
+textarea{width:48%;min-width:300px;height:75vh;padding:20px;font-size:15px;line-height:1.6;border-radius:8px;border:1px solid #ddd;resize:none;}
+.preview{width:48%;min-width:300px;background:white;padding:40px;border-radius:10px;overflow:auto;max-width:640px;}
+.h1{font-size:28px;font-weight:700;margin:30px 0 20px 0;text-align:center;}
+.h2{font-size:22px;font-weight:bold;border-left:6px solid #1e90ff;padding-left:12px;margin:26px 0 14px 0;}
+.h3{font-size:18px;font-weight:bold;color:#1e90ff;margin:20px 0 10px 0;}
+.p{font-size:16px;line-height:1.8;color:#333;margin:14px 0;}
+.quote{border-left:4px solid #ccc;padding-left:12px;color:#555;margin:18px 0;}
+.hr{border-top:1px solid #eee;margin:30px 0;}
+.qa-q{font-weight:bold;margin-top:18px;}
+.qa-a{margin:10px 0;}
+.card{background:#f7f7f7;padding:15px;border-radius:6px;margin:15px 0;}
+.meta{color:#888;font-size:14px;margin-bottom:10px;}
+.toc{background:#f0f0f0;border-radius:8px;padding:12px 16px;margin-bottom:20px;}
+.toc h2{margin-top:0;}
+.toc ul{list-style:none;padding-left:0;}
+.toc li{margin:4px 0;}
+.toc a{text-decoration:none;color:#1e90ff;}
+.toc li a.active{font-weight:bold;text-decoration:underline;}
+.article-selector{margin-bottom:20px;}
+.article-selector button{background:#ffa500;}
+.article-selector button:hover{background:#e69500;}
 </style>
 </head>
-
 <body>
 
-<h1>HOPE Design Lab · 公众号排版器</h1>
+<h1>HOPE Design Lab · 高级公众号排版器</h1>
 
 <div class="toolbar">
 <button onclick="generate()">生成排版</button>
 <button onclick="copyHTML()">复制公众号HTML</button>
 <span id="meta" class="meta"></span>
+</div>
+
+<div class="article-selector">
+<button onclick="loadArticle(0)">文章 1</button>
+<button onclick="loadArticle(1)">文章 2</button>
+<button onclick="loadArticle(2)">文章 3</button>
 </div>
 
 <div class="toc" id="toc">
@@ -167,10 +55,14 @@ textarea{
 </div>
 
 <div class="container">
+<textarea id="input"></textarea>
+<div id="output" class="preview"></div>
+</div>
 
-<textarea id="input">
-
-# HOPE学堂观察
+<script>
+// 多篇文章示例
+const articles=[
+`# HOPE学堂观察
 
 ## 为什么要做社区教育
 
@@ -198,30 +90,44 @@ A：因为这里可以自由表达。
 地点：HOPE学堂  
 报名：公众号后台
 
-![示例图片](assets/images/sample.jpg "这是图片说明示例")
+![示例图片](assets/images/sample.jpg "图片说明示例")`,
 
-</textarea>
+`# 第二篇文章示例
 
-<div id="output" class="preview"></div>
+## 样例段落
 
-</div>
+这是第二篇文章的正文内容。
 
-<script>
+> 引用示例。
+
+---
+
+### 小故事2
+
+Q：你喜欢HOPE吗？
+
+A：非常喜欢！`,
+
+`# 第三篇文章示例
+
+## 段落示例
+
+正文内容。`
+];
+
+function loadArticle(idx){
+  document.getElementById("input").value=articles[idx];
+  generate();
+}
+
 function generate(){
-  let text=document.getElementById("input").value;
-  text=text.replace(/\r/g,"");
-  text=text.replace(/\n{3,}/g,"\n\n");
-
+  let text=document.getElementById("input").value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
   let lines=text.split("\n");
-  let html="";
-  let wordCount=0;
-  let inCard=false;
-  let tocList=[];
+  let html="", wordCount=0, inCard=false, tocList=[];
 
   lines.forEach((line,index)=>{
     line=line.trim();
     if(line==="") return;
-
     wordCount+=line.length;
 
     if(line.startsWith("# ")){
@@ -242,25 +148,13 @@ function generate(){
     } else if(line.startsWith("A：") || line.startsWith("A:")){
       html+=`<p class="qa-a">${line}</p>`;
     } else if(line==="[活动信息]"){
-      html+=`<div class="card">`;
-      inCard=true;
-    } else if(inCard && line===""){
-      html+=`</div>`;
-      inCard=false;
-    } else if(inCard){
-      html+=`<p class="p">${line}</p>`;
+      html+=`<div class="card">`; inCard=true;
+    } else if(inCard && line===""){ html+=`</div>`; inCard=false;
+    } else if(inCard){ html+=`<p class="p">${line}</p>`;
     } else if(line.startsWith("![") && line.includes("](")){
-      // 图片解析
       let match=line.match(/!\[([^\]]*)\]\(([^ )]+)(?: \"([^\"]*)\")?\)/);
-      if(match){
-        let alt=match[1];
-        let src=match[2];
-        let caption=match[3]||"";
-        html+=`<figure><img src="${src}" alt="${alt}"><figcaption>${caption}</figcaption></figure>`;
-      }
-    } else {
-      html+=`<p class="p">${line}</p>`;
-    }
+      if(match){ let alt=match[1], src=match[2], caption=match[3]||""; html+=`<figure><img src="${src}" alt="${alt}"><figcaption>${caption}</figcaption></figure>`;}
+    } else { html+=`<p class="p">${line}</p>`;}
   });
 
   document.getElementById("output").innerHTML=html;
@@ -273,6 +167,17 @@ function generate(){
   });
   document.getElementById("toc-list").innerHTML=tocHtml;
 
+  // 高亮当前章节
+  window.onscroll=function(){
+    let fromTop=window.scrollY+50;
+    tocList.forEach(item=>{
+      let elem=document.getElementById(item.id);
+      let link=document.querySelector(`#toc-list a[href="#${item.id}"]`);
+      if(elem.offsetTop<=fromTop && elem.offsetTop + elem.offsetHeight>fromTop){link.classList.add("active");}
+      else{link.classList.remove("active");}
+    });
+  }
+
   let readTime=Math.ceil(wordCount/300);
   document.getElementById("meta").innerText=`字数 ${wordCount} · 预计阅读 ${readTime} 分钟`;
 }
@@ -283,8 +188,8 @@ function copyHTML(){
   alert("已复制，可直接粘贴到公众号编辑器");
 }
 
-generate();
+// 默认加载第一篇文章
+loadArticle(0);
 </script>
-
 </body>
 </html>
