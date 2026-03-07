@@ -2,46 +2,39 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>HOPE 学堂 | 通用排版实验室</title>
+    <title>HOPE 学堂 | 智能排版实验室</title>
     <style>
         :root { --hope-blue: #2E84C5; --hope-green: #7AB642; --hope-yellow: #FFD100; }
         body { margin: 0; display: flex; height: 100vh; font-family: -apple-system, sans-serif; background: #f0f2f5; }
         
-        /* 工具栏 */
-        #toolbar { width: 60px; background: #2E84C5; display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 20px; }
-        .tool-btn { color: white; cursor: pointer; font-size: 12px; text-align: center; width: 40px; height: 40px; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .tool-btn:hover { background: rgba(255,255,255,0.2); }
-
         /* 输入区 */
         #input-panel { width: 40%; background: white; border-right: 1px solid #ddd; padding: 20px; display: flex; flex-direction: column; }
-        textarea { flex: 1; border: 1px solid #eee; padding: 15px; font-size: 14px; line-height: 1.6; resize: none; outline: none; }
+        textarea { flex: 1; border: 1px solid #eee; padding: 15px; font-size: 14px; line-height: 1.6; resize: none; outline: none; border-radius: 4px; }
 
         /* 预览画布 */
         #preview-panel { flex: 1; padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
         .canvas { width: 100%; max-width: 600px; background: white; padding: 60px 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 100%; }
 
-        /* 样式库 (与 PDF 100% 同步) */
-        .p-num { font-size: 50px; color: #EFEFEF; font-weight: 800; font-family: Arial; margin-bottom: -10px; }
-        .p-title { color: var(--hope-blue); font-size: 20px; font-weight: bold; border-bottom: 3px solid var(--hope-blue); display: inline-block; padding-bottom: 5px; margin-bottom: 40px; }
-        .slice-h { color: var(--hope-blue); font-size: 18px; font-weight: bold; margin-top: 30px; display: flex; align-items: center; }
+        /* 动态样式库 */
+        .p-num { font-size: 60px; color: #EFEFEF; font-weight: 800; font-family: Arial; margin-bottom: -15px; line-height: 1; }
+        .p-title { color: var(--hope-blue); font-size: 20px; font-weight: bold; border-bottom: 3px solid var(--hope-blue); display: inline-block; padding-bottom: 5px; margin-bottom: 40px; text-transform: uppercase; }
+        .slice-h { color: var(--hope-blue); font-size: 18px; font-weight: bold; margin-top: 35px; display: flex; align-items: center; }
         .slice-h::before { content: "● 🧩"; color: var(--hope-green); margin-right: 10px; }
-        .v-line { border-left: 5px solid var(--hope-blue); padding-left: 15px; margin: 30px 0 15px; font-weight: bold; color: #333; }
+        .v-line { border-left: 5px solid var(--hope-blue); padding-left: 15px; margin: 30px 0 15px; font-weight: bold; color: #333; font-size: 17px; }
         .arrow { color: var(--hope-yellow); font-size: 32px; margin: 15px 0 20px 2em; }
-        p { text-indent: 2em; line-height: 1.8; text-align: justify; color: #3F3F3F; margin-bottom: 22px; }
+        p { text-indent: 2em; line-height: 1.8; text-align: justify; color: #3F3F3F; margin-bottom: 22px; font-size: 15px; }
     </style>
 </head>
 <body>
 
-<div id="toolbar">
-    <div class="tool-btn" onclick="addTag('01')">数字</div>
-    <div class="tool-btn" onclick="addTag('PART')">标题</div>
-    <div class="tool-btn" onclick="addTag('切片')">切片</div>
-    <div class="tool-btn" onclick="addTag('关于')">竖线</div>
-    <div class="tool-btn" onclick="addTag('↘')">箭头</div>
-</div>
-
 <div id="input-panel">
-    <textarea id="editor" placeholder="在此粘贴文字..."></textarea>
+    <h3 style="color:var(--hope-blue); margin-top:0;">草莓的排版实验室 v3.0</h3>
+    <textarea id="editor" placeholder="在此粘贴任意文字...
+规则提示：
+1. 纯数字行（如 02）会自动变大。
+2. 包含 'PART' 的行会变蓝色大标题。
+3. 包含 '切片' 或 '项目' 的行会变绿色图标标题。
+4. 包含 '关于' 或 '————' 的行会变蓝色竖线。"></textarea>
 </div>
 
 <div id="preview-panel">
@@ -52,35 +45,38 @@
     const editor = document.getElementById('editor');
     const viewer = document.getElementById('viewer');
 
-    function addTag(tag) {
-        const start = editor.selectionStart;
-        const end = editor.selectionEnd;
-        const text = editor.value;
-        // 在选中行前面加上标识词，触发识别逻辑
-        editor.value = text.substring(0, start) + tag + " " + text.substring(start, end) + text.substring(end);
-        updatePreview();
-    }
-
     function updatePreview() {
-        const lines = editor.value.split('\n').filter(l => l.trim() !== '');
+        const text = editor.value;
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l !== '');
+        
         let html = '';
-        lines.forEach(l => {
-            const line = l.trim();
-            if (/^0\d/.test(line)) {
-                html += `<div class="p-num">${line.match(/\d+/)[0]}</div>`;
-            } else if (line.includes('PART')) {
+        lines.forEach(line => {
+            // 1. 智能数字识别：只要这一行只有数字（或0开头的数字），它就变大
+            if (/^\d+$/.test(line) || /^[0-9]{2}$/.test(line)) {
+                html += `<div class="p-num">${line}</div>`;
+            } 
+            // 2. 识别 PART 标题
+            else if (line.toUpperCase().includes('PART')) {
                 html += `<div class="p-title">${line}</div>`;
-            } else if (line.includes('切片')) {
-                html += `<div class="slice-h">${line.replace('切片', '')}</div>`;
-            } else if (line.includes('↘')) {
+            }
+            // 3. 识别关键节点（切片/项目）
+            else if (line.includes('切片') || line.includes('项目')) {
+                html += `<div class="slice-h">${line}</div>`;
+            }
+            // 4. 识别副标题（关于/分割线）
+            else if (line.includes('关于') || line.includes('——') || line.includes('————')) {
+                html += `<div class="v-line">${line.replace(/[—|]/g, '').trim()}</div>`;
+            }
+            // 5. 识别箭头
+            else if (line.includes('↘')) {
                 html += `<div class="arrow">↘</div>`;
-            } else if (line.includes('关于') || line.includes('┃')) {
-                html += `<div class="v-line">${line.replace('关于', '')}</div>`;
-            } else {
+            }
+            // 6. 其余全归为正文
+            else {
                 html += `<p>${line}</p>`;
             }
         });
-        viewer.innerHTML = html || '<p style="color:#ccc; text-align:center;">等待输入...</p>';
+        viewer.innerHTML = html || '<p style="color:#ccc; text-align:center; margin-top:100px;">等待内容输入...</p>';
     }
 
     editor.addEventListener('input', updatePreview);
