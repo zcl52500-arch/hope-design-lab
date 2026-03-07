@@ -26,4 +26,127 @@ button { background:#2E84C5; color:#fff; padding:8px 20px; border-radius:20px; b
     <h1 style="margin:0; font-size:20px;">🍓 HOPE Design Lab <span style="font-size:11px; background:#76B92E; color:#fff; padding:2px 8px; border-radius:10px; margin-left:10px;">v19.0 深度对齐版</span></h1>
     <button onclick="copyHTML()">一键复制 HTML</button>
   </div>
-  <div class="header-
+  <div class="header-hint">
+    💡 <b>指令提示：</b>
+    <code>## 标题</code> 二级标题(左绿竖线蓝字) | 
+    <code>【标签】</code> 蓝色圆角胶囊
+  </div>
+</header>
+
+<div class="main-workspace">
+  <div class="editor-zone">
+    <textarea id="input" oninput="generate()" placeholder="在此输入文案..."></textarea>
+  </div>
+  <div id="output" class="preview-zone"></div>
+</div>
+
+<script>
+const inputEl = document.getElementById("input");
+const outputEl = document.getElementById("output");
+
+function numToEng(n){
+  const words = ["ZERO","ONE","TWO","THREE","FOUR","FIVE","SIX","SEVEN","EIGHT","NINE","TEN"];
+  return words[parseInt(n)] || "SECTION";
+}
+
+function generate(){
+  const text = inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
+  const lines = text.split("\n");
+  let html = "";
+
+  lines.forEach(line => {
+    line = line.trim();
+    if(!line) return;
+
+    // --- 二级标题 (修正：使用单层容器 + 边框模拟竖线) ---
+    if(line.startsWith("## ")){
+      let content = line.replace("## ","");
+      html += `
+      <section style="margin: 35px 0 20px; padding: 0; clear: both;">
+        <section style="display: inline-block; border-left: 4px solid #76B92E; padding-left: 12px; line-height: 1.4;">
+          <span style="font-size: 21px; font-weight: bold; color: #2E84C5; display: inline-block; vertical-align: middle;">
+            ${content}
+          </span>
+        </section>
+      </section>`;
+    }
+
+    // --- 蓝色圆角胶囊 ---
+    else if(line.startsWith("【") && line.endsWith("】")){
+      let content = line.replace(/[【】]/g,'');
+      html += `
+      <section style="text-align: center; margin: 25px 0;">
+        <span style="display: inline-block; background-color: #2E84C5; color: #ffffff; padding: 5px 25px; border-radius: 50px; font-size: 14px; font-weight: bold; letter-spacing: 1px;">
+          ${content}
+        </span>
+      </section>`;
+    }
+
+    // --- 一级标题 (维持 HOPE 大数字风格) ---
+    else if(line.startsWith("# ")){
+      let content = line.replace("# ","");
+      let numMatch = content.match(/\d+/);
+      let num = numMatch ? numMatch[0] : "01";
+      let cleanTitle = content.replace(num,"").trim();
+      html += `
+      <section style="margin: 50px 0 20px;">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td width="90" style="font-size: 70px; font-weight: 900; color: #EBF4E2; font-family: Arial; line-height: 1;">${num.padStart(2,'0')}</td>
+            <td style="padding-left: 15px; vertical-align: bottom;">
+               <div style="font-size: 13px; font-weight: bold; color: #FFD100; margin-bottom: 5px;">PART ${numToEng(num)}</div>
+               <div style="font-size: 24px; font-weight: bold; color: #2E84C5;">${cleanTitle}</div>
+            </td>
+          </tr>
+        </table>
+        <div style="color: #76B92E; font-size: 30px; font-weight: 900; margin-top: 10px; margin-left: 5px;">↘</div>
+      </section>`;
+    }
+
+    // --- 引用 (编者按样式) ---
+    else if(line.startsWith("> ")){
+      let content = line.replace("> ","");
+      let theme = content.includes("编者按") ? "#2E84C5" : "#FFD100";
+      let bg = content.includes("编者按") ? "#F2F7FB" : "#FCFAF2";
+      html += `
+      <section style="margin: 30px 0; background-color: ${bg}; border-left: 5px solid ${theme}; padding: 25px; line-height: 2.1; font-size: 16px; color: #444; text-align: justify;">
+        ${content}
+      </section>`;
+    }
+
+    // --- 三色分割线 ---
+    else if(line==="---"){
+      html += `
+      <section style="text-align: center; margin: 50px 0;">
+        <span style="display: inline-block; width: 8px; height: 8px; background: #2E84C5; border-radius: 50%; margin: 0 5px;"></span>
+        <span style="display: inline-block; width: 10px; height: 10px; background: #FFD100; border-radius: 50%; margin: 0 5px;"></span>
+        <span style="display: inline-block; width: 8px; height: 8px; background: #76B92E; border-radius: 50%; margin: 0 5px;"></span>
+      </section>`;
+    }
+
+    // --- 图片与正文 ---
+    else if(line.startsWith("![") && line.includes("](")){
+      let match=line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
+      if(match){ html += `<section style="text-align: center; margin: 30px 0;"><img src="${match[2]}" style="max-width: 100%; border-radius: 8px;"></section>`; }
+    }
+    else{
+      html += `<p style="text-indent: 2em; line-height: 2.1; font-size: 16px; color: #333; margin-bottom: 25px; text-align: justify;">${line}</p>`;
+    }
+  });
+
+  outputEl.innerHTML = html;
+}
+
+function copyHTML(){
+  const range = document.createRange();
+  range.selectNode(outputEl);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+  document.execCommand('copy');
+  alert("🍓 HOPE v19.0 复制成功！");
+}
+
+window.onload = generate;
+</script>
+</body>
+</html>
