@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · v28.1 金句&引用区分版</title>
+<title>HOPE Design Lab · v28.2 指令提示版</title>
 <style>
 * { box-sizing:border-box; }
 body { margin:0; font-family:sans-serif; background:#F4F6F9; display:flex; flex-direction:column; height:100vh; }
@@ -10,9 +10,11 @@ header { background:white; padding:15px 30px; border-bottom:1px solid #ddd; disp
 .main { display:grid; grid-template-columns:1fr 1fr; flex:1; overflow:hidden; }
 textarea { width:100%; height:100%; padding:30px; border:none; outline:none; font-size:15px; background:#fafafa; resize:none; }
 .preview { background:white; overflow-y:auto; padding:40px; }
-
-/* 按钮 */
 button { background:#2E84C5; color:white; border:none; padding:10px 25px; border-radius:20px; cursor:pointer; font-weight:bold; }
+
+/* 指令提示区 */
+.hint { background:#F8F9FA; padding:15px 20px; margin-bottom:10px; border-radius:6px; border-left:4px solid #76B92E; font-size:13px; color:#666; }
+.hint code { background:#eee; padding:2px 5px; border-radius:3px; color:#2E84C5; font-weight:bold; font-family:monospace; }
 
 /* 核心样式 */
 h1, h2, p, section { margin:0; padding:0; }
@@ -38,24 +40,35 @@ h1, h2, p, section { margin:0; padding:0; }
 <body>
 
 <header>
-<h1 style="margin:0; font-size:18px; color:#333;">🍓 HOPE Design Lab <span style="color:#76B92E;">v28.1 (金句&引用区分)</span></h1>
+<h1 style="margin:0; font-size:18px; color:#333;">🍓 HOPE Design Lab <span style="color:#76B92E;">v28.2 (指令提示版)</span></h1>
 <button onclick="copyHTML()">一键复制 HTML 全文</button>
 </header>
 
 <div class="main">
-<textarea id="input" oninput="generate()" placeholder="粘贴全文文案，如：# 01 标题内容..."></textarea>
+<div style="display:flex; flex-direction:column;">
+  <div class="hint">
+    💡 <b>语法提示：</b><br>
+    <code># 01 一级标题</code> — 大数字 + PART + 蓝色标题 + 绿色箭头<br>
+    <code>## 二级标题</code> — 左绿竖线 + 蓝色字体<br>
+    <code>【标签】</code> — 蓝色圆角胶囊<br>
+    <code>> 引用</code> — 浅蓝灰块 + 蓝条<br>
+    <code>!! 金句</code> — 金黄色块<br>
+    <code>---</code> — 三色分割线
+  </div>
+  <textarea id="input" oninput="generate()" placeholder="粘贴全文文案，如：# 01 标题内容..."></textarea>
+</div>
 <div id="output" class="preview"></div>
 </div>
 
 <script>
-const inputEl = document.getElementById("input");
-const outputEl = document.getElementById("output");
-const engMap = {"01":"ONE","02":"TWO","03":"THREE","04":"FOUR","05":"FIVE","06":"SIX","07":"SEVEN","08":"EIGHT","09":"NINE","10":"TEN"};
+const inputEl=document.getElementById("input");
+const outputEl=document.getElementById("output");
+const engMap={"01":"ONE","02":"TWO","03":"THREE","04":"FOUR","05":"FIVE","06":"SIX","07":"SEVEN","08":"EIGHT","09":"NINE","10":"TEN"};
 
 function generate(){
-  const text = inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
-  const lines = text.split("\n");
-  let html = "";
+  const text=inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
+  const lines=text.split("\n");
+  let html="";
 
   lines.forEach(line=>{
     line=line.trim();
@@ -129,7 +142,7 @@ function copyHTML(){
   window.getSelection().removeAllRanges();
   window.getSelection().addRange(range);
   document.execCommand('copy');
-  alert("🍓 HOPE v28.1 复制成功！\n金句/引用/一级二级标题/胶囊 样式均已锁定");
+  alert("🍓 HOPE v28.2 复制成功！\n金句/引用/一级二级标题/胶囊 样式均已锁定");
 }
 
 window.onload=generate;
