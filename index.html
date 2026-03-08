@@ -2,129 +2,183 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · v28.0 核心锁死版</title>
+<title>HOPE学堂排版工具 v31.0</title>
 <style>
-* { box-sizing: border-box; }
-body { margin:0; font-family: sans-serif; background:#F4F6F9; display:flex; flex-direction:column; height:100vh; }
-header { background:white; padding:15px 30px; border-bottom:1px solid #ddd; display:flex; justify-content:space-between; align-items:center; }
-.main { display:grid; grid-template-columns:1fr 1fr; flex:1; overflow:hidden; }
-textarea { width:100%; height:100%; padding:30px; border:none; outline:none; font-size:15px; background:#fafafa; resize:none; }
-.preview { background:white; overflow-y:auto; padding:40px; }
-button { background:#2E84C5; color:white; border:none; padding:10px 25px; border-radius:20px; cursor:pointer; font-weight:bold; }
-
-/* 金句样式 */
-.gold-quote { background:#FFF7E0; border-left:6px solid #FFD100; padding:20px 25px; margin:30px 0; line-height:2.1; font-size:16px; color:#444; border-radius:0 8px 8px 0; text-align:justify; }
-
-/* 蓝色胶囊 */
-.blue-capsule { display:inline-block; background-color:#2E84C5; color:#fff; padding:5px 25px; border-radius:50px; font-size:14px; font-weight:bold; letter-spacing:1px; margin:20px 0; text-align:center; }
-
-/* 分割线 */
-.triple-dot { text-align:center; margin:60px 0; }
-.triple-dot span { display:inline-block; border-radius:50%; margin:0 8px; }
-.triple-dot .blue { width:8px; height:8px; background:#2E84C5; }
-.triple-dot .yellow { width:12px; height:12px; background:#FFD100; }
-.triple-dot .green { width:8px; height:8px; background:#76B92E; }
+body{ margin:0; font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",sans-serif; background:#f5f6f8; }
+header{ background:white; padding:18px 30px; font-size:18px; font-weight:600; border-bottom:1px solid #eee; display:flex; justify-content:space-between; align-items:center;}
+.guide{ background:#fff; padding:20px 30px; border-bottom:1px solid #eee; font-size:14px; line-height:1.7; }
+.toggle{ cursor:pointer; color:#2E84C5; font-weight:600; margin-bottom:10px; }
+.guide-content{ display:none; }
+.container{ display:flex; height:calc(100vh - 160px); }
+.panel{ width:50%; padding:30px; box-sizing:border-box; overflow:auto; display:flex; flex-direction:column; }
+textarea{ width:100%; flex:1; border:1px solid #ddd; border-radius:6px; padding:15px; font-size:15px; line-height:1.7; resize:none; outline:none; }
+button{ margin-top:15px; padding:10px 18px; border:none; background:#2E84C5; color:white; border-radius:6px; cursor:pointer; margin-right:10px; font-weight:600; }
+.preview{ background:white; padding:40px; border-radius:8px; box-shadow:0 4px 10px rgba(0,0,0,0.05); min-height:100%; }
 </style>
 </head>
 <body>
 
 <header>
-<h1 style="margin:0; font-size:18px; color:#333;">🍓 HOPE Design Lab <span style="color:#76B92E;">v28.0 核心锁死版</span></h1>
-<button onclick="copyHTML()">一键复制 HTML 全文</button>
+    <span>HOPE学堂 · 微信公众号排版工具 <small style="font-weight:normal; color:#76B92E; margin-left:10px;">v31.0 稳定版</small></span>
 </header>
 
-<div class="main">
-<textarea id="input" oninput="generate()" placeholder="粘贴全文文案，如：# 01 标题内容..."></textarea>
-<div id="output" class="preview"></div>
+<div class="guide">
+    <div class="toggle" onclick="toggleGuide()">▼ 使用语法说明（点击展开）</div>
+    <div class="guide-content" id="guide">
+        <p><b>一级标题：</b># 01 标题 | <b>二级标题：</b>## 小标题 | <b>蓝色标签：</b>【HOPE学堂】</p>
+        <p><b>引用：</b>> 编者按 | <b>分割线：</b>--- | <b>金句：</b>!! 这里的文字会加底色</p>
+        <p><b>图片：</b>![图](URL) | <b>图片说明：</b>(图：说明文字)</p>
+        <p><b>作者：</b>@作者 (回车) 姓名 (回车) 机构 | <b>关注：</b>@关注</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="panel">
+        <textarea id="input" oninput="generate()">
+# 01 未来教育的空间想象
+
+## 为什么学习建筑
+
+教育不是灌输，而是点燃火焰。
+
+!! 教育不是灌输，而是点燃火焰
+
+---
+
+> 编者按
+未来教育不仅改变课程，也改变空间。
+
+![图](https://picsum.photos/800/400)
+(图：学习空间示意)
+
+@作者
+张三
+HOPE学堂研究员
+
+@关注
+        </textarea>
+        <div>
+            <button onclick="generate()">生成排版</button>
+            <button onclick="copy()">复制排版</button>
+        </div>
+    </div>
+    <div class="panel">
+        <div id="output" class="preview"></div>
+    </div>
 </div>
 
 <script>
-const inputEl = document.getElementById("input");
-const outputEl = document.getElementById("output");
+function toggleGuide(){
+    let g=document.getElementById("guide");
+    g.style.display = (g.style.display==="block") ? "none" : "block";
+}
+
 const engMap = {"01":"ONE","02":"TWO","03":"THREE","04":"FOUR","05":"FIVE","06":"SIX","07":"SEVEN","08":"EIGHT","09":"NINE","10":"TEN"};
 
 function generate(){
-    const text = inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
-    const lines = text.split("\n");
-    let html = "";
+    let text=document.getElementById("input").value;
+    let lines=text.split("\n");
+    let html="";
 
-    lines.forEach(line => {
-        line = line.trim();
-        if(!line) return;
+    for(let i=0; i<lines.length; i++){
+        let line = lines[i].trim();
+        if(line==="") { html+=`<section style="height:18px"></section>`; continue; }
 
-        // 一级标题
+        /* 一级标题 - 核心修复：采用 03 稳定布局 + 精准颜色 + 底部对齐 */
         if(line.startsWith("# ")){
-            let raw = line.replace("# ","");
-            let numStr = (raw.match(/^\d+/) || ["01"])[0];
-            let titleStr = raw.replace(/^\d+/,"").trim();
-            let engStr = engMap[numStr] || "SECTION";
+            let t = line.replace("# ","");
+            let numMatch = t.match(/^\d+/);
+            let number = numMatch ? numMatch[0] : "01";
+            let title = t.replace(/^\d+\s*/,"");
+            let eng = engMap[number] || "SECTION";
             html += `
-            <section style="margin:50px 0 40px; padding:0; clear:both; text-align:left;">
-                <section style="display:inline-block; vertical-align:bottom; white-space:nowrap !important; margin:0;">
-                    <span style="font-size:85px; font-weight:900; color:#EBF4E2; font-family:Arial, sans-serif; line-height:1; letter-spacing:-4px;">${numStr}</span>
-                </section>
-                <section style="display:inline-block; vertical-align:bottom; margin-left:15px; padding-bottom:10px; max-width:70%;">
-                    <section style="margin-bottom:8px; line-height:1;">
-                        <span style="display:inline-block; width:12px; height:12px; background-color:#FFD100; border-radius:50%; vertical-align:middle;"></span>
-                        <span style="font-size:14px; font-weight:bold; color:#FFD100; letter-spacing:2px; margin-left:8px; font-family:Arial, sans-serif; vertical-align:middle;">PART ${engStr}</span>
-                    </section>
-                    <section style="font-size:28px; font-weight:bold; color:#2E84C5; line-height:1.3; font-family:sans-serif;">${titleStr}</section>
-                </section>
-                <section style="color:#76B92E; font-size:40px; font-weight:900; margin-top:15px; margin-left:10px; line-height:1;">↘</section>
+            <section style="margin: 60px 0 40px; clear: both;">
+                <table border="0" cellpadding="0" cellspacing="0" style="border:none!important; border-collapse:collapse; width:100%; table-layout:fixed;">
+                    <tr>
+                        <td width="90" valign="bottom" style="border:none; padding:0; margin:0; text-align:right;">
+                            <span style="font-size:80px; font-weight:900; color:#EBF4E2; font-family:Arial,sans-serif; line-height:1.1; white-space:nowrap; letter-spacing:-3px; display:inline-block;">${number}</span>
+                        </td>
+                        <td valign="bottom" style="border:none; padding:0 0 10px 15px; margin:0; text-align:left;">
+                            <div style="margin-bottom:8px; line-height:1;">
+                                <span style="display:inline-block; width:12px; height:12px; background:#FFD100; border-radius:50%; vertical-align:middle;"></span>
+                                <span style="font-size:14px; font-weight:bold; color:#FFD100; letter-spacing:2px; margin-left:8px; font-family:Arial,sans-serif; vertical-align:middle;">PART ${eng}</span>
+                            </div>
+                            <div style="font-size:26px; font-weight:bold; color:#2E84C5; line-height:1.3;">${title}</div>
+                        </td>
+                    </tr>
+                </table>
+                <div style="color:#76B92E; font-size:42px; font-weight:900; margin:15px 0 0 10px; line-height:1;">↘</div>
             </section>`;
         }
 
-        // 二级标题
+        /* 二级标题 - 修复：HOPE蓝文字 + HOPE绿边 */
         else if(line.startsWith("## ")){
-            html += `
-            <section style="margin:40px 0 20px; border-left:5px solid #76B92E; padding-left:15px; line-height:1.4;">
-                <span style="font-size:21px; font-weight:bold; color:#2E84C5; font-family:sans-serif;">${line.replace("## ","")}</span>
-            </section>`;
+            let t = line.replace("## ","");
+            html += `<section style="margin:40px 0 20px 0; border-left:5px solid #76B92E; padding-left:12px;"><div style="font-size:20px; color:#2E84C5; font-weight:600;">${t}</div></section>`;
         }
 
-        // 金句识别
-        else if(line.startsWith("!!")){
-            let content = line.replace("!!","");
-            html += `<section class="gold-quote">${content}</section>`;
-        }
-
-        // 引用
-        else if(line.startsWith("> ")){
-            let content = line.replace("> ","");
-            let theme = content.includes("编者按") ? "#2E84C5" : "#FFD100";
-            let bg = content.includes("编者按") ? "#F2F7FB" : "#FCFAF2";
-            html += `<section style="margin:35px 0; background-color:${bg}; border-left:6px solid ${theme}; padding:25px 30px; line-height:2.1; font-size:16px; color:#444; text-align:justify; border-radius:0 8px 8px 0;">${content}</section>`;
-        }
-
-        // 蓝色胶囊
+        /* 蓝色胶囊 */
         else if(line.startsWith("【") && line.endsWith("】")){
-            let content = line.replace(/[【】]/g,'');
-            html += `<div class="blue-capsule">${content}</div>`;
+            let t = line.replace(/[【】]/g,"");
+            html += `<section style="text-align:center; margin:35px 0;"><span style="display:inline-block; background:#2E84C5; color:#fff; padding:6px 28px; border-radius:999px; font-size:14px; font-weight:600;">${t}</span></section>`;
         }
 
-        // 三色分割线
+        /* 引用 */
+        else if(line.startsWith(">")){
+            let t = line.replace(">","");
+            html += `<section style="margin:30px 0; background:#f4f7fb; padding:20px; border-left:4px solid #2E84C5;"><p style="margin:0; font-size:16px; color:#444; line-height:2;">${t}</p></section>`;
+        }
+
+        /* 分割线 - 修复：三色圆点对齐 */
         else if(line==="---"){
-            html += `<section class="triple-dot"><span class="blue"></span><span class="yellow"></span><span class="green"></span></section>`;
+            html += `<section style="text-align:center; margin:35px 0;"><span style="display:inline-block; width:8px; height:8px; background:#2E84C5; border-radius:50%; margin:0 6px"></span><span style="display:inline-block; width:10px; height:10px; background:#FFD100; border-radius:50%; margin:0 6px"></span><span style="display:inline-block; width:8px; height:8px; background:#76B92E; border-radius:50%; margin:0 6px"></span></section>`;
         }
 
-        // 正文
-        else {
-            html += `<p style="text-indent:2.1em; line-height:2.2; font-size:17px; color:#333; margin-bottom:28px; text-align:justify; letter-spacing:0.5px; font-family:sans-serif;">${line}</p>`;
+        /* 金句 (!!) */
+        else if(line.startsWith("!!")){
+            let t = line.replace(/^!!\s*/,"");
+            html += `<section style="margin:28px 0;"><p style="background:#FFF6D9; padding:18px; border-radius:6px; font-size:17px; line-height:2.1; color:#333; font-weight:500;">${t}</p></section>`;
         }
-    });
 
-    outputEl.innerHTML = html;
+        /* 图片 & 图片说明 */
+        else if(line.startsWith("![")){
+            let url = line.match(/\((.*?)\)/)[1];
+            html += `<section style="margin:30px 0; text-align:center;"><img src="${url}" style="width:100%; border-radius:6px"/></section>`;
+        }
+        else if(line.startsWith("(图：")){
+            let t = line.replace("(图：","").replace(")","");
+            html += `<section style="text-align:center; margin-top:-15px; margin-bottom:20px;"><p style="font-size:13px; color:#888;">${t}</p></section>`;
+        }
+
+        /* 作者模块 */
+        else if(line==="@作者"){
+            let name = lines[i+1] || "";
+            let info = lines[i+2] || "";
+            html += `<section style="margin:40px 0; padding:20px; background:#f7f7f7; border-radius:6px;"><p style="margin:0; font-weight:600; font-size:16px; color:#333;">${name}</p><p style="margin:6px 0 0 0; color:#666; font-size:14px;">${info}</p></section>`;
+            i += 2; 
+        }
+
+        /* 关注模块 */
+        else if(line==="@关注"){
+            html += `<section style="text-align:center; margin:60px 0;"><div style="font-size:20px; font-weight:600; color:#2E84C5; margin-bottom:10px;">关注 HOPE学堂</div><p style="color:#666; font-size:14px; margin:0;">与职校青年一起探索成长的可能</p></section>`;
+        }
+
+        /* 正文 - 增加首行缩进与行高优化 */
+        else{
+            html += `<section style="margin:15px 0;"><p style="margin:0; font-size:17px; line-height:2.1; color:#333; text-align:justify; text-indent:2em;">${line}</p></section>`;
+        }
+    }
+    document.getElementById("output").innerHTML = html;
 }
 
-function copyHTML(){
-    const range = document.createRange();
-    range.selectNode(outputEl);
+function copy(){
+    let range = document.createRange();
+    range.selectNode(document.getElementById("output"));
     window.getSelection().removeAllRanges();
     window.getSelection().addRange(range);
-    document.execCommand('copy');
-    alert("🍓 HOPE v28.0 核心锁死版 复制成功！");
+    document.execCommand("copy");
+    alert("🍓 排版已成功复制！可以直接粘贴到公众号后台。");
 }
-
 window.onload = generate;
 </script>
 </body>
