@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE学堂排版工具 V36</title>
+<title>HOPE学堂排版工具</title>
 
 <style>
 
@@ -95,12 +95,6 @@ HOPE学堂 · 微信公众号排版工具
 
 <div class="guide-content" id="guide">
 
-<p><b>封面</b></p>
-<p>@封面<br>主标题<br>副标题</p>
-
-<p><b>目录</b></p>
-<p>@目录</p>
-
 <p><b>一级标题</b></p>
 <p># 01 标题</p>
 
@@ -138,15 +132,9 @@ HOPE学堂 · 微信公众号排版工具
 
 <textarea id="input">
 
-@封面
-HOPE学堂
-未来教育的空间想象
+# 01 未来教育的空间想象
 
-@目录
-
-# 01 为什么学习建筑
-
-## 教育空间的变化
+## 为什么学习建筑
 
 教育不是灌输，而是点燃火焰。
 
@@ -201,7 +189,6 @@ let text=document.getElementById("input").value;
 let lines=text.split("\n");
 
 let html="";
-let toc=[];
 
 lines.forEach((line,i)=>{
 
@@ -211,65 +198,81 @@ if(line===""){
 html+=`<section style="height:18px"></section>`;
 }
 
-else if(line==="@封面"){
-
-let title=lines[i+1];
-let sub=lines[i+2];
-
-html+=`
-<section style="text-align:center;margin:50px 0">
-
-<div style="font-size:34px;font-weight:700;color:#222">${title}</div>
-
-<div style="margin-top:10px;font-size:16px;color:#666">${sub}</div>
-
-</section>
-`;
-
-}
-
-else if(line==="@目录"){
-
-html+=`<section id="toc"></section>`;
-
-}
+/* 一级标题 */
 
 else if(line.startsWith("# ")){
 
 let t=line.replace("# ","");
-toc.push(t);
 
-let num=t.match(/^\d+/);
-let number=num?num[0]:"";
+let numMatch=t.match(/^\d+/);
+let number=numMatch?numMatch[0]:"";
 
 let title=t.replace(/^\d+\s*/,"");
 
 html+=`
-<section style="margin:55px 0 25px 0;text-align:center;position:relative">
+<section style="margin:60px 0 30px 0;text-align:center;position:relative">
 
-<div style="font-size:64px;color:#eef2f6;font-weight:800;position:absolute;left:50%;transform:translateX(-50%);top:-30px">${number}</div>
+<div style="
+font-size:72px;
+color:#eef2f6;
+font-weight:800;
+position:absolute;
+left:50%;
+transform:translateX(-50%);
+top:-36px;
+">${number}</div>
 
-<div style="font-size:24px;font-weight:700;color:#222;position:relative">${title}</div>
+<div style="
+font-size:12px;
+letter-spacing:2px;
+color:#49B675;
+margin-bottom:6px;
+">PART ${number}</div>
+
+<div style="
+font-size:24px;
+font-weight:700;
+color:#222;
+position:relative;
+">${title}</div>
+
+<div style="margin-top:8px">
+
+<span style="display:inline-block;width:0;height:0;
+border-left:6px solid transparent;
+border-right:6px solid transparent;
+border-top:8px solid #49B675"></span>
+
+</div>
 
 </section>
 `;
-
 }
+
+/* 二级标题 */
 
 else if(line.startsWith("## ")){
 
 let t=line.replace("## ","");
-toc.push(t);
 
 html+=`
-<section style="margin:40px 0 20px 0;border-left:4px solid #49B675;padding-left:12px">
+<section style="
+margin:40px 0 20px 0;
+border-left:4px solid #49B675;
+padding-left:12px;
+">
 
-<div style="font-size:18px;color:#2E84C5;font-weight:600">${t}</div>
+<div style="
+font-size:18px;
+color:#2E84C5;
+font-weight:600;
+">${t}</div>
 
 </section>
 `;
-
 }
+
+/* 蓝色胶囊 */
 
 else if(line.startsWith("【") && line.endsWith("】")){
 
@@ -277,25 +280,47 @@ let t=line.replace(/[【】]/g,"");
 
 html+=`
 <section style="text-align:center;margin:35px 0">
-<span style="display:inline-block;background:#2E84C5;color:#fff;padding:6px 28px;border-radius:999px;font-size:14px;font-weight:600">${t}</span>
+
+<span style="
+display:inline-block;
+background:#2E84C5;
+color:#fff;
+padding:6px 28px;
+border-radius:999px;
+font-size:14px;
+font-weight:600;
+">${t}</span>
+
 </section>
 `;
-
 }
+
+/* 引用 */
 
 else if(line.startsWith(">")){
 
 let t=line.replace(">","");
 
 html+=`
-<section style="margin:30px 0;background:#f4f7fb;padding:18px;border-left:4px solid #2E84C5">
+<section style="
+margin:30px 0;
+background:#f4f7fb;
+padding:18px;
+border-left:4px solid #2E84C5;
+">
 
-<p style="margin:0;font-size:15px;color:#444;line-height:2">${t}</p>
+<p style="
+margin:0;
+font-size:15px;
+color:#444;
+line-height:2;
+">${t}</p>
 
 </section>
 `;
-
 }
+
+/* 分割线 */
 
 else if(line==="---"){
 
@@ -308,22 +333,32 @@ html+=`
 
 </section>
 `;
-
 }
 
-else if(line.startsWith("!!")){
+/* 金句 */
 
-let t=line.replace("!!","");
+else if(line.trim().startsWith("!!")){
+
+let t=line.replace(/^!!\s*/,"");
 
 html+=`
-<section style="margin:25px 0">
+<section style="margin:28px 0">
 
-<p style="background:#FFF6D9;padding:14px;border-radius:6px;font-size:16px;line-height:2">${t}</p>
+<p style="
+background:#FFF6D9;
+padding:16px;
+border-radius:6px;
+font-size:16.5px;
+line-height:2.1;
+color:#333;
+font-weight:500;
+">${t}</p>
 
 </section>
 `;
-
 }
+
+/* 图片 */
 
 else if(line.startsWith("![")){
 
@@ -336,8 +371,9 @@ html+=`
 
 </section>
 `;
-
 }
+
+/* 图片说明 */
 
 else if(line.startsWith("(图：")){
 
@@ -350,8 +386,9 @@ html+=`
 
 </section>
 `;
-
 }
+
+/* 作者 */
 
 else if(line==="@作者"){
 
@@ -367,50 +404,46 @@ html+=`
 
 </section>
 `;
-
 }
+
+/* 关注 */
 
 else if(line==="@关注"){
 
 html+=`
 <section style="text-align:center;margin:50px 0">
 
-<div style="font-size:18px;font-weight:600;color:#2E84C5">关注 HOPE学堂</div>
+<div style="font-size:18px;font-weight:600;color:#2E84C5">
+关注 HOPE学堂
+</div>
 
-<p style="color:#666;font-size:14px">一起探索未来教育与空间创新</p>
+<p style="color:#666;font-size:14px">
+一起探索未来教育与空间创新
+</p>
 
 </section>
 `;
-
 }
+
+/* 正文 */
 
 else{
 
 html+=`
 <section style="margin:15px 0">
 
-<p style="margin:0;font-size:16.5px;line-height:2.1;color:#333">${line}</p>
+<p style="
+margin:0;
+font-size:16.5px;
+line-height:2.1;
+color:#333;
+">${line}</p>
 
 </section>
 `;
-
 }
 
 });
-
-if(toc.length>0){
-
-let tocHTML=`<section style="margin:30px 0">`;
-
-toc.forEach(t=>{
-tocHTML+=`<p style="font-size:14px;color:#2E84C5">${t}</p>`;
-});
-
-tocHTML+=`</section>`;
-
-html=html.replace(`<section id="toc"></section>`,tocHTML);
-
-}
 
 document.getElementById("output").innerHTML=html;
 
