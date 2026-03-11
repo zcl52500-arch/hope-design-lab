@@ -2,16 +2,14 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · v30</title>
+<title>HOPE Design Lab v33</title>
 
 <style>
-
-*{box-sizing:border-box;}
 
 body{
 margin:0;
 font-family:sans-serif;
-background:#F4F6F9;
+background:#f5f6f7;
 display:flex;
 flex-direction:column;
 height:100vh;
@@ -19,7 +17,7 @@ height:100vh;
 
 header{
 background:white;
-padding:15px 30px;
+padding:14px 24px;
 border-bottom:1px solid #ddd;
 display:flex;
 justify-content:space-between;
@@ -30,23 +28,22 @@ align-items:center;
 display:grid;
 grid-template-columns:1fr 1fr;
 flex:1;
-overflow:hidden;
 }
 
 textarea{
 width:100%;
 height:100%;
-padding:30px;
 border:none;
-outline:none;
+padding:30px;
 font-size:15px;
+outline:none;
 background:#fafafa;
 resize:none;
 }
 
 .preview{
 background:white;
-overflow-y:auto;
+overflow:auto;
 padding:40px;
 }
 
@@ -54,165 +51,57 @@ button{
 background:#2E84C5;
 color:white;
 border:none;
-padding:10px 25px;
+padding:8px 18px;
 border-radius:20px;
 cursor:pointer;
 font-weight:bold;
 }
 
-/* 语法提示 */
-
 .hint{
-background:#F8F9FA;
-padding:15px 20px;
-margin-bottom:10px;
-border-radius:6px;
-border-left:4px solid #76B92E;
+background:#f7f8fa;
+padding:15px;
 font-size:13px;
-color:#666;
-}
-
-.hint code{
-background:#eee;
-padding:2px 5px;
-border-radius:3px;
-color:#2E84C5;
-font-weight:bold;
-font-family:monospace;
-}
-
-h1,h2,p,section{margin:0;padding:0;}
-
-/* 金句 */
-
-.gold-quote{
-background:#FFD100;
-color:#fff;
-padding:20px;
-border-radius:8px;
-line-height:2.1;
-font-size:16px;
-text-align:justify;
-margin:30px 0;
-}
-
-/* 引用 */
-
-.quote-block{
-background:#F2F7FB;
-border-left:6px solid #2E84C5;
-padding:25px 30px;
-line-height:2.1;
-font-size:16px;
-color:#444;
-text-align:justify;
-border-radius:0 8px 8px 0;
-margin:35px 0;
-}
-
-/* 蓝色胶囊 */
-
-.blue-tag{
-display:inline-block;
-background:#2E84C5;
-color:#fff;
-padding:5px 25px;
-border-radius:50px;
-font-size:14px;
-font-weight:bold;
-letter-spacing:1px;
-margin:20px 0;
-}
-
-/* 一级标题 */
-
-.section-number{
-font-size:85px;
-font-weight:900;
-color:#EBF4E2;
-font-family:Arial;
-line-height:1;
-letter-spacing:-4px;
-}
-
-.section-part{
-font-size:14px;
-font-weight:bold;
-color:#FFD100;
-letter-spacing:2px;
-margin-left:8px;
-font-family:Arial;
-}
-
-.section-arrow{
-color:#76B92E;
-font-size:40px;
-font-weight:900;
-margin-top:15px;
-margin-left:10px;
-}
-
-/* 二级标题 */
-
-.h2-line{
-border-left:5px solid #76B92E;
-padding-left:15px;
-line-height:1.4;
-font-size:21px;
-font-weight:bold;
-color:#2E84C5;
-margin:40px 0 20px;
+border-left:4px solid #76B92E;
+margin-bottom:10px;
+line-height:1.7;
 }
 
 </style>
+
 </head>
 
 <body>
 
 <header>
-
-<h1 style="margin:0;font-size:18px;color:#333;">
-🍓 HOPE Design Lab
-<span style="color:#76B92E;">v30</span>
-</h1>
+<b>HOPE Design Lab v33</b>
 
 <div>
 <button onclick="copyHTML()">复制HTML</button>
-<button onclick="clearText()" style="margin-left:10px;background:#888;">清空</button>
+<button onclick="clearText()" style="background:#888;margin-left:10px;">清空</button>
 </div>
-
 </header>
 
 <div class="main">
 
-<div style="display:flex;flex-direction:column;">
+<div style="display:flex;flex-direction:column">
 
 <div class="hint">
 
-<b>语法提示</b><br><br>
-
-<code># 01 标题</code> 一级标题<br>
-<code>## 标题</code> 二级标题<br>
-<code>!! 金句</code><br>
-<code>> 引用</code><br>
-<code>【标签】</code><br>
-<code>---</code> 分割线<br><br>
-
-<b>列表</b><br>
-
-<code>- 内容</code> 蓝点<br>
-<code>* 内容</code> 黄菱形<br>
-<code>+ 内容</code> 绿点<br>
-<code>1. 内容</code> 自动列表<br><br>
-
-<b>其他</b><br>
-
-<code>[图片] URL</code><br>
-<code>**粗体**</code>
+# 标题<br>
+## 小标题<br>
+!! 金句<br>
+> 引用<br>
+【标签】<br>
+--- 分割线<br>
+- * + 列表<br>
+1. 自动列表<br>
+[图片] url<br>
+[图注] 说明<br>
+**粗体**
 
 </div>
 
-<textarea id="input" oninput="generate()" placeholder="粘贴文章..."></textarea>
+<textarea id="input" oninput="generate()"></textarea>
 
 </div>
 
@@ -222,27 +111,49 @@ margin:40px 0 20px;
 
 <script>
 
-const inputEl=document.getElementById("input");
-const outputEl=document.getElementById("output");
-
-const engMap={
-"01":"ONE","02":"TWO","03":"THREE","04":"FOUR",
-"05":"FIVE","06":"SIX","07":"SEVEN","08":"EIGHT",
-"09":"NINE","10":"TEN"
-};
-
-function parseBold(text){
-
-return text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
-
+function parseBold(t){
+return t.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>");
 }
 
 function generate(){
 
-const text=inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
-const lines=text.split("\n");
+let text=document.getElementById("input").value
+.replace(/\r/g,"")
+.replace(/\n{3,}/g,"\n\n");
+
+let lines=text.split("\n");
 
 let html="";
+let titles=[];
+let count=0;
+
+/* 扫描标题 */
+
+lines.forEach(l=>{
+if(l.startsWith("# ")){
+count++;
+titles.push({num:count,title:l.replace("# ","")});
+}
+});
+
+/* 目录 */
+
+if(titles.length>1){
+
+html+=`<p style="font-weight:bold;margin:20px 0;">目录</p>`;
+
+titles.forEach(t=>{
+html+=`<p style="margin:4px 0;color:#2E84C5;">
+${String(t.num).padStart(2,"0")} ${t.title}
+</p>`;
+});
+
+html+=`<p style="margin:20px 0;"></p>`;
+}
+
+/* 正文生成 */
+
+count=0;
 
 lines.forEach(line=>{
 
@@ -257,23 +168,21 @@ if(line.startsWith("[图片]")){
 
 let url=line.replace("[图片]","").trim();
 
-html+=`
-
-<section style="text-align:center;margin:30px 0;">
+html+=`<p style="text-align:center;margin:25px 0;">
 <img src="${url}" style="max-width:100%;border-radius:6px;">
-</section>
-
-`;
+</p>`;
 
 }
 
-/* 金句 */
+/* 图注 */
 
-else if(line.startsWith("!!")){
+else if(line.startsWith("[图注]")){
 
-let content=line.replace(/^!!/,"").trim();
+let txt=line.replace("[图注]","").trim();
 
-html+=`<section class="gold-quote">${content}</section>`;
+html+=`<p style="text-align:center;color:#888;font-size:13px;margin-top:-15px;margin-bottom:25px;">
+${txt}
+</p>`;
 
 }
 
@@ -281,40 +190,13 @@ html+=`<section class="gold-quote">${content}</section>`;
 
 else if(line.startsWith("# ")){
 
-let raw=line.replace("# ","");
+count++;
 
-let numStr=(raw.match(/^\d+/)||["01"])[0];
+let t=line.replace("# ","");
 
-let titleStr=raw.replace(/^\d+/,"").trim();
-
-let engStr=engMap[numStr]||"SECTION";
-
-html+=`
-
-<section style="margin:50px 0 40px;clear:both;text-align:left;">
-
-<section style="display:inline-block;vertical-align:bottom;">
-<span class="section-number">${numStr}</span>
-</section>
-
-<section style="display:inline-block;vertical-align:bottom;margin-left:15px;padding-bottom:10px;max-width:70%;">
-
-<section style="margin-bottom:8px;">
-<span style="display:inline-block;width:12px;height:12px;background:#FFD100;border-radius:50%;"></span>
-<span class="section-part">PART ${engStr}</span>
-</section>
-
-<section style="font-size:28px;font-weight:bold;color:#2E84C5;line-height:1.3;">
-${titleStr}
-</section>
-
-</section>
-
-<section class="section-arrow">↘</section>
-
-</section>
-
-`;
+html+=`<p style="font-size:26px;font-weight:bold;color:#2E84C5;margin:40px 0 20px 0;">
+${String(count).padStart(2,"0")} ${t}
+</p>`;
 
 }
 
@@ -322,7 +204,23 @@ ${titleStr}
 
 else if(line.startsWith("## ")){
 
-html+=`<section class="h2-line">${line.replace("## ","")}</section>`;
+let t=line.replace("## ","");
+
+html+=`<p style="border-left:4px solid #76B92E;padding-left:10px;font-size:20px;font-weight:bold;margin:30px 0 15px;color:#2E84C5;">
+${t}
+</p>`;
+
+}
+
+/* 金句 */
+
+else if(line.startsWith("!!")){
+
+let t=line.replace("!!","").trim();
+
+html+=`<p style="background:#FFD100;color:white;padding:12px 14px;border-radius:6px;line-height:1.9;margin:25px 0;">
+${t}
+</p>`;
 
 }
 
@@ -330,17 +228,25 @@ html+=`<section class="h2-line">${line.replace("## ","")}</section>`;
 
 else if(line.startsWith("> ")){
 
-let content=line.replace("> ","");
+let t=line.replace("> ","");
 
-html+=`<section class="quote-block">${content}</section>`;
+html+=`<p style="border-left:4px solid #2E84C5;padding-left:12px;color:#555;margin:25px 0;line-height:1.9;">
+${t}
+</p>`;
 
 }
 
-/* 胶囊 */
+/* 标签 */
 
 else if(line.startsWith("【") && line.endsWith("】")){
 
-html+=`<div class="blue-tag">${line.replace(/[【】]/g,'')}</div>`;
+let t=line.replace(/[【】]/g,"");
+
+html+=`<p style="margin:20px 0;">
+<span style="background:#2E84C5;color:white;padding:4px 14px;border-radius:20px;font-size:14px;">
+${t}
+</span>
+</p>`;
 
 }
 
@@ -348,99 +254,41 @@ html+=`<div class="blue-tag">${line.replace(/[【】]/g,'')}</div>`;
 
 else if(line==="---"){
 
-html+=`
-
-<section style="text-align:center;margin:60px 0;">
-
-<span style="display:inline-block;width:8px;height:8px;background:#2E84C5;border-radius:50%;margin:0 8px;"></span>
-
-<span style="display:inline-block;width:12px;height:12px;background:#FFD100;border-radius:50%;margin:0 8px;"></span>
-
-<span style="display:inline-block;width:8px;height:8px;background:#76B92E;border-radius:50%;margin:0 8px;"></span>
-
-</section>
-
-`;
+html+=`<p style="text-align:center;margin:40px 0;">
+<span style="display:inline-block;width:8px;height:8px;background:#2E84C5;border-radius:50%;margin:0 5px;"></span>
+<span style="display:inline-block;width:12px;height:12px;background:#FFD100;border-radius:50%;margin:0 5px;"></span>
+<span style="display:inline-block;width:8px;height:8px;background:#76B92E;border-radius:50%;margin:0 5px;"></span>
+</p>`;
 
 }
 
-/* 自动数字列表 */
+/* 列表 */
 
-else if(/^\d+\.\s/.test(line)){
+else if(line.startsWith("- ")||line.startsWith("* ")||line.startsWith("+ ")){
 
-let content=line.replace(/^\d+\.\s/,"");
+let color="#2E84C5";
+if(line.startsWith("* ")) color="#FFD100";
+if(line.startsWith("+ ")) color="#76B92E";
 
-html+=`
+let t=line.substring(2);
 
-<section style="display:flex;margin:12px 0;align-items:flex-start;">
-
-<span style="flex-shrink:0;width:10px;height:10px;background:#2E84C5;border-radius:50%;margin-top:9px;margin-right:10px;"></span>
-
-<span style="line-height:2;font-size:17px;color:#333;flex:1;">${content}</span>
-
-</section>
-
-`;
+html+=`<p style="margin:8px 0;line-height:2;">
+<span style="display:inline-block;width:8px;height:8px;background:${color};border-radius:50%;margin-right:8px;"></span>
+${t}
+</p>`;
 
 }
 
-/* 蓝点 */
+/* 自动列表 */
 
-else if(line.startsWith("- ")){
+else if(/^\d+\./.test(line)){
 
-let content=line.replace("- ","");
+let t=line.replace(/^\d+\.\s*/,"");
 
-html+=`
-
-<section style="display:flex;margin:12px 0;align-items:flex-start;">
-
-<span style="flex-shrink:0;width:10px;height:10px;background:#2E84C5;border-radius:50%;margin-top:9px;margin-right:10px;"></span>
-
-<span style="line-height:2;font-size:17px;color:#333;flex:1;">${content}</span>
-
-</section>
-
-`;
-
-}
-
-/* 黄菱形 */
-
-else if(line.startsWith("* ")){
-
-let content=line.replace("* ","");
-
-html+=`
-
-<section style="display:flex;margin:12px 0;align-items:flex-start;">
-
-<span style="flex-shrink:0;width:10px;height:10px;background:#FFD100;transform:rotate(45deg);margin-top:9px;margin-right:10px;"></span>
-
-<span style="line-height:2;font-size:17px;color:#333;flex:1;">${content}</span>
-
-</section>
-
-`;
-
-}
-
-/* 绿点 */
-
-else if(line.startsWith("+ ")){
-
-let content=line.replace("+ ","");
-
-html+=`
-
-<section style="display:flex;margin:12px 0;align-items:flex-start;">
-
-<span style="flex-shrink:0;width:10px;height:10px;background:#76B92E;border-radius:50%;margin-top:9px;margin-right:10px;"></span>
-
-<span style="line-height:2;font-size:17px;color:#333;flex:1;">${content}</span>
-
-</section>
-
-`;
+html+=`<p style="margin:8px 0;line-height:2;">
+<span style="display:inline-block;width:8px;height:8px;background:#2E84C5;border-radius:50%;margin-right:8px;"></span>
+${t}
+</p>`;
 
 }
 
@@ -448,46 +296,37 @@ html+=`
 
 else{
 
-html+=`
-
-<p style="line-height:2.1;font-size:17px;color:#333;margin-bottom:28px;text-align:justify;letter-spacing:0.5px;">
-
+html+=`<p style="line-height:2;font-size:16px;color:#333;margin:15px 0;text-align:justify;">
 ${line}
-
-</p>
-
-`;
+</p>`;
 
 }
 
 });
 
-outputEl.innerHTML=html;
+document.getElementById("output").innerHTML=html;
 
 }
 
 function copyHTML(){
 
-const html=outputEl.innerHTML;
+let html=document.getElementById("output").innerHTML;
 
-const blob=new Blob([html],{type:"text/html"});
-
-const data=[new ClipboardItem({"text/html":blob})];
+let blob=new Blob([html],{type:"text/html"});
+let data=[new ClipboardItem({"text/html":blob})];
 
 navigator.clipboard.write(data);
 
-alert("复制成功，可直接粘贴到公众号后台");
+alert("复制成功");
 
 }
 
 function clearText(){
 
-inputEl.value="";
-outputEl.innerHTML="";
+document.getElementById("input").value="";
+document.getElementById("output").innerHTML="";
 
 }
-
-window.onload=generate;
 
 </script>
 
