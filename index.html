@@ -2,10 +2,9 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab v33</title>
+<title>HOPE Design Lab v33.1</title>
 
 <style>
-
 body{
 margin:0;
 font-family:sans-serif;
@@ -65,16 +64,13 @@ border-left:4px solid #76B92E;
 margin-bottom:10px;
 line-height:1.7;
 }
-
 </style>
-
 </head>
 
 <body>
 
 <header>
-<b>HOPE Design Lab v33</b>
-
+<b>HOPE Design Lab v33.1</b>
 <div>
 <button onclick="copyHTML()">复制HTML</button>
 <button onclick="clearText()" style="background:#888;margin-left:10px;">清空</button>
@@ -86,7 +82,6 @@ line-height:1.7;
 <div style="display:flex;flex-direction:column">
 
 <div class="hint">
-
 # 标题<br>
 ## 小标题<br>
 !! 金句<br>
@@ -98,7 +93,6 @@ line-height:1.7;
 [图片] url<br>
 [图注] 说明<br>
 **粗体**
-
 </div>
 
 <textarea id="input" oninput="generate()"></textarea>
@@ -110,6 +104,11 @@ line-height:1.7;
 </div>
 
 <script>
+
+const partMap={
+1:"ONE",2:"TWO",3:"THREE",4:"FOUR",5:"FIVE",
+6:"SIX",7:"SEVEN",8:"EIGHT",9:"NINE",10:"TEN"
+};
 
 function parseBold(t){
 return t.replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>");
@@ -171,7 +170,6 @@ let url=line.replace("[图片]","").trim();
 html+=`<p style="text-align:center;margin:25px 0;">
 <img src="${url}" style="max-width:100%;border-radius:6px;">
 </p>`;
-
 }
 
 /* 图注 */
@@ -183,7 +181,6 @@ let txt=line.replace("[图注]","").trim();
 html+=`<p style="text-align:center;color:#888;font-size:13px;margin-top:-15px;margin-bottom:25px;">
 ${txt}
 </p>`;
-
 }
 
 /* 一级标题 */
@@ -194,9 +191,37 @@ count++;
 
 let t=line.replace("# ","");
 
-html+=`<p style="font-size:26px;font-weight:bold;color:#2E84C5;margin:40px 0 20px 0;">
-${String(count).padStart(2,"0")} ${t}
-</p>`;
+let num=String(count).padStart(2,"0");
+
+let part=partMap[count] || "SECTION";
+
+html+=`
+
+<p style="margin:50px 0 30px 0;line-height:1.2;">
+
+<span style="font-size:70px;font-weight:900;color:#E8F2DD;margin-right:10px;">
+${num}
+</span>
+
+<span style="display:inline-block;margin-right:6px;
+width:10px;height:10px;background:#FFD100;border-radius:50%;"></span>
+
+<span style="font-size:13px;font-weight:bold;color:#FFD100;letter-spacing:2px;">
+PART ${part}
+</span>
+
+<br>
+
+<span style="font-size:26px;font-weight:bold;color:#2E84C5;">
+${t}
+</span>
+
+<span style="color:#76B92E;font-size:28px;margin-left:8px;">
+↘
+</span>
+
+</p>
+`;
 
 }
 
@@ -209,7 +234,6 @@ let t=line.replace("## ","");
 html+=`<p style="border-left:4px solid #76B92E;padding-left:10px;font-size:20px;font-weight:bold;margin:30px 0 15px;color:#2E84C5;">
 ${t}
 </p>`;
-
 }
 
 /* 金句 */
@@ -221,7 +245,6 @@ let t=line.replace("!!","").trim();
 html+=`<p style="background:#FFD100;color:white;padding:12px 14px;border-radius:6px;line-height:1.9;margin:25px 0;">
 ${t}
 </p>`;
-
 }
 
 /* 引用 */
@@ -233,7 +256,6 @@ let t=line.replace("> ","");
 html+=`<p style="border-left:4px solid #2E84C5;padding-left:12px;color:#555;margin:25px 0;line-height:1.9;">
 ${t}
 </p>`;
-
 }
 
 /* 标签 */
@@ -247,7 +269,6 @@ html+=`<p style="margin:20px 0;">
 ${t}
 </span>
 </p>`;
-
 }
 
 /* 分割线 */
@@ -259,7 +280,6 @@ html+=`<p style="text-align:center;margin:40px 0;">
 <span style="display:inline-block;width:12px;height:12px;background:#FFD100;border-radius:50%;margin:0 5px;"></span>
 <span style="display:inline-block;width:8px;height:8px;background:#76B92E;border-radius:50%;margin:0 5px;"></span>
 </p>`;
-
 }
 
 /* 列表 */
@@ -276,7 +296,6 @@ html+=`<p style="margin:8px 0;line-height:2;">
 <span style="display:inline-block;width:8px;height:8px;background:${color};border-radius:50%;margin-right:8px;"></span>
 ${t}
 </p>`;
-
 }
 
 /* 自动列表 */
@@ -289,7 +308,6 @@ html+=`<p style="margin:8px 0;line-height:2;">
 <span style="display:inline-block;width:8px;height:8px;background:#2E84C5;border-radius:50%;margin-right:8px;"></span>
 ${t}
 </p>`;
-
 }
 
 /* 正文 */
@@ -299,13 +317,11 @@ else{
 html+=`<p style="line-height:2;font-size:16px;color:#333;margin:15px 0;text-align:justify;">
 ${line}
 </p>`;
-
 }
 
 });
 
 document.getElementById("output").innerHTML=html;
-
 }
 
 function copyHTML(){
@@ -318,14 +334,11 @@ let data=[new ClipboardItem({"text/html":blob})];
 navigator.clipboard.write(data);
 
 alert("复制成功");
-
 }
 
 function clearText(){
-
 document.getElementById("input").value="";
 document.getElementById("output").innerHTML="";
-
 }
 
 </script>
