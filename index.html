@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>HOPE Design Lab · v29 稳定共享版</title>
+<title>HOPE Design Lab · v30</title>
 
 <style>
 
@@ -60,7 +60,7 @@ cursor:pointer;
 font-weight:bold;
 }
 
-/* 提示区 */
+/* 语法提示 */
 
 .hint{
 background:#F8F9FA;
@@ -170,12 +170,17 @@ margin:40px 0 20px;
 <body>
 
 <header>
+
 <h1 style="margin:0;font-size:18px;color:#333;">
 🍓 HOPE Design Lab
-<span style="color:#76B92E;">v29 稳定共享版</span>
+<span style="color:#76B92E;">v30</span>
 </h1>
 
-<button onclick="copyHTML()">一键复制 HTML</button>
+<div>
+<button onclick="copyHTML()">复制HTML</button>
+<button onclick="clearText()" style="margin-left:10px;background:#888;">清空</button>
+</div>
+
 </header>
 
 <div class="main">
@@ -184,21 +189,26 @@ margin:40px 0 20px;
 
 <div class="hint">
 
-💡 <b>语法提示</b><br>
+<b>语法提示</b><br><br>
 
-<code># 01 一级标题</code> 大数字标题<br>
-<code>## 二级标题</code> 绿竖线标题<br>
-<code>!! 金句</code> 黄色块<br>
-<code>> 引用</code> 蓝引用块<br>
-<code>【标签】</code> 蓝色胶囊<br>
-<code>---</code> 三色分割线<br>
-<br>
+<code># 01 标题</code> 一级标题<br>
+<code>## 标题</code> 二级标题<br>
+<code>!! 金句</code><br>
+<code>> 引用</code><br>
+<code>【标签】</code><br>
+<code>---</code> 分割线<br><br>
 
-<b>HOPE 列表</b><br>
+<b>列表</b><br>
 
-<code>- 内容</code> 蓝色圆点<br>
-<code>* 内容</code> 黄色菱形<br>
-<code>+ 内容</code> 绿色圆点
+<code>- 内容</code> 蓝点<br>
+<code>* 内容</code> 黄菱形<br>
+<code>+ 内容</code> 绿点<br>
+<code>1. 内容</code> 自动列表<br><br>
+
+<b>其他</b><br>
+
+<code>[图片] URL</code><br>
+<code>**粗体**</code>
 
 </div>
 
@@ -221,10 +231,15 @@ const engMap={
 "09":"NINE","10":"TEN"
 };
 
+function parseBold(text){
+
+return text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+
+}
+
 function generate(){
 
 const text=inputEl.value.replace(/\r/g,"").replace(/\n{3,}/g,"\n\n");
-
 const lines=text.split("\n");
 
 let html="";
@@ -232,12 +247,29 @@ let html="";
 lines.forEach(line=>{
 
 line=line.trim();
-
 if(!line) return;
+
+line=parseBold(line);
+
+/* 图片 */
+
+if(line.startsWith("[图片]")){
+
+let url=line.replace("[图片]","").trim();
+
+html+=`
+
+<section style="text-align:center;margin:30px 0;">
+<img src="${url}" style="max-width:100%;border-radius:6px;">
+</section>
+
+`;
+
+}
 
 /* 金句 */
 
-if(line.startsWith("!!")){
+else if(line.startsWith("!!")){
 
 let content=line.replace(/^!!/,"").trim();
 
@@ -304,7 +336,7 @@ html+=`<section class="quote-block">${content}</section>`;
 
 }
 
-/* 蓝胶囊 */
+/* 胶囊 */
 
 else if(line.startsWith("【") && line.endsWith("】")){
 
@@ -332,7 +364,27 @@ html+=`
 
 }
 
-/* 蓝点列表 */
+/* 自动数字列表 */
+
+else if(/^\d+\.\s/.test(line)){
+
+let content=line.replace(/^\d+\.\s/,"");
+
+html+=`
+
+<section style="display:flex;margin:12px 0;align-items:flex-start;">
+
+<span style="flex-shrink:0;width:10px;height:10px;background:#2E84C5;border-radius:50%;margin-top:9px;margin-right:10px;"></span>
+
+<span style="line-height:2;font-size:17px;color:#333;flex:1;">${content}</span>
+
+</section>
+
+`;
+
+}
+
+/* 蓝点 */
 
 else if(line.startsWith("- ")){
 
@@ -340,11 +392,11 @@ let content=line.replace("- ","");
 
 html+=`
 
-<section style="display:flex;margin:10px 0;">
+<section style="display:flex;margin:12px 0;align-items:flex-start;">
 
-<span style="width:8px;height:8px;background:#2E84C5;border-radius:50%;margin-top:10px;margin-right:10px;"></span>
+<span style="flex-shrink:0;width:10px;height:10px;background:#2E84C5;border-radius:50%;margin-top:9px;margin-right:10px;"></span>
 
-<span style="line-height:2;font-size:17px;color:#333;">${content}</span>
+<span style="line-height:2;font-size:17px;color:#333;flex:1;">${content}</span>
 
 </section>
 
@@ -360,11 +412,11 @@ let content=line.replace("* ","");
 
 html+=`
 
-<section style="display:flex;margin:10px 0;">
+<section style="display:flex;margin:12px 0;align-items:flex-start;">
 
-<span style="width:8px;height:8px;background:#FFD100;transform:rotate(45deg);margin-top:10px;margin-right:10px;"></span>
+<span style="flex-shrink:0;width:10px;height:10px;background:#FFD100;transform:rotate(45deg);margin-top:9px;margin-right:10px;"></span>
 
-<span style="line-height:2;font-size:17px;color:#333;">${content}</span>
+<span style="line-height:2;font-size:17px;color:#333;flex:1;">${content}</span>
 
 </section>
 
@@ -380,11 +432,11 @@ let content=line.replace("+ ","");
 
 html+=`
 
-<section style="display:flex;margin:10px 0;">
+<section style="display:flex;margin:12px 0;align-items:flex-start;">
 
-<span style="width:8px;height:8px;background:#76B92E;border-radius:50%;margin-top:10px;margin-right:10px;"></span>
+<span style="flex-shrink:0;width:10px;height:10px;background:#76B92E;border-radius:50%;margin-top:9px;margin-right:10px;"></span>
 
-<span style="line-height:2;font-size:17px;color:#333;">${content}</span>
+<span style="line-height:2;font-size:17px;color:#333;flex:1;">${content}</span>
 
 </section>
 
@@ -414,8 +466,6 @@ outputEl.innerHTML=html;
 
 }
 
-/* 跨电脑稳定复制 */
-
 function copyHTML(){
 
 const html=outputEl.innerHTML;
@@ -427,6 +477,13 @@ const data=[new ClipboardItem({"text/html":blob})];
 navigator.clipboard.write(data);
 
 alert("复制成功，可直接粘贴到公众号后台");
+
+}
+
+function clearText(){
+
+inputEl.value="";
+outputEl.innerHTML="";
 
 }
 
